@@ -1,0 +1,25 @@
+{
+  "glyphs": {
+    "P": {"ha":690,"x_min":76,"x_max":634,"o":"m 76 0 l 76 700 l 365 700 q 507 671 451 700 q 599 589 563 643 q 634 467 634 535 q 599 345 634 399 q 507 263 563 291 q 365 234 451 234 l 180 234 l 180 0 l 76 0 m 180 321 l 365 321 q 493 366 447 321 q 539 467 539 411 q 493 568 539 523 q 365 613 447 613 l 180 613 l 180 321"},
+    "I": {"ha":256,"x_min":76,"x_max":180,"o":"m 76 0 l 76 700 l 180 700 l 180 0 l 76 0"},
+    "B": {"ha":690,"x_min":76,"x_max":634,"o":"m 76 0 l 76 700 l 365 700 q 507 671 451 700 q 599 589 563 643 q 634 467 634 535 q 599 345 634 399 q 507 263 563 291 q 365 234 451 234 l 180 234 l 180 0 l 76 0 m 180 321 l 365 321 q 493 366 447 321 q 539 467 539 411 q 493 568 539 523 q 365 613 447 613 l 180 613 l 180 321"},
+    "T": {"ha":600,"x_min":20,"x_max":580,"o":"m 248 0 l 248 613 l 20 613 l 20 700 l 580 700 l 580 613 l 352 613 l 352 0 l 248 0"}
+  },
+  "familyName": "Fredoka",
+  "ascender": 800,
+  "descender": -200,
+  "underlinePosition": -100,
+  "underlineThickness": 50,
+  "boundingBox": {"yMin":-200,"xMin":-50,"yMax":800,"xMax":650},
+  "resolution": 1000,
+  "original_font_information": {
+    "format": 0,
+    "copyright": "Copyright 2016 The Fredoka Project Authors (https://github.com/hafontia/Fredoka-One)",
+    "fontFamily": "Fredoka",
+    "fontSubfamily": "Regular",
+    "uniqueID": "1.000;NONE;Fredoka-Regular",
+    "fullName": "Fredoka Regular",
+    "version": "Version 1.000",
+    "postScriptName": "Fredoka-Regular"
+  }
+} 
