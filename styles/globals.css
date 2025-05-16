@@ -1,0 +1,60 @@
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+/* Next.js/Vercel 왼쪽 하단 버튼 숨기기 */
+[data-nextjs-dev-overlay],
+.nextjs-portal,
+#__next-route-announcer {
+  display: none !important;
+}
+div[style*="position: fixed"][style*="left: 0px"][style*="bottom: 0px"] {
+  display: none !important;
+}
+
+/* Next.js 개발자 버튼(왼쪽 하단 N 아이콘) 완전 숨기기 */
+div[style*="position: fixed"][style*="left: 0px"][style*="bottom: 0px"],
+div[style*="position:fixed"][style*="left:0px"][style*="bottom:0px"],
+div[style*="position: fixed"][style*="bottom: 0px"][style*="z-index: 9999999999"],
+div[style*="position:fixed"][style*="bottom:0px"][style*="z-index:9999999999"] {
+  display: none !important;
+}
