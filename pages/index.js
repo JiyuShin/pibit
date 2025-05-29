@@ -881,185 +881,77 @@ export default function Home() {
 
   useEffect(() => {
     const newImages = [
-      // module 001 이미지들
+      // finger.png
       {
-        id: 'module1_1',
+        id: 'finger',
         type: 'image',
-        src: '/module/module001.png',
-        size: 528,
-        left: -5,
-        bottom: -135,
-        duration: 5,
-        rotation: -15,
-        zIndex: 3
-      },
-      {
-        id: 'module1_2',
-        type: 'image',
-        src: '/module/module001.png',
-        size: 528,
-        left: 15,
-        bottom: -138,
-        duration: 6,
-        rotation: 120,
-        zIndex: 1
-      },
-      {
-        id: 'module1_3',
-        type: 'image',
-        src: '/module/module001.png',
-        size: 528,
-        left: 35,
-        bottom: -136,
-        duration: 7,
-        rotation: -75,
-        zIndex: 4
-      },
-      {
-        id: 'module1_4',
-        type: 'image',
-        src: '/module/module001.png',
-        size: 528,
-        left: 55,
-        bottom: -137,
-        duration: 8,
-        rotation: 45,
-        zIndex: 2
-      },
-      // module 003 이미지들
-      {
-        id: 'module3_1',
-        type: 'image',
-        src: '/module/module003.png',
-        size: 396,
+        src: '/module/finger.png',
+        size: 462,
         left: 0,
         bottom: -135,
-        duration: 6,
-        rotation: 60,
-        zIndex: 2
-      },
-      {
-        id: 'module3_2',
-        type: 'image',
-        src: '/module/module003.png',
-        size: 396,
-        left: 20,
-        bottom: -138,
-        duration: 7,
-        rotation: -120,
-        zIndex: 4
-      },
-      {
-        id: 'module3_3',
-        type: 'image',
-        src: '/module/module003.png',
-        size: 396,
-        left: 40,
-        bottom: -136,
-        duration: 8,
-        rotation: 150,
-        zIndex: 1
-      },
-      {
-        id: 'module3_4',
-        type: 'image',
-        src: '/module/module003.png',
-        size: 396,
-        left: 60,
-        bottom: -137,
         duration: 5,
-        rotation: -30,
+        rotation: -35,
         zIndex: 3
       },
-      // module 004 이미지들
+      // flower.png
       {
-        id: 'module4_1',
+        id: 'flower',
         type: 'image',
-        src: '/module/module004.png',
-        size: 462,
-        left: 5,
-        bottom: -135,
-        duration: 7,
-        rotation: 90,
-        zIndex: 4
-      },
-      {
-        id: 'module4_2',
-        type: 'image',
-        src: '/module/module004.png',
-        size: 462,
-        left: 25,
-        bottom: -138,
+        src: '/module/flower.png',
+        size: 420,
+        left: 16,
+        bottom: -110,
         duration: 6,
-        rotation: -150,
-        zIndex: 2
-      },
-      {
-        id: 'module4_3',
-        type: 'image',
-        src: '/module/module004.png',
-        size: 462,
-        left: 45,
-        bottom: -136,
-        duration: 8,
-        rotation: 30,
-        zIndex: 3
-      },
-      {
-        id: 'module4_4',
-        type: 'image',
-        src: '/module/module004.png',
-        size: 462,
-        left: 65,
-        bottom: -137,
-        duration: 7,
-        rotation: -60,
+        rotation: -35,
         zIndex: 1
       },
-      // module 005 이미지들
+      // heart.png
       {
-        id: 'module5_1',
+        id: 'heart',
         type: 'image',
-        src: '/module/module005.png',
-        size: 502,
-        left: 10,
-        bottom: -135,
-        duration: 8,
-        rotation: 180,
-        zIndex: 1
-      },
-      {
-        id: 'module5_2',
-        type: 'image',
-        src: '/module/module005.png',
-        size: 502,
-        left: 30,
-        bottom: -138,
-        duration: 5,
-        rotation: -90,
-        zIndex: 3
-      },
-      {
-        id: 'module5_3',
-        type: 'image',
-        src: '/module/module005.png',
-        size: 502,
-        left: 50,
+        src: '/module/heart.png',
+        size: 420,
+        left: 32,
         bottom: -136,
-        duration: 6,
-        rotation: 45,
+        duration: 7,
+        rotation: 35,
+        zIndex: 4
+      },
+      // pinch.png
+      {
+        id: 'pinch',
+        type: 'image',
+        src: '/module/pinch.png',
+        size: 420,
+        left: 48,
+        bottom: -102,
+        duration: 8,
+        rotation: -35,
         zIndex: 2
       },
+      // puffy.png
       {
-        id: 'module5_4',
+        id: 'puffy',
         type: 'image',
-        src: '/module/module005.png',
-        size: 502,
-        left: 70,
-        bottom: -137,
+        src: '/module/puffy.png',
+        size: 378,
+        left: 64,
+        bottom: -135,
+        duration: 6,
+        rotation: -38,
+        zIndex: 3
+      },
+      // wiggle.png
+      {
+        id: 'wiggle',
+        type: 'image',
+        src: '/module/wiggle.png',
+        size: 600,
+        left: -16,
+        bottom: -138,
         duration: 7,
-        rotation: -135,
-        zIndex: 4
+        rotation: 34,
+        zIndex: 1
       }
     ];
     
@@ -1225,27 +1117,6 @@ export default function Home() {
 
   const handleFurryLeave = () => setIsFurry(false);
 
-  const generateStars = () => {
-    const stars = [];
-    const colors = ['#bbdefb', '#ffe082', '#ffffff'];
-    
-    // 화면 전체에 별을 균일하게 배치
-    for (let i = 0; i < 70; i++) {
-      stars.push({
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        size: `${Math.random() * 9 + 12}px`,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        duration: 4 + Math.random() * 2,
-        delay: `${Math.random() * 2}s`
-      });
-    }
-    
-    return stars;
-  };
-
-  const [stars] = useState(generateStars());
-
   const handleImageMouseEnter = (id) => {
     setFollowStates(prev => ({ ...prev, [id]: { following: true, x: 0, y: 0 } }));
   };
@@ -1339,13 +1210,6 @@ export default function Home() {
 
   return (
     <Hero onMouseMove={handleMouseMove}>
-      {stars.map((star, i) => (
-        <Star
-          key={i}
-          {...star}
-          isPulsing={pulsingStars.has(i)}
-        />
-      ))}
       {shapes.map((shape, idx) => {
         if (shape.type !== 'image') return null;
         const follow = followStates[shape.id] || { following: false, x: 0, y: 0 };
@@ -1391,7 +1255,7 @@ export default function Home() {
             onMouseLeave={handleButtonMouseLeave}
             onClick={handleButtonClick}
           >
-            새로운 동반자 찾기
+            새로운 동반자 탐색하기
           </CTAButton>
         </Link>
       </HeroContent>

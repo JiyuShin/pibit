@@ -10,6 +10,13 @@ const io = new Server(server, {
   }
 });
 
+const ids = [
+  '04973bcac01c90', // 10대
+  '04063bcac01c91', // 언니
+  '04a73bcac01c90', // 어르신
+];
+let idx = 0;
+
 io.on('connection', (socket) => {
   console.log("✅ 웹사이트와 소켓 연결됨");
 
@@ -19,8 +26,9 @@ io.on('connection', (socket) => {
     console.log(`🎯 리더기 연결됨: ${reader.name}`);
 
     reader.on('card', card => {
-      console.log(`📥 태그 인식됨: ${card.uid}`);
-      socket.emit('tag-read', { text: '지유야 안녕' }); // 메시지 변경
+      const payload = { id: card.uid, text: '지유야 안녕' };
+      console.log('[NFC 서버 emit payload]', payload);
+      socket.emit('tag-read', payload);
     });
 
     reader.on('error', err => {

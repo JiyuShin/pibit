@@ -9,8 +9,13 @@ import {
   Input,
   SendBtn
 } from './StyledComponents';
+import { toneAndManner } from './constants';
 // teenReplies는 현재 이 컴포넌트에서 직접 사용되지 않으므로 import하지 않습니다.
 // 만약 필요하다면 import { teenReplies } from './constants'; 로 추가할 수 있습니다.
+
+console.log('toneAndManner:', toneAndManner);
+console.log('toneAndManner[0]:', toneAndManner[0]);
+console.log('getSystemPrompt:', toneAndManner[0].getSystemPrompt('테스트유저'));
 
 let socket;
 
@@ -27,6 +32,8 @@ export default function ConversationView() {
   // const [userDay, setUserDay] = useState(''); // setUserDay는 있지만 userDay가 사용되지 않음. 아래 로직 확인 필요
   // const [showDunggutAudio, setShowDunggutAudio] = useState(false); // 현재 사용되지 않음
   const nfcSocketRef = useRef(null);
+  const [currentToneId, setCurrentToneId] = useState(toneAndManner[0].id);
+  const [isPibitLoading, setIsPibitLoading] = useState(false);
 
   useEffect(() => {
     console.log('[ConversationView] useEffect for name/router.isReady triggered. Name:', name, 'IsReady:', router.isReady);
@@ -66,18 +73,33 @@ export default function ConversationView() {
 
     console.log('[ConversationView] Setting up NFC socket...');
     if (!nfcSocketRef.current) {
-      nfcSocketRef.current = io('http://localhost:4000');
+      nfcSocketRef.current = io('http://localhost:4000', { transports: ['websocket'] });
       nfcSocketRef.current.on('connect', () => {
         console.log('[ConversationView] nfcSocket connected');
       });
       nfcSocketRef.current.on('tag-read', (data) => {
-        console.log('[ConversationView] nfcSocket event: tag-read', data);
-        const pibitMessage = { user: 'PIBIT', text: '안녕!' };
-        console.log('[ConversationView] Adding PIBIT message for tag-read:', pibitMessage);
-        setMessages((prev) => [
-          ...prev,
-          pibitMessage
-        ]);
+        console.log('[NFC] tag-read data:', data);
+        const tagToneId = data && data.id ? String(data.id).trim() : toneAndManner[0].id;
+        console.log('[NFC] tagToneId:', tagToneId);
+        setCurrentToneId(tagToneId);
+        fetch('/api/gpt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: '안녕!',
+            userName: nickname,
+            toneId: tagToneId
+          }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            const pibitMessage = { user: 'PIBIT', text: data.reply || '안녕!' };
+            setMessages((prev) => [...prev, pibitMessage]);
+          })
+          .catch(() => {
+            const pibitMessage = { user: 'PIBIT', text: '안녕!' };
+            setMessages((prev) => [...prev, pibitMessage]);
+          });
       });
       nfcSocketRef.current.on('tag-removed', (data) => {
         console.log('[ConversationView] nfcSocket event: tag-removed', data);
@@ -111,76 +133,39 @@ export default function ConversationView() {
 
   const handleSend = (e) => {
     e.preventDefault();
-    console.log('[ConversationView] handleSend triggered. Input:', input, 'Nickname:', nickname);
-    if (!input.trim()) {
-      console.log('[ConversationView] handleSend: Input is empty, returning.');
-      return;
-    }
+    if (!input.trim()) return;
     const userMessage = { user: nickname, text: input };
-    console.log('[ConversationView] handleSend: User message created:', userMessage);
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = input; // 비동기 fetch 전에 input 값을 저장
-    setInput(''); 
-
-    if (socket) {
-      console.log('[ConversationView] handleSend: Emitting message via socket.io:', userMessage);
-      socket.emit('message', userMessage);
-    }
-
-    console.log('[ConversationView] handleSend: Calling /api/gpt with message:', currentInput, 'and userName:', name || nickname);
+    const currentInput = input;
+    setInput('');
+    if (socket) socket.emit('message', userMessage);
+    setIsPibitLoading(true);
     fetch('/api/gpt', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message: currentInput, userName: name || nickname }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: currentInput, userName: name || nickname, toneId: currentToneId }),
     })
-    .then(res => {
-      console.log('[ConversationView] handleSend: Received raw response from /api/gpt:', res);
-      if (!res.ok) {
-        // res.json()을 호출하기 전에 에러 응답을 먼저 처리
-        console.error('[ConversationView] handleSend: API response not OK. Status:', res.status);
-        res.json().then(errData => {
-          console.error('[ConversationView] handleSend: API error response data:', errData);
-          const errorMessage = { user: 'PIBIT', text: errData.error || '앗, 지금은 대답하기 조금 어려워. 다시 시도해줘! (서버 에러)' };
+      .then(res => res.json())
+      .then(data => {
+        setIsPibitLoading(false);
+        if (data.reply) {
+          const pibitMessage = { user: 'PIBIT', text: data.reply };
+          setMessages((prev) => [...prev, pibitMessage]);
+        } else if (data.error) {
+          const errorMessage = { user: 'PIBIT', text: data.error };
           setMessages((prev) => [...prev, errorMessage]);
-        }).catch(jsonError => {
-          // JSON 파싱 실패 시
-          console.error('[ConversationView] handleSend: Failed to parse API error response as JSON:', jsonError);
-          const errorMessage = { user: 'PIBIT', text: '앗, 지금은 대답하기 조금 어려워. 다시 시도해줘! (응답 형식 오류)' };
-          setMessages((prev) => [...prev, errorMessage]);
-        });
-        return Promise.reject(new Error(`API responded with status ${res.status}`)); // 이후 .then(data => ..) 실행 방지
-      }
-      return res.json();
-    })
-    .then(data => {
-      console.log('[ConversationView] handleSend: Parsed data from /api/gpt:', data);
-      if (data.reply) {
-        const pibitMessage = { user: 'PIBIT', text: data.reply };
-        console.log('[ConversationView] handleSend: Adding PIBIT message from API:', pibitMessage);
-        setMessages((prev) => [...prev, pibitMessage]);
-      } else if (data.error) {
-        console.error('[ConversationView] handleSend: Error in API response data:', data.error);
-        const errorMessage = { user: 'PIBIT', text: data.error }; // API가 보낸 에러 메시지 사용
+        }
+      })
+      .catch(() => {
+        setIsPibitLoading(false);
+        const errorMessage = { user: 'PIBIT', text: '앗, 지금은 대답하기 조금 어려워. 다시 시도해줘! (서버 에러)' };
         setMessages((prev) => [...prev, errorMessage]);
-      }
-    })
-    .catch(error => {
-      // 위에서 Promise.reject()를 호출했거나 네트워크 에러 등 다른 에러 발생 시
-      console.error('[ConversationView] handleSend: Failed to fetch GPT response or process it:', error);
-      // 이미 UI에 에러 메시지를 표시했을 수 있으므로, 중복 표시를 피하기 위해 여기서는 추가적인 setMessages는 하지 않거나, 다른 종류의 메시지를 표시할 수 있습니다.
-      // 예를 들어, 네트워크 연결 문제와 API 자체 에러를 구분하고 싶을 때 사용합니다.
-      // if (!messages.some(m => m.text.includes('앗, 지금은 대답하기 조금 어려워'))) {
-      //   const errorMessage = { user: 'PIBIT', text: '앗, 네트워크 문제로 대답을 가져오지 못했어요.' };
-      //   setMessages((prev) => [...prev, errorMessage]);
-      // }
-    });
+      });
   };
 
   return (
     <Bg>
-      <h2 style={{textAlign:'center',margin:'24px 0 0 0',color:'#fbc02d'}}>실시간 채팅</h2>
+      <h2 style={{textAlign:'center',margin:'24px 0 0 0',color:'#7b61ff',fontWeight:700,fontSize:'2.1rem',letterSpacing:'-1px'}}>피빗과의 실시간 채팅</h2>
       <Messages>
         {messages.map((msg, i) =>
           <div
@@ -188,7 +173,7 @@ export default function ConversationView() {
             style={{
               display: 'flex',
               flexDirection: msg.user === nickname ? 'row-reverse' : 'row',
-              alignItems: 'center',
+              alignItems: 'flex-end',
               marginLeft: msg.user === nickname ? 0 : 60,
               marginRight: msg.user === nickname ? 30 : 0,
               marginTop: 8,
@@ -219,7 +204,7 @@ export default function ConversationView() {
             >
               {msg.user}
             </div>
-            <Message me={msg.user === nickname} style={{ fontSize: '1.18rem', padding: '11px 16px', fontFamily: 'Pretendard SemiBold, Pretendard, sans-serif' }}>
+            <Message me={msg.user === nickname} style={{ fontSize: '1.18rem', padding: '11px 16px', fontFamily: 'Pretendard SemiBold, Pretendard, sans-serif', background: msg.user === 'PIBIT' ? '#f3f0ff' : '#ffe082', color: msg.user === 'PIBIT' ? '#333' : '#333', border: msg.user === 'PIBIT' ? '1.5px solid #7b61ff' : '1.5px solid #ffe082' }}>
               {msg.user === 'audio' ? (
                 <audio controls style={{ marginTop: 12 }}>
                   <source src={msg.audio} type="audio/wav" />
@@ -239,6 +224,34 @@ export default function ConversationView() {
             </Message>
           </div>
         )}
+        {isPibitLoading && (
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: 60, marginTop: 8, marginBottom: 8 }}>
+            <div style={{
+              fontWeight: 700,
+              fontSize: '2.25rem',
+              color: undefined,
+              marginRight: 0,
+              marginLeft: 0,
+              minWidth: 40,
+              textAlign: 'left',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.1,
+              background: 'linear-gradient(90deg, #7b61ff 0%, #3ec6ff 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
+              PIBIT
+            </div>
+            <Message me={false} style={{ fontSize: '1.18rem', padding: '11px 16px', fontFamily: 'Pretendard SemiBold, Pretendard, sans-serif', background: '#f3f0ff', color: '#333', border: '1.5px solid #7b61ff', display: 'flex', alignItems: 'center' }}>
+              <span style={{ display: 'inline-block', width: 32 }}>
+                <span className="pibit-loading-dot" style={{ animation: 'pibit-dot 1s infinite', fontSize: '2rem', marginRight: 2 }}>.</span>
+                <span className="pibit-loading-dot" style={{ animation: 'pibit-dot 1s infinite 0.2s', fontSize: '2rem', marginRight: 2 }}>.</span>
+                <span className="pibit-loading-dot" style={{ animation: 'pibit-dot 1s infinite 0.4s', fontSize: '2rem' }}>.</span>
+              </span>
+            </Message>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </Messages>
       <InputRow onSubmit={handleSend}>
@@ -250,6 +263,13 @@ export default function ConversationView() {
         />
         <SendBtn type="submit">전송</SendBtn>
       </InputRow>
+      <style>{`
+        @keyframes pibit-dot {
+          0% { opacity: 0.2; }
+          20% { opacity: 1; }
+          100% { opacity: 0.2; }
+        }
+      `}</style>
     </Bg>
   );
-} 
+}

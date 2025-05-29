@@ -10,7 +10,8 @@ export default function handler(req, res) {
       cors: {
         origin: '*',
         methods: ['GET', 'POST']
-      }
+      },
+      transports: ['websocket']
     });
     res.socket.server.io = io;
 
