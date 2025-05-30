@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 // 습관 카드 데이터 (예시 5개, 나머지는 추가만 하면 됨)
 const CARD_WIDTH = 261;
@@ -60,10 +61,10 @@ const Polygon1 = styled.div`
 const Root = styled.div`
   position: relative;
   width: 1512px;
-  height: 1275px;
+  height: 100vh;
   margin: 0 auto;
   background: linear-gradient(180deg, #D3E4FE 0%, #FFF7E0 100%);
-  overflow: visible;
+  overflow-y: auto;
 `;
 
 // 배경 이미지
@@ -589,6 +590,7 @@ const Rectangle10 = styled.div`
 
 export default function PibitContext() {
   const [selectedIdxs, setSelectedIdxs] = useState([]);
+  const router = useRouter();
   return (
     <>
       <Head>
@@ -666,7 +668,22 @@ export default function PibitContext() {
             {card.text}
           </HabitCard>
         ))}
-        <BottomButton>습관 유형 탐색하기</BottomButton>
+        <BottomButton
+          disabled={selectedIdxs.length !== 5}
+          style={{
+            opacity: selectedIdxs.length === 5 ? 1 : 0.5,
+            pointerEvents: selectedIdxs.length === 5 ? 'auto' : 'none',
+          }}
+          onClick={() => {
+            if (selectedIdxs.length === 5) {
+              const selectedTexts = selectedIdxs.map(idx => habitCards[idx].text);
+              const params = new URLSearchParams();
+              params.append('name', router.query.name || '');
+              selectedTexts.forEach((text, i) => params.append(`habit${i+1}`, text));
+              router.push(`/pibitemotion?${params.toString()}`);
+            }
+          }}
+        >습관 유형 탐색하기</BottomButton>
       </Root>
     </>
   );

@@ -42,13 +42,13 @@ const PngImg = styled.img`
 
 const PibitLogo = styled.div`
   position: absolute;
-  left: 50%;
+  left: calc(50% + 23px);
   top: calc(18.5vh - 45px);
   transform: translate(-50%, 0);
   font-family: 'Pretendard', 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 700;
-  font-size: 23.328vw;
+  font-size: 24.4944vw;
   line-height: 1;
   text-align: center;
   color: #fff;
@@ -70,7 +70,7 @@ const EngTitle = styled.div`
   line-height: 1.2;
   text-align: center;
   color: #fff;
-  text-shadow: 4px 4px 38px rgba(0,0,0,0.07);
+  text-shadow: 4px 4px 38px rgba(0,0,0,0.07), 2px 2px 8px rgba(0,0,0,0.18);
   z-index: 2;
 `;
 
@@ -118,24 +118,25 @@ const MainButton = styled.button`
 const BottomDesc = styled.div`
   position: absolute;
   left: 50%;
-  bottom: calc(10vh + 56px);
+  bottom: calc(10vh + 36px);
   transform: translateX(-50%);
   font-family: 'Pretendard', sans-serif;
   font-weight: 700;
-  font-size: 13pt;
+  font-size: 11.7pt;
   color: #fff;
   text-align: center;
-  z-index: 10;
+  z-index: 2147483647;
   white-space: nowrap;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.18);
 `;
 
 const BottomLeftDesc = styled.div`
   position: absolute;
-  left: 32px;
-  bottom: calc(10vh + 56px);
+  left: 25px;
+  bottom: calc(10vh + 36px);
   font-family: 'Pretendard', sans-serif;
   font-weight: 500;
-  font-size: 11pt;
+  font-size: 8.8pt;
   color: #B5AECA;
   text-align: left;
   letter-spacing: 0.01em;
@@ -145,11 +146,11 @@ const BottomLeftDesc = styled.div`
 
 const CompanyLogoText = styled.div`
   position: absolute;
-  right: 32px;
-  bottom: calc(10vh + 56px);
+  right: 22px;
+  bottom: calc(10vh + 36px);
   font-family: 'Pretendard', sans-serif;
   font-weight: 600;
-  font-size: 15pt;
+  font-size: 12pt;
   color: #B5AECA;
   text-transform: uppercase;
   letter-spacing: 0.02em;

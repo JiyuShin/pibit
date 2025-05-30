@@ -61,6 +61,7 @@ const Flower = styled.div`
   background: url('/module/flower.png');
   background-size: contain;
   background-repeat: no-repeat;
+  pointer-events: none;
 `;
 
 const Puffy = styled.div`
@@ -73,6 +74,7 @@ const Puffy = styled.div`
   background-size: contain;
   background-repeat: no-repeat;
   transform: rotate(26.64deg);
+  pointer-events: none;
 `;
 
 const WhiteRect = styled.div`
@@ -169,6 +171,7 @@ const Wiggle = styled.div`
   background-size: contain;
   background-repeat: no-repeat;
   transform: rotate(19.68deg);
+  pointer-events: none;
 `;
 
 const Pinch = styled.div`
@@ -181,6 +184,7 @@ const Pinch = styled.div`
   background-size: contain;
   background-repeat: no-repeat;
   transform: matrix(0.7, -0.72, -0.72, -0.7, 0, 0);
+  pointer-events: none;
 `;
 
 const Finger = styled.div`
@@ -195,6 +199,7 @@ const Finger = styled.div`
   transform: rotate(10.03deg);
   filter: brightness(1.12);
   z-index: 3000;
+  pointer-events: none;
 `;
 
 const Heart = styled.div`
@@ -207,6 +212,7 @@ const Heart = styled.div`
   background-size: contain;
   background-repeat: no-repeat;
   transform: rotate(21.31deg);
+  pointer-events: none;
 `;
 
 const Company = styled.div`
@@ -276,6 +282,7 @@ const PinchBetween = styled.div`
   z-index: 2000;
   transform: rotate(-17deg);
   filter: brightness(1.1);
+  pointer-events: none;
 `;
 
 const StartButton = styled.button`
@@ -293,8 +300,11 @@ const StartButton = styled.button`
   box-shadow: 0px 8px 25px 0px rgba(80, 80, 80, 0.25);
   transition: background 0.2s, border 0.2s, color 0.2s;
   pointer-events: auto;
-  z-index: 10;
-  position: relative;
+  z-index: 9999;
+  position: fixed;
+  left: 50%;
+  bottom: 35px;
+  transform: translateX(-50%);
   &:hover {
     background: rgba(230, 226, 234, 0.7);
     border: 3px solid #B5AECA;
@@ -329,7 +339,11 @@ export default function PibitIntro() {
               <InputRect value={age} onChange={e => setAge(e.target.value)} />
             </div>
           </InputRow>
-          <StartButton onClick={() => router.push('/pibitcontext')}>시작하기</StartButton>
+          <StartButton
+            onClick={() => {
+              router.push(`/pibitcontext?name=${encodeURIComponent(name)}&age=${encodeURIComponent(age)}`);
+            }}
+          >시작하기</StartButton>
         </WhiteRect>
         <FindYourOwnPibit>FindYourOwnPibit</FindYourOwnPibit>
         <Desc>
