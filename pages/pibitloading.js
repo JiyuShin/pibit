@@ -1,0 +1,307 @@
+import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
+import { useRouter } from 'next/router';
+
+const GlobalStyle = createGlobalStyle`
+  html, body {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+const moveBlob1 = keyframes`
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(150px, -50px) scale(1.2); }
+  50% { transform: translate(50px, 100px) scale(0.8); }
+  75% { transform: translate(-100px, 50px) scale(1.1); }
+`;
+
+const moveBlob2 = keyframes`
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-100px, 80px) scale(1.1); }
+  50% { transform: translate(100px, -120px) scale(0.9); }
+  75% { transform: translate(50px, 50px) scale(1.2); }
+`;
+
+const moveBlob3 = keyframes`
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(80px, 120px) scale(1.2); }
+  50% { transform: translate(-120px, -80px) scale(0.8); }
+  75% { transform: translate(40px, -60px) scale(1.1); }
+`;
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const Root = styled.div`
+  position: relative;
+  width: 1512px;
+  height: 100vh;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: ${({ isExiting }) => isExiting ? '#FFFFFF' : '#f0f2f5'};
+  transition: background-color 1.5s ease-in-out;
+`;
+
+const BlobContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  filter: blur(80px); // Increased blur for softer edges
+  opacity: 0.8;
+`;
+
+const Blob = styled.div`
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+`;
+
+const Blob1 = styled(Blob)`
+  background: #EAEDF7;
+  width: 500px;
+  height: 500px;
+  top: 5%;
+  left: 10%;
+  animation: ${moveBlob1} 10s ease-in-out infinite alternate;
+`;
+
+const Blob2 = styled(Blob)`
+  background: #E9E2ED;
+  width: 600px;
+  height: 600px;
+  top: 20%;
+  right: 5%;
+  animation: ${moveBlob2} 12s ease-in-out infinite alternate;
+`;
+
+const Blob3 = styled(Blob)`
+  background: #F2F2F7;
+  width: 450px;
+  height: 450px;
+  bottom: 5%;
+  left: 30%;
+  animation: ${moveBlob3} 14s ease-in-out infinite alternate;
+`;
+
+const PibitLogo = styled.div`
+  position: absolute;
+  width: 562px;
+  height: 75px;
+  left: calc(50% - 562px/2 - 2px);
+  top: 0px;
+  font-family: 'Pragati Narrow', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 60px;
+  line-height: 102px;
+  text-align: center;
+  color: #FFFFFF;
+  text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
+  z-index: 1;
+  opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
+  transition: opacity 1.5s ease-in-out;
+`;
+
+const HeaderLine = styled.div`
+  position: absolute;
+  width: 424px;
+  height: 0px;
+  left: 801px;
+  top: 54px;
+  border: 2px solid #FFFFFF;
+  z-index: 1;
+  opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
+  transition: opacity 1.5s ease-in-out;
+`;
+
+const BackArrow = () => (
+    <svg width="14" height="24" viewBox="0 0 14 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 12L12 22" stroke="#B5AECA" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
+const BackButtonContainer = styled.div`
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  left: 34px;
+  top: 33px;
+  background: #FAF9FB;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
+  transition: opacity 1.5s ease-in-out;
+  pointer-events: ${({ isExiting }) => (isExiting ? 'none' : 'auto')};
+`;
+
+const FooterText = styled.div`
+  position: absolute;
+  left: 40px;
+  bottom: 18px;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: #B5AECA;
+  z-index: 1;
+  opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
+  transition: opacity 1.5s ease-in-out;
+`;
+
+const CompanyText = styled.div`
+  position: absolute;
+  right: 25px;
+  bottom: 18px;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 20px;
+  text-align: right;
+  color: #B5AECA;
+  z-index: 1;
+  opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
+  transition: opacity 1.5s ease-in-out;
+`;
+
+const CenterImageContainer = styled.div`
+    position: absolute;
+    width: 593px;
+    height: 593px;
+    left: 459.5px;
+    top: 184.5px;
+    opacity: ${({ isExiting }) => isExiting ? 0 : 0.7};
+    filter: blur(10px) drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.25));
+    z-index: 1;
+    background: url('/load.png') no-repeat center center;
+    background-size: contain;
+    animation: ${rotate} 5s linear infinite;
+    transition: opacity 1.5s ease-in-out;
+`;
+
+const CenterText = styled.div`
+  position: absolute;
+  left: 27.65%;
+  right: 25.07%;
+  top: calc(49.8% - 5px);
+  bottom: 41.34%;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 30px;
+  text-align: center;
+  color: #B5B5B5;
+  z-index: 1;
+  opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
+  transition: opacity 1.5s ease-in-out;
+`;
+
+const CustomizeButton = styled.button`
+  box-sizing: border-box;
+  position: absolute;
+  width: 264px;
+  height: 48px;
+  left: 1225px;
+  top: 26px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid #FFFFFF;
+  box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 41.5px;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 27px;
+  text-align: center;
+  color: #B79BCA;
+  cursor: pointer;
+  z-index: 1;
+  opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
+  transition: opacity 1.5s ease-in-out;
+  pointer-events: ${({ isExiting }) => (isExiting ? 'none' : 'auto')};
+`;
+
+export default function PibitLoadingPage() {
+    const router = useRouter();
+    const { name = '지수' } = router.query;
+    const [isExiting, setIsExiting] = useState(false);
+
+    useEffect(() => {
+        const exitTimer = setTimeout(() => {
+            setIsExiting(true);
+        }, 10000); // Start fade out after 10 seconds
+
+        return () => {
+            clearTimeout(exitTimer);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isExiting) {
+            const navTimer = setTimeout(() => {
+                router.push('/flowermodule');
+            }, 1500); // animation duration
+
+            return () => {
+                clearTimeout(navTimer);
+            };
+        }
+    }, [isExiting, router]);
+
+    return (
+        <>
+            <GlobalStyle />
+            <Head>
+                <title>PIBIT - Loading Module</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+                <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:opsz,wght@10..144,600..700&display=swap" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@700&display=swap" rel="stylesheet" />
+            </Head>
+            <Root isExiting={isExiting}>
+                <BlobContainer>
+                    <Blob1 />
+                    <Blob2 />
+                    <Blob3 />
+                </BlobContainer>
+                <PibitLogo isExiting={isExiting}>PIBIT</PibitLogo>
+                <HeaderLine isExiting={isExiting} />
+                <BackButtonContainer isExiting={isExiting} onClick={() => router.back()}>
+                    <BackArrow />
+                </BackButtonContainer>
+
+                <CenterImageContainer isExiting={isExiting} />
+
+                <CenterText isExiting={isExiting}>
+                    {name}님의 '손톱 물어뜯기' 습관을 긴 시간동안 곁에서<br/>
+                    {name}님과 함께 관리해줄 맞춤화 피빗 제작을 시작할게요!
+                </CenterText>
+
+                <CustomizeButton isExiting={isExiting} onClick={() => router.push('/flowermodule')}>
+                    피빗 커스터마이징
+                </CustomizeButton>
+                
+                <FooterText isExiting={isExiting}>Journey to create habit-caretaker companion pibit</FooterText>
+                <CompanyText isExiting={isExiting}>PIBITCOMPANY @</CompanyText>
+            </Root>
+        </>
+    );
+} 
