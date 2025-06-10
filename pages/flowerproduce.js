@@ -1,9 +1,12 @@
-import React, { Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import styled, { keyframes, createGlobalStyle } from 'styled-components';
 import { useRouter } from 'next/router';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import dynamic from 'next/dynamic';
+
+const FlowerModelView = dynamic(() => import('../components/FlowerModelView'), { 
+  ssr: false,
+});
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -23,16 +26,6 @@ const Root = styled.div`
   margin: 0 auto;
   overflow: hidden;
   animation: ${fadeIn} 1.5s ease-in-out;
-`;
-
-const ModelContainer = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 800px;
-  height: 800px;
-  z-index: 10;
 `;
 
 const BgImage = styled.div`
@@ -139,7 +132,7 @@ const FooterBrand = styled.div`
   width: 458px;
   height: 43px;
   left: calc(50% - 458px/2 + 658px);
-  top: 652px;
+  top: 952px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -154,7 +147,7 @@ const CopyrightSymbol = styled.div`
     width: 458px;
     height: 43px;
     left: calc(50% - 458px / 2 + 733px);
-    top: 650px;
+    top: 950px;
     font-family: 'Pretendard Variable', sans-serif;
     font-style: normal;
     font-weight: 700;
@@ -170,7 +163,7 @@ const CopyrightCircle = styled.div`
   width: 18px;
   height: 18px;
   left: 1480px;
-  top: 653px;
+  top: 953px;
   border: 2px solid #B5AECA;
   border-radius: 50%;
 `;
@@ -180,7 +173,7 @@ const FooterJourney = styled.div`
   width: 1086px;
   height: 43px;
   left: calc(50% - 1086px/2 - 197px);
-  top: 650px;
+  top: 950px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -189,14 +182,18 @@ const FooterJourney = styled.div`
   color: #B5AECA;
 `;
 
-function FlowerModel(props) {
-  const { scene } = useGLTF('/flowerob.glb');
-  return <primitive object={scene} {...props} />;
-}
-
 export default function FlowerProducePage() {
     const router = useRouter();
-    const { name = "지수" } = router.query;
+    const [name, setName] = useState("지수");
+
+    useEffect(() => {
+        if (router.isReady) {
+            const queryName = router.query.name;
+            if (queryName) {
+                setName(queryName);
+            }
+        }
+    }, [router.isReady, router.query.name]);
 
     return (
         <>
@@ -209,16 +206,7 @@ export default function FlowerProducePage() {
             </Head>
             <Root>
                 <BgImage />
-                <ModelContainer>
-                  <Canvas>
-                    <Suspense fallback={null}>
-                      <ambientLight intensity={1.5} />
-                      <directionalLight position={[5, 5, 5]} intensity={1} />
-                      <FlowerModel scale={20} position={[0, -1.5, 0]} />
-                      <OrbitControls />
-                    </Suspense>
-                  </Canvas>
-                </ModelContainer>
+                <FlowerModelView />
                 <Title>{name}님의 첫 맞춤형 피빗이 태어났어요!</Title>
                 <Subtitle>
                     데스크탑 앞에 놓여있는 five flower 모듈과의 대화를 통해<br/>
