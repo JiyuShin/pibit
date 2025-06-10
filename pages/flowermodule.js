@@ -322,6 +322,12 @@ const GenerateButton = styled.button`
   line-height: 22px;
   color: #8B8B8B;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
 `;
 
 const CustomizeButton = styled.button`
@@ -515,6 +521,14 @@ export default function FlowerModulePage() {
         }, 1500);
     };
 
+    const handleProduceClick = () => {
+        if (isExiting) return;
+        setIsExiting(true);
+        setTimeout(() => {
+            router.push(`/flowerproduce?name=${name}`);
+        }, 1500);
+    };
+
     useEffect(() => {
         if (from !== 'stepd') {
             const timer = setTimeout(handleGenerateClick, 7000);
@@ -556,7 +570,7 @@ export default function FlowerModulePage() {
                 <FiveFlowerTitle>Five Flower</FiveFlowerTitle>
                 <Description className={startTextAnimation ? 'animated' : ''}>{name}님께 'Five Flower Module'을 추천드려요!<br/>마음에 드신다면 맞춤화 피빗 생성을 시작할게요!</Description>
                 <CustomizeButton onClick={handleGenerateClick}>피빗 커스터마이징</CustomizeButton>
-                <GenerateButton onClick={handleGenerateClick}>피빗 생성하기</GenerateButton>
+                <GenerateButton onClick={handleProduceClick}>피빗 생성하기</GenerateButton>
                 <UserPreferenceCard />
                 <UserPreferenceIcon />
                 <UserPreferenceTitle>USER PREFERENCE</UserPreferenceTitle>
