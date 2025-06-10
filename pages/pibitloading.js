@@ -241,13 +241,17 @@ const CustomizeButton = styled.button`
 
 export default function PibitLoadingPage() {
     const router = useRouter();
-    const { name = '지수' } = router.query;
+    const { name = '지수', habit = '선택된 습관 없음' } = router.query;
     const [isExiting, setIsExiting] = useState(false);
+
+    const handleNavigation = () => {
+        setIsExiting(true);
+    };
 
     useEffect(() => {
         const exitTimer = setTimeout(() => {
-            setIsExiting(true);
-        }, 10000); // Start fade out after 10 seconds
+            handleNavigation();
+        }, 5000); // Start fade out after 5 seconds
 
         return () => {
             clearTimeout(exitTimer);
@@ -257,7 +261,7 @@ export default function PibitLoadingPage() {
     useEffect(() => {
         if (isExiting) {
             const navTimer = setTimeout(() => {
-                router.push('/flowermodule');
+                router.push({ pathname: '/flowermodule', query: { name, habit } });
             }, 1500); // animation duration
 
             return () => {
@@ -291,11 +295,11 @@ export default function PibitLoadingPage() {
                 <CenterImageContainer isExiting={isExiting} />
 
                 <CenterText isExiting={isExiting}>
-                    {name}님의 '손톱 물어뜯기' 습관을 긴 시간동안 곁에서<br/>
+                    {name}님의 '{habit}' 습관을 긴 시간동안 곁에서<br/>
                     {name}님과 함께 관리해줄 맞춤화 피빗 제작을 시작할게요!
                 </CenterText>
 
-                <CustomizeButton isExiting={isExiting} onClick={() => router.push('/flowermodule')}>
+                <CustomizeButton isExiting={isExiting} onClick={handleNavigation}>
                     피빗 커스터마이징
                 </CustomizeButton>
                 

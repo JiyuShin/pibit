@@ -704,7 +704,18 @@ export default function PibitEmotion() {
                 <path d="M7 10L14 3L21 10" stroke="#FFF7E0" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </ArrowIcon>
-            <ExploreButton show={showExploreButton} onClick={() => router.push({ pathname: '/pibitloading', query: { name } })}>모듈 탐색하기</ExploreButton>
+            <ExploreButton 
+              show={showExploreButton} 
+              onClick={() => {
+                const selectedHabit = selectedIdx !== null ? cardItems[selectedIdx] : '';
+                router.push({ 
+                  pathname: '/pibitloading', 
+                  query: { name, habit: selectedHabit } 
+                })
+              }}
+            >
+              모듈 탐색하기
+            </ExploreButton>
           </>
         )}
       </Root>
