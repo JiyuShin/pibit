@@ -43,7 +43,8 @@ const BgImage = styled.div`
 const Title = styled.h1`
   position: absolute;
   width: 876px;
-  left: calc(50% - 876px/2 + 18px);
+  left: 50%;
+  transform: translateX(-50%);
   top: 5.5%;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
@@ -59,7 +60,8 @@ const Subtitle = styled.p`
   position: absolute;
   width: 550px;
   height: 60px;
-  left: calc(50% - 259px);
+  left: 50%;
+  transform: translateX(-50%);
   top: 113px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
@@ -73,13 +75,16 @@ const Subtitle = styled.p`
 
 const Rectangle1 = styled.div`
   position: absolute;
-  width: 406px;
+  width: 435px;
   height: 100px;
-  left: 86px;
+  left: 37px;
   top: 262px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50px 50px 0px 50px;
+  transform: scale(0.9);
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 0.5s ease-in-out;
 `;
 
 const Rectangle2 = styled.div`
@@ -92,12 +97,14 @@ const Rectangle2 = styled.div`
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 30px 30px 0px 30px;
   transform: scaleX(-1);
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 0.5s ease-in-out;
 `;
 
 const BubbleText1 = styled.p`
   position: absolute;
   width: 380px;
-  left: 102px;
+  left: 67px;
   top: 288px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
@@ -107,6 +114,7 @@ const BubbleText1 = styled.p`
   text-align: center;
   color: #B5B5B5;
   margin: 0;
+  transform: scale(0.9);
 `;
 
 const BubbleButton = styled.button`
@@ -125,6 +133,9 @@ const BubbleButton = styled.button`
   border: none;
   cursor: pointer;
   padding: 0;
+  white-space: pre-wrap;
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 0.5s ease-in-out;
 `;
 
 const FooterBrand = styled.div`
@@ -182,9 +193,35 @@ const FooterJourney = styled.div`
   color: #B5AECA;
 `;
 
+function Typewriter({ text, onComplete }) {
+    const [displayText, setDisplayText] = useState('');
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        if (currentIndex < text.length) {
+            const timeoutId = setTimeout(() => {
+                setDisplayText((prev) => prev + text[currentIndex]);
+                setCurrentIndex((prev) => prev + 1);
+            }, 100);
+            return () => clearTimeout(timeoutId);
+        } else if (onComplete) {
+            onComplete();
+        }
+    }, [currentIndex, text, onComplete]);
+
+    return <>{displayText}</>;
+}
+
 export default function FlowerProducePage() {
     const router = useRouter();
     const [name, setName] = useState("지수");
+    const [showRectangle1, setShowRectangle1] = useState(false);
+    const [showBubbleText1, setShowBubbleText1] = useState(false);
+    const [showRectangle2, setShowRectangle2] = useState(false);
+    const [showBubbleButton, setShowBubbleButton] = useState(false);
+
+    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께 지내며\n손톱물어뜯기를 곁에서 케어해줄 따듯하고 포근한 존재야!`;
+    const fullText2 = "나와 대화를 시작하고 싶다면 클릭해줘 !";
 
     useEffect(() => {
         if (router.isReady) {
@@ -194,6 +231,36 @@ export default function FlowerProducePage() {
             }
         }
     }, [router.isReady, router.query.name]);
+
+    useEffect(() => {
+        const timer1 = setTimeout(() => {
+            setShowRectangle1(true);
+        }, 500);
+
+        const timer2 = setTimeout(() => {
+            setShowBubbleText1(true);
+        }, 1000);
+
+        return () => {
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+        };
+    }, []);
+
+    const handleText1Complete = () => {
+        const timer3 = setTimeout(() => {
+            setShowRectangle2(true);
+        }, 500);
+
+        const timer4 = setTimeout(() => {
+            setShowBubbleButton(true);
+        }, 1000);
+        
+        return () => {
+            clearTimeout(timer3);
+            clearTimeout(timer4);
+        };
+    };
 
     return (
         <>
@@ -213,14 +280,17 @@ export default function FlowerProducePage() {
                     새로운 습관 개선 여정을 시작하세요
                 </Subtitle>
                 
-                <Rectangle1 />
+                <Rectangle1 show={showRectangle1} />
                 <BubbleText1>
-                    안녕! 만나서 반가워, 난 {name}와 함께 지내며<br/>
-                    손톱물어뜯기를 곁에서 케어해줄 따듯하고 포근한 존재야!
+                    {showBubbleText1 && (
+                        <Typewriter text={fullText1} onComplete={handleText1Complete} />
+                    )}
                 </BubbleText1>
 
-                <Rectangle2 />
-                <BubbleButton>나와 대화를 시작하고 싶다면 클릭해줘 !</BubbleButton>
+                <Rectangle2 show={showRectangle2} />
+                <BubbleButton show={showBubbleButton}>
+                    {showBubbleButton && <Typewriter text={fullText2} />}
+                </BubbleButton>
                 
                 <FooterJourney>Journey to create habit-caretaker companion pibit</FooterJourney>
                 <CopyrightCircle />
