@@ -337,7 +337,7 @@ export default function StepdPage() {
     useEffect(() => {
         if (isExiting) {
             const timer = setTimeout(() => {
-                router.push('/flowermodule');
+                router.push('/flowermodule?from=stepd');
             }, 800); 
 
             return () => clearTimeout(timer);

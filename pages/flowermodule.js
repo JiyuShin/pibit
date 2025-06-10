@@ -492,7 +492,7 @@ const CompanionTypeDescription = styled.div`
 
 export default function FlowerModulePage() {
     const router = useRouter();
-    const { name = '지수' } = router.query;
+    const { name = '지수', from } = router.query;
     const [isExiting, setIsExiting] = useState(false);
     const [startTextAnimation, setStartTextAnimation] = useState(false);
     const [isImageAnimated, setIsImageAnimated] = useState(false);
@@ -516,9 +516,11 @@ export default function FlowerModulePage() {
     };
 
     useEffect(() => {
-        const timer = setTimeout(handleGenerateClick, 7000);
-        return () => clearTimeout(timer);
-    }, [isExiting]);
+        if (from !== 'stepd') {
+            const timer = setTimeout(handleGenerateClick, 7000);
+            return () => clearTimeout(timer);
+        }
+    }, [from]);
 
     const line1 = 'Concentrated\u00A0finger\u00A0pressure';
     const line2 = 'for\u00A0sensory\u00A0relief';
