@@ -10,38 +10,35 @@ const io = new Server(server, {
   }
 });
 
-const ids = [
-  '04973bcac01c90', // 10대
-  '04063bcac01c91', // 언니
-  '04a73bcac01c90', // 어르신
-];
-let idx = 0;
+const nfc = new NFC(); // NFC 리더기를 서버 시작 시 한 번만 초기화
 
-io.on('connection', (socket) => {
-  console.log("✅ 웹사이트와 소켓 연결됨");
+nfc.on('error', err => {
+  console.error('NFC 라이브러리 오류:', err);
+});
 
-  const nfc = new NFC(); // 리더기 초기화
+nfc.on('reader', reader => {
+  console.log(`🎯 리더기 연결됨: ${reader.name}`);
 
-  nfc.on('reader', reader => {
-    console.log(`🎯 리더기 연결됨: ${reader.name}`);
-
-    reader.on('card', card => {
-      const payload = { id: card.uid, text: '지유야 안녕' };
-      console.log('[NFC 서버 emit payload]', payload);
-      socket.emit('tag-read', payload);
-    });
-
-    reader.on('error', err => {
-      console.error(`❌ 리더기 오류: ${err}`);
-    });
-
-    reader.on('end', () => {
-      console.log(`🔌 리더기 연결 종료: ${reader.name}`);
-    });
+  reader.on('card', card => {
+    const payload = { id: card.uid, text: '지유야 안녕' };
+    console.log('[NFC 서버 emit payload]', payload);
+    io.emit('tag-read', payload); // 모든 연결된 클라이언트에게 전송
   });
 
-  nfc.on('error', err => {
-    console.error('NFC 전체 오류', err);
+  reader.on('error', err => {
+    console.error(`❌ 리더기 오류: ${err}`);
+  });
+
+  reader.on('end', () => {
+    console.log(`🔌 리더기 연결 종료: ${reader.name}`);
+  });
+});
+
+io.on('connection', (socket) => {
+  console.log(`✅ 웹사이트와 소켓 연결됨 (클라이언트 ID: ${socket.id})`);
+
+  socket.on('disconnect', () => {
+    console.log(`🔌 웹사이트와 소켓 연결 끊어짐 (클라이언트 ID: ${socket.id})`);
   });
 });
 

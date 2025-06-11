@@ -24,7 +24,5 @@
     "styled-components": "^6.1.8",
     "three": "^0.158.0"
   },
-  "devDependencies": {
-    "file-loader": "^6.2.0"
-  }
+  "devDependencies": {}
 }
