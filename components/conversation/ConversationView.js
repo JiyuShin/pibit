@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { useRouter } from 'next/router';
+import styled from 'styled-components';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bg,
   Messages,
@@ -27,47 +29,99 @@ import {
   NfcInstruction,
   BackButton,
   AnimatedContentImage,
+  PreChatContainer,
+  PostChatContainer,
+  FlowerImage,
+  DividerLine,
+  DateBox,
+  DateText,
+  ChatTitle,
+  WelcomeMessage,
+  GradientOverlay,
 } from './StyledComponents';
 import { toneAndManner } from './constants';
 // teenReplies는 현재 이 컴포넌트에서 직접 사용되지 않으므로 import하지 않습니다.
 // 만약 필요하다면 import { teenReplies } from './constants'; 로 추가할 수 있습니다.
 
-console.log('toneAndManner:', toneAndManner);
-console.log('toneAndManner[0]:', toneAndManner[0]);
-console.log('getSystemPrompt:', toneAndManner[0].getSystemPrompt('테스트유저'));
+const NewUIContainer = styled(motion.div)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: 'Pretendard Variable', sans-serif;
+`;
 
-function Typewriter({ text, onComplete, speed = 100 }) {
-  const [displayText, setDisplayText] = useState('');
-  const currentIndex = useRef(0);
+const NewDateBox = styled.div`
+  position: absolute;
+  width: 305px;
+  height: 43px;
+  top: 60px;
+  background: #DFDFDF;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+`;
 
-  useEffect(() => {
-    setDisplayText('');
-    currentIndex.current = 0;
+const NewDateText = styled.p`
+  font-style: normal;
+  font-weight: 500;
+  font-size: 23px;
+  line-height: 30px;
+  text-align: center;
+  color: #FFFFFF;
+`;
 
-    const timer = setInterval(() => {
-      if (currentIndex.current < text.length) {
-        setDisplayText((prev) => prev + text.charAt(currentIndex.current));
-        currentIndex.current += 1;
-      } else {
-        clearInterval(timer);
-        if (onComplete) onComplete();
-      }
-    }, speed);
+const HorizontalLine = styled.div`
+  position: absolute;
+  width: 805px;
+  height: 0px;
+  left: calc(50% - 805px/2);
+  top: 80px;
+  border: 1px solid #C2BFBF;
+`;
 
-    return () => clearInterval(timer);
-  }, [text, onComplete, speed]);
+const ContentBox = styled.div`
+  position: absolute;
+  top: 172px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+`;
 
-  return (
-    <>
-      {displayText.split('\\n').map((line, index) => (
-        <React.Fragment key={index}>
-          {line}
-          {index < displayText.split('\\n').length - 1 && <br />}
-        </React.Fragment>
-      ))}
-    </>
-  );
-}
+const TitleText = styled.p`
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 30px;
+  color: #828282;
+  margin: 0;
+`;
+
+const SubText = styled.p`
+  margin-top: 13px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 25px;
+  color: #828282;
+`;
+
+const NewGradientBox = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 200px;
+  background: linear-gradient(180deg, rgba(237, 241, 245, 0) 17.54%, #EDF1F5 85.96%);
+  z-index: -1;
+`;
 
 export default function ConversationView() {
   const router = useRouter();
@@ -84,8 +138,8 @@ export default function ConversationView() {
   const [currentToneId, setCurrentToneId] = useState(toneAndManner[0].id);
   const [isPibitLoading, setIsPibitLoading] = useState(false);
   const [isChatStarted, setIsChatStarted] = useState(false);
-  const [animationState, setAnimationState] = useState('idle'); // 'idle', 'typingGreeting', 'typingInstruction', 'showingInfo', 'allShown'
-
+  const [currentDate, setCurrentDate] = useState('');
+  
   const socketRef = useRef(null);
   const nfcSocketRef = useRef(null);
 
@@ -102,23 +156,12 @@ export default function ConversationView() {
       } else {
         setNickname('당신');
       }
-      if (animationState === 'idle') {
-        setAnimationState('typingGreeting');
-      }
     }
-  }, [name, router.isReady, animationState]);
+  }, [name, router.isReady]);
 
   useEffect(() => {
-    if (animationState === 'showingInfo') {
-      const timer = setTimeout(() => {
-        setAnimationState('allShown');
-      }, 700); // Corresponds to the fade-in duration
-      return () => clearTimeout(timer);
-    }
-  }, [animationState]);
-
-  useEffect(() => {
-    // Scroll to top on component mount
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
     window.scrollTo(0, 0);
 
     socketRef.current = io({
@@ -173,8 +216,20 @@ export default function ConversationView() {
     return () => {
       if (socketRef.current) socketRef.current.disconnect();
       if (nfcSocketRef.current) nfcSocketRef.current.disconnect();
+      document.documentElement.style.overflow = 'auto';
+      document.body.style.overflow = 'auto';
     };
   }, []);
+
+  useEffect(() => {
+    if (isChatStarted) {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      setCurrentDate(`${year}. ${month}. ${day}`);
+    }
+  }, [isChatStarted]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -227,8 +282,8 @@ export default function ConversationView() {
   const greetingText = `${nickname} 안녕, 여기까지 오느라 수고 많았어!`;
   const mainInstructionText = `이제 나와 대화하면서 ${nickname}에게 가장 효과적인 손톱물어뜯기\\n습관 개선 루틴을 체험해보고 커스터마이징을 진행해보자!`;
 
-  if (!nickname || animationState === 'idle') {
-    return null; // 닉네임이 준비되고 애니메이션이 시작될 때까지 렌더링하지 않음
+  if (!nickname) {
+    return null; 
   }
 
   return (
@@ -236,185 +291,106 @@ export default function ConversationView() {
       <BackButton onClick={() => router.back()}>
         <img src="/whiteb.png" alt="뒤로 가기" />
       </BackButton>
-      <Ellipse26 />
-      <Ellipse29 />
-      <Ellipse31 />
-      <Ellipse32 />
-      <Ellipse33 />
-      <Ellipse28 />
-
-      {isChatStarted ? (
-        <>
-          <h2 style={{textAlign:'center',margin:'24px 0 0 0',color:'#7b61ff',fontWeight:700,fontSize:'2.1rem',letterSpacing:'-1px', zIndex: 2, position: 'relative'}}>피빗과의 실시간 채팅</h2>
-          <Messages>
-            {messages.map((msg, i) =>
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  flexDirection: msg.user === nickname ? 'row-reverse' : 'row',
-                  alignItems: 'flex-end',
-                  marginLeft: msg.user === nickname ? 0 : 60,
-                  marginRight: msg.user === nickname ? 30 : 0,
-                  marginTop: 8,
-                  marginBottom: 8
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight: 700,
-                    fontSize: msg.user === '하윙' ? '2.05rem' : '2.25rem',
-                    color:
-                      msg.user === 'PIBIT'
-                        ? undefined
-                      : msg.user === '하윙'
-                        ? '#ffe082'
-                        : '#ffe082',
-                    marginRight: msg.user === nickname ? 0 : 4,
-                    marginLeft: msg.user === nickname ? 4 : 0,
-                    minWidth: 40,
-                    textAlign: msg.user === nickname ? 'right' : 'left',
-                    whiteSpace: 'nowrap',
-                    lineHeight: 1.1,
-                    background: msg.user === 'PIBIT' ? 'linear-gradient(90deg, #7b61ff 0%, #3ec6ff 100%)' : undefined,
-                    WebkitBackgroundClip: msg.user === 'PIBIT' ? 'text' : undefined,
-                    WebkitTextFillColor: msg.user === 'PIBIT' ? 'transparent' : undefined,
-                    backgroundClip: msg.user === 'PIBIT' ? 'text' : undefined,
-                  }}
-                >
-                  {msg.user}
-                </div>
-                <Message me={msg.user === nickname} style={{ fontSize: '1.18rem', padding: '11px 16px', fontFamily: 'Pretendard SemiBold, Pretendard, sans-serif', background: msg.user === 'PIBIT' ? '#f3f0ff' : '#ffe082', color: msg.user === 'PIBIT' ? '#333' : '#333', border: msg.user === 'PIBIT' ? '1.5px solid #7b61ff' : '1.5px solid #ffe082' }}>
-                  {msg.user === 'audio' ? (
-                    <audio controls style={{ marginTop: 12 }}>
-                      <source src={msg.audio} type="audio/wav" />
-                      브라우저가 오디오 태그를 지원하지 않습니다.
-                    </audio>
-                  ) : (
-                    <>
-                      <span style={{marginLeft:2, fontSize: '1em', fontFamily: 'Pretendard SemiBold, Pretendard, sans-serif'}}>{msg.text}</span>
-                      {msg.audio && (
-                        <audio controls style={{ marginTop: 12 }}>
-                          <source src={msg.audio} />
-                          브라우저가 오디오 태그를 지원하지 않습니다.
-                        </audio>
-                      )}
-                    </>
-                  )}
-                </Message>
-              </div>
-            )}
-            {isPibitLoading && (
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: 60, marginTop: 8, marginBottom: 8 }}>
-                <div style={{
-                  fontWeight: 700,
-                  fontSize: '2.25rem',
-                  color: undefined,
-                  marginRight: 0,
-                  marginLeft: 0,
-                  minWidth: 40,
-                  textAlign: 'left',
-                  whiteSpace: 'nowrap',
-                  lineHeight: 1.1,
-                  background: 'linear-gradient(90deg, #7b61ff 0%, #3ec6ff 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>
-                  PIBIT
-                </div>
-                <Message me={false} style={{ fontSize: '1.18rem', padding: '11px 16px', fontFamily: 'Pretendard SemiBold, Pretendard, sans-serif', background: '#f3f0ff', color: '#333', border: '1.5px solid #7b61ff', display: 'flex', alignItems: 'center' }}>
-                  <span style={{ display: 'inline-block', width: 32 }}>
-                    <span className="pibit-loading-dot" style={{ animation: 'pibit-dot 1s infinite', fontSize: '2rem', marginRight: 2 }}>.</span>
-                    <span className="pibit-loading-dot" style={{ animation: 'pibit-dot 1s infinite 0.2s', fontSize: '2rem', marginRight: 2 }}>.</span>
-                    <span className="pibit-loading-dot" style={{ animation: 'pibit-dot 1s infinite 0.4s', fontSize: '2rem' }}>.</span>
-                  </span>
-                </Message>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </Messages>
-        </>
-      ) : (
-        <>
-          <Greeting>
-            {animationState === 'typingGreeting' ? (
-              <Typewriter text={greetingText} onComplete={() => setAnimationState('typingInstruction')} />
-            ) : (
-              greetingText.replace(/\\n/g, '\n')
-            )}
-          </Greeting>
-          <MainInstruction>
-            {animationState === 'typingInstruction' ? (
-              <Typewriter text={mainInstructionText} onComplete={() => setAnimationState('showingInfo')} />
-            ) : ['showingInfo', 'allShown'].includes(animationState) ? (
-              mainInstructionText.split('\\n').map((line, index) => (
-                <React.Fragment key={index}>
-                  {line}
-                  {index < mainInstructionText.split('\\n').length - 1 && <br />}
-                </React.Fragment>
-              ))
-            ) : null}
-          </MainInstruction>
-          <InfoBox1 show={['showingInfo', 'allShown'].includes(animationState)} />
-          <InfoBox2 show={['showingInfo', 'allShown'].includes(animationState)} />
-          <AnimatedContentImage
-            show={['showingInfo', 'allShown'].includes(animationState)}
-            src="/routine.png"
-            alt="routine icon"
-            width="113.4px"
-            left="512px"
-            top="228px"
-          />
-          <RoutineTitle show={['showingInfo', 'allShown'].includes(animationState)}>Routine Making</RoutineTitle>
-          <RoutineDescription show={['showingInfo', 'allShown'].includes(animationState)}>
-            생성하신 피빗 모듈의 구체적인 사용<br />
-            방법과 습관, 감정을 케어해줄 수 있는<br />
-            모듈 인터렉티브 스케줄을 제안해요
-          </RoutineDescription>
-          <AnimatedContentImage
-            show={['showingInfo', 'allShown'].includes(animationState)}
-            src="/custom.png"
-            alt="customize icon"
-            width="85.8px"
-            left="788.73px"
-            top="238px"
-            rotate="15deg"
-          />
-          <CustomizingTitle show={['showingInfo', 'allShown'].includes(animationState)}>Customizing</CustomizingTitle>
-          <CustomizingDescription show={['showingInfo', 'allShown'].includes(animationState)}>
-            모듈의 색상, 텍스쳐, 모듈과<br />
-            함께 사용 가능한 귀여운<br />
-            기능들을 선물하고 제안해요
-          </CustomizingDescription>
-          <NfcArea show={animationState === 'allShown'}>
-            <AnimatedExampleImage src="/example1.png" alt="NFC 모듈 사용 예시" />
-          </NfcArea>
-          <NfcInstruction show={animationState === 'allShown'}>대화를 시작하기 위해 모듈의 바닥면을 박스 안에 넣어줘!</NfcInstruction>
-        </>
-      )}
-
-      <InputRow onSubmit={handleSend}>
-        <Input
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder="메시지를 입력하세요..."
-          autoFocus
-        />
-      </InputRow>
-      <SendButtonContainer type="submit" onClick={handleSend}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 21V3M5 10L12 3L19 10" stroke="#B5AECA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </SendButtonContainer>
       
-      <style>{`
-        @keyframes pibit-dot {
-          0% { opacity: 0.2; }
-          20% { opacity: 1; }
-          100% { opacity: 0.2; }
-        }
-      `}</style>
+      <AnimatePresence>
+        {!isChatStarted && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+          >
+            <PreChatContainer show={true}>
+              <Ellipse26 />
+              <Ellipse29 />
+              <Ellipse31 />
+              <Ellipse32 />
+              <Ellipse33 />
+              <Ellipse28 />
+              <Greeting>
+                {greetingText.replace(/\\n/g, '\n')}
+              </Greeting>
+              <MainInstruction>
+                {mainInstructionText.split('\\n').map((line, index) => (
+                  <React.Fragment key={index}>
+                    {line}
+                    {index < mainInstructionText.split('\\n').length - 1 && <br />}
+                  </React.Fragment>
+                ))}
+              </MainInstruction>
+              <InfoBox1 />
+              <InfoBox2 />
+              <div style={{ position: 'absolute', left: '521px', top: '295px' }}>
+                <AnimatedContentImage
+                  src="/routine.png"
+                  alt="routine icon"
+                  width="167.9px"
+                />
+              </div>
+              <RoutineTitle>Routine Making</RoutineTitle>
+              <RoutineDescription>
+                생성하신 피빗 모듈의 구체적인 사용<br />
+                방법과 습관, 감정을 케어해줄 수 있는<br />
+                모듈 인터렉티브 스케줄을 제안해요
+              </RoutineDescription>
+              <div style={{ position: 'absolute', left: '780px', top: '295px', transform: 'none' }}>
+                <AnimatedContentImage
+                  src="/custom.png"
+                  alt="customize icon"
+                  width="120px"
+                />
+              </div>
+              <CustomizingTitle>Customizing</CustomizingTitle>
+              <CustomizingDescription>
+                모듈의 색상, 텍스쳐, 모듈과<br />
+                함께 사용 가능한 귀여운<br />
+                기능들을 선물하고 제안해요
+              </CustomizingDescription>
+              <NfcArea>
+                <AnimatedExampleImage src="/example1.png" alt="NFC 모듈 사용 예시" />
+              </NfcArea>
+              <NfcInstruction>
+                "모듈의 바닥면을 박스 안에 부착하여 대화를 시작해보세요!"
+              </NfcInstruction>
+            </PreChatContainer>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isChatStarted && (
+           <NewUIContainer
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.5, delay: 0.5 } }}
+            exit={{ opacity: 0 }}
+           >
+            <NewGradientBox />
+            <NewDateBox>
+              <NewDateText>{currentDate}</NewDateText>
+            </NewDateBox>
+            <HorizontalLine />
+            <ContentBox>
+              <TitleText>Five Flower</TitleText>
+              <SubText>{nickname} 안녕! 만나게 되서 너무 반가워!</SubText>
+            </ContentBox>
+            
+            {/* The chat messages part is removed as per the new requirement */}
+            {/* If chat functionality is needed alongside this new UI, it needs to be integrated here */}
+
+            <InputRow onSubmit={handleSend}>
+              <Input
+                type="text"
+                placeholder="메시지 보내기"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+              <SendButtonContainer type="submit">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 22V2M5 9L12 2L19 9" stroke="#B5AECA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </SendButtonContainer>
+            </InputRow>
+          </NewUIContainer>
+        )}
+      </AnimatePresence>
     </Bg>
   );
 }

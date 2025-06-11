@@ -18,6 +18,7 @@ nfc.on('error', err => {
 
 nfc.on('reader', reader => {
   console.log(`🎯 리더기 연결됨: ${reader.name}`);
+  console.log('💳 카드를 기다리는 중...');
 
   reader.on('card', card => {
     const payload = { id: card.uid, text: '지유야 안녕' };

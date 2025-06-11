@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"next dev\" \"node nfc-server.js\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,7 +12,8 @@
     "@react-three/drei": "^9.74.3",
     "@react-three/fiber": "^8.0.27",
     "express": "^5.1.0",
-    "next": "15.3.0",
+    "framer-motion": "^12.17.0",
+    "next": "14.2.3",
     "nfc-pcsc": "^0.8.1",
     "open": "^10.1.2",
     "openai": "^4.98.0",
@@ -24,5 +25,8 @@
     "styled-components": "^6.1.8",
     "three": "^0.158.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-plugin-styled-components": "^2.1.4",
+    "concurrently": "^9.1.2"
+  }
 }
