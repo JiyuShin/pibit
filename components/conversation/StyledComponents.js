@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 const moveBlob1 = keyframes`
   0% { transform: translate(0, 0) scale(1); }
@@ -57,6 +57,24 @@ const nfcExampleAnimation = keyframes`
       transform: translate(-320px, -50%);
       opacity: 1;
   }
+`;
+
+const messageFadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const animatedFadeIn = css`
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transform: ${({ show }) => (show ? 'translateY(0)' : 'translateY(15px)')};
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  transition-delay: ${({ show }) => (show ? '0.5s' : '0s')};
 `;
 
 export const Bg = styled.div`
@@ -154,6 +172,7 @@ export const Message = styled.div`
   background: ${props => (props.me ? '#ffe082' : '#f3f0ff')};
   color: #333;
   border: 1.5px solid ${props => (props.me ? '#ffe082' : '#7b61ff')};
+  animation: ${messageFadeIn} 0.4s ease-out;
 `;
 
 export const InputRow = styled.form`
@@ -161,7 +180,7 @@ export const InputRow = styled.form`
   width: 811px;
   height: 55px;
   left: calc(50% - 811px/2 + 0.5px);
-  top: 864px;
+  top: 694px;
   background: #FFFFFF;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
   border-radius: 20px;
@@ -177,6 +196,7 @@ export const Input = styled.input`
   background: transparent;
   outline: none;
   font-size: 1rem;
+  padding-left: 16px;
 `;
 
 export const SendButtonContainer = styled.button`
@@ -185,25 +205,30 @@ export const SendButtonContainer = styled.button`
   width: 45px;
   height: 45px;
   left: 1111px;
-  top: 869px;
+  top: 699px;
   background: #FFFFFF;
   border: 1px solid #B5AECA;
   box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.17);
   border-radius: 50%;
   cursor: pointer;
   z-index: 3;
-`;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 
-export const SendButtonArrow = styled.div`
-  box-sizing: border-box;
-  position: absolute;
-  width: 27px;
-  height: 0px;
-  left: 1120px;
-  top: 892px;
-  border: 2px solid #B5AECA;
-  transform: rotate(-90deg);
-  z-index: 3;
+  svg path {
+    transition: stroke 0.2s ease-in-out;
+  }
+
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #9d96b8;
+
+    svg path {
+      stroke: #7b61ff;
+    }
+  }
 `;
 
 export const ProfileImg = styled.img`
@@ -227,7 +252,7 @@ export const Greeting = styled.p`
   position: absolute;
   width: 567px;
   left: calc(50% - 567px/2 + 3.5px);
-  top: calc(17.92% - 55px);
+  top: calc(17.92% - 117px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -241,7 +266,7 @@ export const MainInstruction = styled.p`
   position: absolute;
   width: 900px;
   left: calc(50% - 900px/2 + 3.5px);
-  top: 176px;
+  top: 114px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -249,6 +274,7 @@ export const MainInstruction = styled.p`
   line-height: 1.5;
   text-align: center;
   color: #828282;
+  min-height: 90px;
 `;
 
 export const InfoBox1 = styled.div`
@@ -256,11 +282,12 @@ export const InfoBox1 = styled.div`
   width: 245px;
   height: 139px;
   left: 511px;
-  top: 300px;
+  top: 238px;
   background: #FFFFFF;
   opacity: 0.8;
   box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.25);
   border-radius: 20px;
+  ${animatedFadeIn}
 `;
 
 export const InfoBox2 = styled.div`
@@ -268,18 +295,19 @@ export const InfoBox2 = styled.div`
   width: 243px;
   height: 139px;
   left: 785px;
-  top: 300px;
+  top: 238px;
   background: #FFFFFF;
   opacity: 0.8;
   box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.25);
   border-radius: 20px;
+  ${animatedFadeIn}
 `;
 
 export const RoutineTitle = styled.h3`
   position: absolute;
   width: 567px;
   left: calc(50% - 567px/2 - 76.5px);
-  top: calc(37.78% - 55px);
+  top: calc(37.78% - 117px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -287,13 +315,14 @@ export const RoutineTitle = styled.h3`
   line-height: 30px;
   text-align: center;
   color: #828282;
+  ${animatedFadeIn}
 `;
 
 export const RoutineDescription = styled.p`
   position: absolute;
   width: 210px;
   left: 528.5px;
-  top: calc(42.36% - 55px);
+  top: calc(42.36% - 117px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -301,13 +330,14 @@ export const RoutineDescription = styled.p`
   line-height: 20px;
   text-align: center;
   color: #9E9E9E;
+  ${animatedFadeIn}
 `;
 
 export const CustomizingTitle = styled.h3`
   position: absolute;
   width: 567px;
   left: calc(50% - 567px/2 + 205.5px);
-  top: calc(37.68% - 55px);
+  top: calc(37.68% - 117px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -315,13 +345,14 @@ export const CustomizingTitle = styled.h3`
   line-height: 30px;
   text-align: center;
   color: #828282;
+  ${animatedFadeIn}
 `;
 
 export const CustomizingDescription = styled.p`
   position: absolute;
   width: 200px;
   left: 810px;
-  top: calc(42.36% - 55px);
+  top: calc(42.36% - 117px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -329,6 +360,7 @@ export const CustomizingDescription = styled.p`
   line-height: 20px;
   text-align: center;
   color: #9E9E9E;
+  ${animatedFadeIn}
 `;
 
 export const NfcArea = styled.div`
@@ -336,10 +368,11 @@ export const NfcArea = styled.div`
   width: 403.2px;
   height: 146.2px;
   left: calc(50% - 403.2px/2 + 0.5px);
-  top: 481px;
+  top: 419px;
   border: 2px dashed #9A9A9A;
   border-radius: 20px;
   position: relative;
+  ${animatedFadeIn}
 `;
 
 export const AnimatedExampleImage = styled.img`
@@ -356,7 +389,7 @@ export const NfcInstruction = styled.p`
   position: absolute;
   width: 567px;
   left: calc(50% - 567px/2 + 16.5px);
-  top: 658px;
+  top: 596px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -364,6 +397,7 @@ export const NfcInstruction = styled.p`
   line-height: 30px;
   text-align: center;
   color: #9E9E9E;
+  ${animatedFadeIn}
 `;
 
 export const BackButton = styled.button`
@@ -385,4 +419,15 @@ export const BackButton = styled.button`
     width: 96px;
     height: auto;
   }
-`; 
+`;
+
+export const AnimatedContentImage = styled.img`
+  position: absolute;
+  width: ${({width}) => width};
+  height: auto;
+  left: ${({left}) => left};
+  top: ${({top}) => top};
+  transform: ${({rotate}) => rotate ? `rotate(${rotate})` : 'none'};
+  z-index: 3;
+  ${animatedFadeIn}
+`;

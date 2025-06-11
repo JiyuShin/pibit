@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import Head from 'next/head';
 import styled, { keyframes, createGlobalStyle } from 'styled-components';
 import { useRouter } from 'next/router';
@@ -9,8 +9,16 @@ const FlowerModelView = dynamic(() => import('../components/FlowerModelView'), {
 });
 
 const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: 'Pretendard Variable Custom';
+    src: url('/fonts/PretendardVariable.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   body, html {
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 `;
 
@@ -37,7 +45,25 @@ const BgImage = styled.div`
   background: url('/pbk.png');
   background-size: cover;
   background-position: center;
-  z-index: -1;
+  z-index: -2;
+`;
+
+const LogoImage = styled.div`
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  width: 320px;
+  height: 80px;
+  background-image: url('/whiteb.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  z-index: 10;
+
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
 
 const Title = styled.h1`
@@ -75,36 +101,38 @@ const Subtitle = styled.p`
 
 const Rectangle1 = styled.div`
   position: absolute;
-  width: 435px;
+  width: 406px;
   height: 100px;
-  left: 37px;
+  left: 86px;
   top: 262px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50px 50px 0px 50px;
-  transform: scale(0.9);
   opacity: ${({ show }) => (show ? 1 : 0)};
-  transition: opacity 0.5s ease-in-out;
+  transform: ${({ show }) => (show ? 'translateY(0)' : 'translateY(20px)')};
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  will-change: transform, opacity;
 `;
 
 const Rectangle2 = styled.div`
   position: absolute;
   width: 325px;
   height: 63px;
-  left: 1135px;
+  left: 1115px;
   top: 354px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 30px 30px 0px 30px;
-  transform: scaleX(-1);
+  transform: ${({ show }) => (show ? 'scaleX(-1) translateY(0)' : 'scaleX(-1) translateY(20px)')};
   opacity: ${({ show }) => (show ? 1 : 0)};
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  will-change: transform, opacity;
 `;
 
 const BubbleText1 = styled.p`
   position: absolute;
   width: 380px;
-  left: 67px;
+  left: 102px;
   top: 288px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
@@ -114,13 +142,16 @@ const BubbleText1 = styled.p`
   text-align: center;
   color: #B5B5B5;
   margin: 0;
-  transform: scale(0.9);
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transform: ${({ show }) => (show ? 'translateY(0)' : 'translateY(20px)')};
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  will-change: transform, opacity;
 `;
 
 const BubbleButton = styled.button`
   position: absolute;
   width: 280px;
-  left: 1161px;
+  left: 1141px;
   top: 370px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
@@ -135,7 +166,9 @@ const BubbleButton = styled.button`
   padding: 0;
   white-space: pre-wrap;
   opacity: ${({ show }) => (show ? 1 : 0)};
-  transition: opacity 0.5s ease-in-out;
+  transform: ${({ show }) => (show ? 'translateY(0)' : 'translateY(20px)')};
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  will-change: transform, opacity;
 `;
 
 const FooterBrand = styled.div`
@@ -143,10 +176,10 @@ const FooterBrand = styled.div`
   width: 458px;
   height: 43px;
   left: calc(50% - 458px/2 + 658px);
-  top: 952px;
+  top: 831px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 17px;
   line-height: 20px;
   text-align: center;
@@ -158,10 +191,10 @@ const CopyrightSymbol = styled.div`
     width: 458px;
     height: 43px;
     left: calc(50% - 458px / 2 + 733px);
-    top: 950px;
+    top: 829px;
     font-family: 'Pretendard Variable', sans-serif;
     font-style: normal;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 17px;
     line-height: 20px;
     text-align: center;
@@ -170,11 +203,11 @@ const CopyrightSymbol = styled.div`
 
 const CopyrightCircle = styled.div`
   box-sizing: border-box;
-  position: absolute;
+   position: absolute;
   width: 18px;
   height: 18px;
   left: 1480px;
-  top: 953px;
+  top: 832px;
   border: 2px solid #B5AECA;
   border-radius: 50%;
 `;
@@ -183,83 +216,95 @@ const FooterJourney = styled.div`
   position: absolute;
   width: 1086px;
   height: 43px;
-  left: calc(50% - 1086px/2 - 197px);
-  top: 950px;
-  font-family: 'Pretendard Variable', sans-serif;
+  left: calc(50% - 1086px/2 - 177px);
+  top: 822px;
+  font-family: 'Pretendard Variable Custom';
   font-style: normal;
   font-weight: 600;
-  font-size: 10px;
-  line-height: 20px;
+  font-size: 18px;
+  line-height: 36px;
   color: #B5AECA;
 `;
 
-function Typewriter({ text, onComplete }) {
+const Typewriter = memo(function Typewriter({ text, onComplete }) {
     const [displayText, setDisplayText] = useState('');
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const index = React.useRef(0);
 
-    useEffect(() => {
-        if (currentIndex < text.length) {
-            const timeoutId = setTimeout(() => {
-                setDisplayText((prev) => prev + text[currentIndex]);
-                setCurrentIndex((prev) => prev + 1);
-            }, 100);
-            return () => clearTimeout(timeoutId);
-        } else if (onComplete) {
-            onComplete();
-        }
-    }, [currentIndex, text, onComplete]);
+    React.useEffect(() => {
+        index.current = 0;
+        setDisplayText('');
 
-    return <>{displayText}</>;
-}
+        const timer = setInterval(() => {
+            if (index.current < text.length) {
+                setDisplayText((prev) => prev + text.charAt(index.current));
+                index.current += 1;
+            } else {
+                clearInterval(timer);
+                if (onComplete) onComplete();
+            }
+        }, 100);
+
+        return () => clearInterval(timer);
+    }, [text, onComplete]);
+
+    return (
+        <>
+            {displayText.split('\n').map((line, i) => (
+                <React.Fragment key={i}>
+                    {line}
+                    {i < displayText.split('\n').length - 1 && <br />}
+                </React.Fragment>
+            ))}
+        </>
+    );
+});
+Typewriter.displayName = 'Typewriter';
 
 export default function FlowerProducePage() {
     const router = useRouter();
-    const [name, setName] = useState("지수");
+    const { name: queryName, selectedHabits } = router.query;
+    const [name, setName] = useState("당신");
     const [showRectangle1, setShowRectangle1] = useState(false);
     const [showBubbleText1, setShowBubbleText1] = useState(false);
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께 지내며\n손톱물어뜯기를 곁에서 케어해줄 따듯하고 포근한 존재야!`;
-    const fullText2 = "나와 대화를 시작하고 싶다면 클릭해줘 !";
+    const fullText1 = "안녕! 만나서 반가워, 난 지수와 함께 지내며\n손톱물어뜯기를 곁에서 돌봐줄 따듯하고 포근한 존재야!";
+    const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
-        if (router.isReady) {
-            const queryName = router.query.name;
-            if (queryName) {
-                setName(queryName);
-            }
+        if (router.isReady && queryName) {
+            setName(queryName);
         }
-    }, [router.isReady, router.query.name]);
+    }, [router.isReady, queryName]);
 
     useEffect(() => {
-        const timer1 = setTimeout(() => {
-            setShowRectangle1(true);
-        }, 500);
-
-        const timer2 = setTimeout(() => {
-            setShowBubbleText1(true);
-        }, 1000);
-
+        const timer1 = setTimeout(() => setShowRectangle1(true), 500);
+        const timer2 = setTimeout(() => setShowBubbleText1(true), 1000);
         return () => {
             clearTimeout(timer1);
             clearTimeout(timer2);
         };
     }, []);
 
-    const handleText1Complete = () => {
-        const timer3 = setTimeout(() => {
-            setShowRectangle2(true);
-        }, 500);
-
-        const timer4 = setTimeout(() => {
-            setShowBubbleButton(true);
-        }, 1000);
-        
+    const handleText1Complete = useCallback(() => {
+        const timer3 = setTimeout(() => setShowRectangle2(true), 1000);
+        const timer4 = setTimeout(() => setShowBubbleButton(true), 1500);
         return () => {
             clearTimeout(timer3);
             clearTimeout(timer4);
         };
+    }, []);
+
+    const handleStartConversation = useCallback(() => {
+        router.push({
+            pathname: '/converf',
+            query: { name, selectedHabits: JSON.stringify(selectedHabits) },
+        });
+    }, [router, name, selectedHabits]);
+
+    const handleGoBack = () => {
+        router.back();
     };
 
     return (
@@ -273,7 +318,8 @@ export default function FlowerProducePage() {
             </Head>
             <Root>
                 <BgImage />
-                <FlowerModelView />
+                <LogoImage onClick={handleGoBack} />
+                <FlowerModelView onModelClick={handleStartConversation}/>
                 <Title>{name}님의 첫 맞춤형 피빗이 태어났어요!</Title>
                 <Subtitle>
                     데스크탑 앞에 놓여있는 five flower 모듈과의 대화를 통해<br/>
@@ -281,14 +327,17 @@ export default function FlowerProducePage() {
                 </Subtitle>
                 
                 <Rectangle1 show={showRectangle1} />
-                <BubbleText1>
+                <BubbleText1 show={showBubbleText1}>
                     {showBubbleText1 && (
                         <Typewriter text={fullText1} onComplete={handleText1Complete} />
                     )}
                 </BubbleText1>
 
                 <Rectangle2 show={showRectangle2} />
-                <BubbleButton show={showBubbleButton}>
+                <BubbleButton 
+                    show={showBubbleButton} 
+                    onClick={handleStartConversation}
+                >
                     {showBubbleButton && <Typewriter text={fullText2} />}
                 </BubbleButton>
                 
@@ -299,4 +348,4 @@ export default function FlowerProducePage() {
             </Root>
         </>
     );
-} 
+}

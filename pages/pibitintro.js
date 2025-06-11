@@ -305,6 +305,7 @@ const StartButton = styled.button`
   left: 50%;
   bottom: 35px;
   transform: translateX(-50%);
+
   &:hover {
     background: rgba(230, 226, 234, 0.7);
     border: 3px solid #B5AECA;
@@ -316,6 +317,7 @@ export default function PibitIntro() {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const router = useRouter();
+
   return (
     <>
       <GlobalStyle />
@@ -339,12 +341,12 @@ export default function PibitIntro() {
               <InputRect value={age} onChange={e => setAge(e.target.value)} />
             </div>
           </InputRow>
-          <StartButton
-            onClick={() => {
-              router.push(`/pibitcontext?name=${encodeURIComponent(name)}&age=${encodeURIComponent(age)}`);
-            }}
-          >시작하기</StartButton>
         </WhiteRect>
+        <StartButton
+          onClick={() => {
+            router.push(`/pibitcontext?name=${encodeURIComponent(name)}&age=${encodeURIComponent(age)}`);
+          }}
+        >시작하기</StartButton>
         <FindYourOwnPibit>FindYourOwnPibit</FindYourOwnPibit>
         <Desc>
           이곳은 당신의 감정과 습관을 조금 더 정확히 이해해보는 공간입니다. 알고 있었지만 놓치고 있던, 혹은 아직 눈치채지 못한 감정과 습관들을<br />

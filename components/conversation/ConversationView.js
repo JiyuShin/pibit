@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { useRouter } from 'next/router';
 import {
@@ -8,7 +8,6 @@ import {
   InputRow,
   Input,
   SendButtonContainer,
-  SendButtonArrow,
   Ellipse26,
   Ellipse29,
   Ellipse32,
@@ -27,6 +26,7 @@ import {
   AnimatedExampleImage,
   NfcInstruction,
   BackButton,
+  AnimatedContentImage,
 } from './StyledComponents';
 import { toneAndManner } from './constants';
 // teenReplies는 현재 이 컴포넌트에서 직접 사용되지 않으므로 import하지 않습니다.
@@ -35,6 +35,39 @@ import { toneAndManner } from './constants';
 console.log('toneAndManner:', toneAndManner);
 console.log('toneAndManner[0]:', toneAndManner[0]);
 console.log('getSystemPrompt:', toneAndManner[0].getSystemPrompt('테스트유저'));
+
+function Typewriter({ text, onComplete, speed = 100 }) {
+  const [displayText, setDisplayText] = useState('');
+  const currentIndex = useRef(0);
+
+  useEffect(() => {
+    setDisplayText('');
+    currentIndex.current = 0;
+
+    const timer = setInterval(() => {
+      if (currentIndex.current < text.length) {
+        setDisplayText((prev) => prev + text.charAt(currentIndex.current));
+        currentIndex.current += 1;
+      } else {
+        clearInterval(timer);
+        if (onComplete) onComplete();
+      }
+    }, speed);
+
+    return () => clearInterval(timer);
+  }, [text, onComplete, speed]);
+
+  return (
+    <>
+      {displayText.split('\\n').map((line, index) => (
+        <React.Fragment key={index}>
+          {line}
+          {index < displayText.split('\\n').length - 1 && <br />}
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
 
 export default function ConversationView() {
   const router = useRouter();
@@ -51,6 +84,7 @@ export default function ConversationView() {
   const [currentToneId, setCurrentToneId] = useState(toneAndManner[0].id);
   const [isPibitLoading, setIsPibitLoading] = useState(false);
   const [isChatStarted, setIsChatStarted] = useState(false);
+  const [animationState, setAnimationState] = useState('idle'); // 'idle', 'typingGreeting', 'typingInstruction', 'showingInfo', 'allShown'
 
   const socketRef = useRef(null);
   const nfcSocketRef = useRef(null);
@@ -66,15 +100,27 @@ export default function ConversationView() {
         setNickname(name);
         setMessages([]);
       } else {
-        const randomId = Math.floor(Math.random() * 10000);
-        const defaultNickname = '유저' + randomId;
-        setNickname(defaultNickname);
-        router.query.name = defaultNickname;
+        setNickname('당신');
+      }
+      if (animationState === 'idle') {
+        setAnimationState('typingGreeting');
       }
     }
-  }, [name, router.isReady]);
+  }, [name, router.isReady, animationState]);
 
   useEffect(() => {
+    if (animationState === 'showingInfo') {
+      const timer = setTimeout(() => {
+        setAnimationState('allShown');
+      }, 700); // Corresponds to the fade-in duration
+      return () => clearTimeout(timer);
+    }
+  }, [animationState]);
+
+  useEffect(() => {
+    // Scroll to top on component mount
+    window.scrollTo(0, 0);
+
     socketRef.current = io({
       path: '/api/socket',
       transports: ['websocket'],
@@ -92,24 +138,31 @@ export default function ConversationView() {
     nfcSocketRef.current.on('connect', () => console.log('nfcSocket connected'));
     nfcSocketRef.current.on('disconnect', () => console.log('nfcSocket disconnected'));
     nfcSocketRef.current.on('connect_error', (err) => console.error('nfcSocket connect_error:', err));
-    nfcSocketRef.current.on('tag-read', (data) => {
+    nfcSocketRef.current.on('tag-read', async (data) => {
       setIsChatStarted(true);
       const tagToneId = data && data.id ? String(data.id).trim() : toneAndManner[0].id;
       setCurrentToneId(tagToneId);
-      fetch('/api/gpt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: '안녕!', userName: nicknameRef.current, toneId: tagToneId }),
-      })
-      .then(res => res.json())
-      .then(data => {
-        const pibitMessage = { user: 'PIBIT', text: data.reply || '안녕!' };
+      try {
+        const res = await fetch('/api/gpt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: '안녕!', userName: nicknameRef.current, toneId: tagToneId }),
+        });
+        const text = await res.text();
+        let resData;
+        try {
+          resData = JSON.parse(text);
+        } catch (e) {
+          console.error("Failed to parse JSON on tag-read:", text);
+          throw new Error("Server response was not valid JSON on tag-read.");
+        }
+        const pibitMessage = { user: 'PIBIT', text: resData.reply || '안녕!' };
         setMessages((prev) => [...prev, pibitMessage]);
-      })
-      .catch(() => {
+      } catch (err) {
+        console.error(err);
         const pibitMessage = { user: 'PIBIT', text: '안녕!' };
         setMessages((prev) => [...prev, pibitMessage]);
-      });
+      }
     });
     nfcSocketRef.current.on('tag-removed', (data) => {
       console.log('nfcSocket event: tag-removed', data);
@@ -129,7 +182,7 @@ export default function ConversationView() {
     }
   }, [messages]);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
     const userMessage = { user: nickname, text: input };
@@ -138,28 +191,45 @@ export default function ConversationView() {
     setInput('');
     if (socketRef.current) socketRef.current.emit('message', userMessage);
     setIsPibitLoading(true);
-    fetch('/api/gpt', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: currentInput, userName: name || nickname, toneId: currentToneId }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        setIsPibitLoading(false);
-        if (data.reply) {
-          const pibitMessage = { user: 'PIBIT', text: data.reply };
-          setMessages((prev) => [...prev, pibitMessage]);
-        } else if (data.error) {
-          const errorMessage = { user: 'PIBIT', text: data.error };
-          setMessages((prev) => [...prev, errorMessage]);
-        }
-      })
-      .catch(() => {
-        setIsPibitLoading(false);
-        const errorMessage = { user: 'PIBIT', text: '앗, 지금은 대답하기 조금 어려워. 다시 시도해줘! (서버 에러)' };
-        setMessages((prev) => [...prev, errorMessage]);
+
+    try {
+      const res = await fetch('/api/gpt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: currentInput, userName: name || nickname, toneId: currentToneId }),
       });
+      
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error("Failed to parse JSON response:", text);
+        throw new Error("Server response was not valid JSON.");
+      }
+
+      setIsPibitLoading(false);
+      if (data.reply) {
+        const pibitMessage = { user: 'PIBIT', text: data.reply };
+        setMessages((prev) => [...prev, pibitMessage]);
+      } else if (data.error) {
+        const errorMessage = { user: 'PIBIT', text: data.error };
+        setMessages((prev) => [...prev, errorMessage]);
+      }
+    } catch (err) {
+      console.error(err);
+      setIsPibitLoading(false);
+      const errorMessage = { user: 'PIBIT', text: '앗, 지금은 대답하기 조금 어려워. 다시 시도해줘! (서버 에러)' };
+      setMessages((prev) => [...prev, errorMessage]);
+    }
   };
+
+  const greetingText = `${nickname} 안녕, 여기까지 오느라 수고 많았어!`;
+  const mainInstructionText = `이제 나와 대화하면서 ${nickname}에게 가장 효과적인 손톱물어뜯기\\n습관 개선 루틴을 체험해보고 커스터마이징을 진행해보자!`;
+
+  if (!nickname || animationState === 'idle') {
+    return null; // 닉네임이 준비되고 애니메이션이 시작될 때까지 렌더링하지 않음
+  }
 
   return (
     <Bg>
@@ -267,54 +337,60 @@ export default function ConversationView() {
         </>
       ) : (
         <>
-          <Greeting>{nickname}님 안녕, 여기까지 오느라 수고 많았어!</Greeting>
+          <Greeting>
+            {animationState === 'typingGreeting' ? (
+              <Typewriter text={greetingText} onComplete={() => setAnimationState('typingInstruction')} />
+            ) : (
+              greetingText.replace(/\\n/g, '\n')
+            )}
+          </Greeting>
           <MainInstruction>
-            이제 나와 대화하면서 {nickname}에게 가장 효과적인 손톱물어뜯기<br />
-            습관 개선 루틴을 체험해보고 커스터마이징을 진행해보자!
+            {animationState === 'typingInstruction' ? (
+              <Typewriter text={mainInstructionText} onComplete={() => setAnimationState('showingInfo')} />
+            ) : ['showingInfo', 'allShown'].includes(animationState) ? (
+              mainInstructionText.split('\\n').map((line, index) => (
+                <React.Fragment key={index}>
+                  {line}
+                  {index < mainInstructionText.split('\\n').length - 1 && <br />}
+                </React.Fragment>
+              ))
+            ) : null}
           </MainInstruction>
-          <InfoBox1 />
-          <InfoBox2 />
-          <img
+          <InfoBox1 show={['showingInfo', 'allShown'].includes(animationState)} />
+          <InfoBox2 show={['showingInfo', 'allShown'].includes(animationState)} />
+          <AnimatedContentImage
+            show={['showingInfo', 'allShown'].includes(animationState)}
             src="/routine.png"
             alt="routine icon"
-            style={{
-              position: 'absolute',
-              width: '113.4px',
-              height: 'auto',
-              left: '512px',
-              top: '290px',
-              zIndex: 3, // to be on top of other elements
-            }}
+            width="113.4px"
+            left="512px"
+            top="228px"
           />
-          <RoutineTitle>Routine Making</RoutineTitle>
-          <RoutineDescription>
+          <RoutineTitle show={['showingInfo', 'allShown'].includes(animationState)}>Routine Making</RoutineTitle>
+          <RoutineDescription show={['showingInfo', 'allShown'].includes(animationState)}>
             생성하신 피빗 모듈의 구체적인 사용<br />
             방법과 습관, 감정을 케어해줄 수 있는<br />
             모듈 인터렉티브 스케줄을 제안해요
           </RoutineDescription>
-          <img
+          <AnimatedContentImage
+            show={['showingInfo', 'allShown'].includes(animationState)}
             src="/custom.png"
             alt="customize icon"
-            style={{
-              position: 'absolute',
-              width: '85.8px',
-              height: 'auto',
-              left: '788.73px',
-              top: '300px',
-              transform: 'rotate(15deg)',
-              zIndex: 3,
-            }}
+            width="85.8px"
+            left="788.73px"
+            top="238px"
+            rotate="15deg"
           />
-          <CustomizingTitle>Customizing</CustomizingTitle>
-          <CustomizingDescription>
+          <CustomizingTitle show={['showingInfo', 'allShown'].includes(animationState)}>Customizing</CustomizingTitle>
+          <CustomizingDescription show={['showingInfo', 'allShown'].includes(animationState)}>
             모듈의 색상, 텍스쳐, 모듈과<br />
             함께 사용 가능한 귀여운<br />
             기능들을 선물하고 제안해요
           </CustomizingDescription>
-          <NfcArea>
+          <NfcArea show={animationState === 'allShown'}>
             <AnimatedExampleImage src="/example1.png" alt="NFC 모듈 사용 예시" />
           </NfcArea>
-          <NfcInstruction>대화를 시작하기 위해 모듈의 바닥면을 박스 안에 넣어줘!</NfcInstruction>
+          <NfcInstruction show={animationState === 'allShown'}>대화를 시작하기 위해 모듈의 바닥면을 박스 안에 넣어줘!</NfcInstruction>
         </>
       )}
 
@@ -326,8 +402,11 @@ export default function ConversationView() {
           autoFocus
         />
       </InputRow>
-      <SendButtonContainer type="submit" onClick={handleSend} />
-      <SendButtonArrow />
+      <SendButtonContainer type="submit" onClick={handleSend}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21V3M5 10L12 3L19 10" stroke="#B5AECA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </SendButtonContainer>
       
       <style>{`
         @keyframes pibit-dot {
