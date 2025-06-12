@@ -81,20 +81,30 @@ const NewDateText = styled.p`
 
 const HorizontalLine = styled.div`
   position: absolute;
-  width: 805px;
+  width: 855px;
   height: 0px;
-  left: calc(50% - 805px/2);
+  left: calc(50% - 855px/2);
   top: 80px;
   border: 1px solid #C2BFBF;
 `;
 
-const ContentBox = styled.div`
-  position: absolute;
-  top: 172px;
+const FirstTitleRow = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  position: relative;
+  left: 374px !important;
+  top: 136px !important;
+`;
+
+const FirstMessageText = styled.p`
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 25px;
+  color: #828282;
+  position: relative;
+  left: 205px !important;
+  top: 105px !important;
+  text-align: left;
 `;
 
 const TitleText = styled.p`
@@ -103,14 +113,56 @@ const TitleText = styled.p`
   line-height: 30px;
   color: #828282;
   margin: 0;
+  transform: translate(-169px, -48px);
 `;
 
 const SubText = styled.p`
-  margin-top: 13px;
   font-weight: 500;
   font-size: 16px;
   line-height: 25px;
   color: #828282;
+  position: relative;
+  left: 25px !important;
+  top: -108px !important;
+`;
+
+const SecondTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  left: 374px !important;
+  top: 226px !important;
+`;
+
+const SecondMessageText = styled.p`
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 25px;
+  color: #828282;
+  position: relative;
+  left: 205px !important;
+  top: 195px !important;
+  text-align: left;
+`;
+
+const ThirdTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  left: 374px !important;
+  top: 316px !important;
+`;
+
+const ThirdMessageText = styled.p`
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 25px;
+  color: #828282;
+  position: relative;
+  left: 205px !important;
+  top: 281px !important;
+  width: calc(100% - 95px);
+  text-align: left;
 `;
 
 const NewGradientBox = styled.div`
@@ -139,6 +191,10 @@ export default function ConversationView() {
   const [isPibitLoading, setIsPibitLoading] = useState(false);
   const [isChatStarted, setIsChatStarted] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
+  const [nfcData, setNfcData] = useState(null);
+  const [showSecondMessage, setShowSecondMessage] = useState(false);
+  const [showThirdMessage, setShowThirdMessage] = useState(false);
+  const [showInitialMessage, setShowInitialMessage] = useState(false);
   
   const socketRef = useRef(null);
   const nfcSocketRef = useRef(null);
@@ -181,36 +237,40 @@ export default function ConversationView() {
     nfcSocketRef.current.on('connect', () => console.log('nfcSocket connected'));
     nfcSocketRef.current.on('disconnect', () => console.log('nfcSocket disconnected'));
     nfcSocketRef.current.on('connect_error', (err) => console.error('nfcSocket connect_error:', err));
-    nfcSocketRef.current.on('tag-read', async (data) => {
+    nfcSocketRef.current.on('tag-read', (data) => {
       setIsChatStarted(true);
+      setShowInitialMessage(false);
+      setShowSecondMessage(false);
+      setShowThirdMessage(false);
+      
+      const isFiveFlowerTag = data.id === '0488bb12361e90';
+      const name = isFiveFlowerTag ? 'Five Flower' : (data.name || '방문객');
+      const message = isFiveFlowerTag ? '안녕! 난 five flower이야, 만나게 되서 너무 반가워!' : (data.message || data.text || '만나서 반가워요!');
+
+      const structuredData = { id: data.id, name, message };
+      setNfcData(structuredData);
+
+      const initialMessage = { user: 'PIBIT', text: message };
+      setMessages([initialMessage]);
+      
+      setShowInitialMessage(true);
+      setTimeout(() => {
+        setShowSecondMessage(true);
+        setTimeout(() => {
+          setShowThirdMessage(true);
+        }, 1000);
+      }, 1000);
+
       const tagToneId = data && data.id ? String(data.id).trim() : toneAndManner[0].id;
       setCurrentToneId(tagToneId);
-      try {
-        const res = await fetch('/api/gpt', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: '안녕!', userName: nicknameRef.current, toneId: tagToneId }),
-        });
-        const text = await res.text();
-        let resData;
-        try {
-          resData = JSON.parse(text);
-        } catch (e) {
-          console.error("Failed to parse JSON on tag-read:", text);
-          throw new Error("Server response was not valid JSON on tag-read.");
-        }
-        const pibitMessage = { user: 'PIBIT', text: resData.reply || '안녕!' };
-        setMessages((prev) => [...prev, pibitMessage]);
-      } catch (err) {
-        console.error(err);
-        const pibitMessage = { user: 'PIBIT', text: '안녕!' };
-        setMessages((prev) => [...prev, pibitMessage]);
-      }
     });
     nfcSocketRef.current.on('tag-removed', (data) => {
       console.log('nfcSocket event: tag-removed', data);
       setIsChatStarted(false);
       setMessages([]);
+      setNfcData(null);
+      setShowSecondMessage(false);
+      setShowThirdMessage(false);
     });
 
     return () => {
@@ -227,14 +287,16 @@ export default function ConversationView() {
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, '0');
       const day = String(today.getDate()).padStart(2, '0');
-      setCurrentDate(`${year}. ${month}. ${day}`);
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayOfWeek = days[today.getDay()];
+      setCurrentDate(`${year}. ${month}. ${day} (${dayOfWeek})`);
     }
   }, [isChatStarted]);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    // if (messagesEndRef.current) {
+    //   messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    // }
   }, [messages]);
 
   const handleSend = async (e) => {
@@ -242,41 +304,41 @@ export default function ConversationView() {
     if (!input.trim()) return;
     const userMessage = { user: nickname, text: input };
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = input;
+    // const currentInput = input;
     setInput('');
     if (socketRef.current) socketRef.current.emit('message', userMessage);
-    setIsPibitLoading(true);
+    // setIsPibitLoading(true);
 
-    try {
-      const res = await fetch('/api/gpt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: currentInput, userName: name || nickname, toneId: currentToneId }),
-      });
+    // try {
+    //   const res = await fetch('/api/gpt', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ message: currentInput, userName: name || nickname, toneId: currentToneId }),
+    //   });
       
-      const text = await res.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.error("Failed to parse JSON response:", text);
-        throw new Error("Server response was not valid JSON.");
-      }
+    //   const text = await res.text();
+    //   let data;
+    //   try {
+    //     data = JSON.parse(text);
+    //   } catch (err) {
+    //     console.error("Failed to parse JSON response:", text);
+    //     throw new Error("Server response was not valid JSON.");
+    //   }
 
-      setIsPibitLoading(false);
-      if (data.reply) {
-        const pibitMessage = { user: 'PIBIT', text: data.reply };
-        setMessages((prev) => [...prev, pibitMessage]);
-      } else if (data.error) {
-        const errorMessage = { user: 'PIBIT', text: data.error };
-        setMessages((prev) => [...prev, errorMessage]);
-      }
-    } catch (err) {
-      console.error(err);
-      setIsPibitLoading(false);
-      const errorMessage = { user: 'PIBIT', text: '앗, 지금은 대답하기 조금 어려워. 다시 시도해줘! (서버 에러)' };
-      setMessages((prev) => [...prev, errorMessage]);
-    }
+    //   setIsPibitLoading(false);
+    //   if (data.reply) {
+    //     const pibitMessage = { user: 'PIBIT', text: data.reply };
+    //     setMessages((prev) => [...prev, pibitMessage]);
+    //   } else if (data.error) {
+    //     const errorMessage = { user: 'PIBIT', text: data.error };
+    //     setMessages((prev) => [...prev, errorMessage]);
+    //   }
+    // } catch (err) {
+    //   console.error(err);
+    //   setIsPibitLoading(false);
+    //   const errorMessage = { user: 'PIBIT', text: '앗, 지금은 대답하기 조금 어려워. 다시 시도해줘! (서버 에러)' };
+    //   setMessages((prev) => [...prev, errorMessage]);
+    // }
   };
 
   const greetingText = `${nickname} 안녕, 여기까지 오느라 수고 많았어!`;
@@ -367,14 +429,71 @@ export default function ConversationView() {
               <NewDateText>{currentDate}</NewDateText>
             </NewDateBox>
             <HorizontalLine />
-            <ContentBox>
-              <TitleText>Five Flower</TitleText>
-              <SubText>{nickname} 안녕! 만나게 되서 너무 반가워!</SubText>
-            </ContentBox>
-            
-            {/* The chat messages part is removed as per the new requirement */}
-            {/* If chat functionality is needed alongside this new UI, it needs to be integrated here */}
-
+            <div style={{ width: '100%', transform: 'translateX(-40px)', position: 'absolute', top: '100px' }}>
+              <AnimatePresence>
+                {showInitialMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <FirstTitleRow>
+                      <TitleText>{nfcData.name}</TitleText>
+                    </FirstTitleRow>
+                    <FirstMessageText>
+                      지수 안녕! 만나게 되서 너무 반가워!
+                    </FirstMessageText>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {showSecondMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <SecondTitleRow>
+                      <TitleText>{nfcData.name}</TitleText>
+                    </SecondTitleRow>
+                    <SecondMessageText>
+                      나와 대화를 통해 어떤것을 할 수 있는지 간략하게 설명할게!
+                    </SecondMessageText>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {showThirdMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <ThirdTitleRow>
+                      <TitleText>{nfcData.name}</TitleText>
+                    </ThirdTitleRow>
+                    <ThirdMessageText>
+                      난 앞으로 {nickname}의 일상 속 감정과 그 감정이 만들어낼 수 있는 미래의 습관 발현,
+                      <br />
+                      또는 현재 진행중인 습관들을 빠짐없이 캐치하고 맞춤화 케어를 통해 고쳐나가며,감정적으로 성장할 수 있도록
+                      <br />
+                      도와주는 작지만 강한 평생 동반자야! 이해했다면 "좋아" 를 전송해줘!
+                    </ThirdMessageText>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <Messages>
+              {messages.slice(1).map((msg, index) => (
+                <Message key={index} me={msg.user !== 'PIBIT'}>
+                  {msg.text}
+                </Message>
+              ))}
+              <div ref={messagesEndRef} />
+            </Messages>
             <InputRow onSubmit={handleSend}>
               <Input
                 type="text"

@@ -140,9 +140,11 @@ export const Ellipse28 = styled.div`
 `;
 
 export const Messages = styled.div`
-  position: relative;
-  z-index: 2;
-  height: calc(100% - 200px);
+  position: absolute;
+  top: 172px;
+  left: calc(50% - 811px/2);
+  width: 811px;
+  height: 540px; /* 734 - 172 - 22 (margin) */
   overflow-y: auto;
   padding: 20px;
   display: flex;
@@ -165,7 +167,7 @@ export const InputRow = styled.form`
   width: 811px;
   height: 55px;
   left: calc(50% - 811px/2 + 0.5px);
-  top: 779px;
+  top: 734px;
   background: #FFFFFF;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
   border-radius: 20px;

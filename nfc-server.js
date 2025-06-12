@@ -10,6 +10,11 @@ const io = new Server(server, {
   }
 });
 
+// NFC 태그 ID와 데이터 매핑
+const tagMappings = {
+  '0488bb12361e90': { name: 'Five Flower', message: '안녕! 난 five flower이야, 만나게 되서 너무 반가워!' }
+};
+
 const nfc = new NFC(); // NFC 리더기를 서버 시작 시 한 번만 초기화
 
 nfc.on('error', err => {
@@ -21,7 +26,24 @@ nfc.on('reader', reader => {
   console.log('💳 카드를 기다리는 중...');
 
   reader.on('card', card => {
-    const payload = { id: card.uid, text: '지유야 안녕' };
+    const tagData = tagMappings[card.uid];
+    let payload;
+
+    if (tagData) {
+      payload = {
+        id: card.uid,
+        name: tagData.name,
+        message: tagData.message,
+      };
+    } else {
+      // 등록되지 않은 태그의 기본값
+      payload = {
+        id: card.uid,
+        name: '방문객',
+        message: '만나서 반가워요!',
+      };
+    }
+    
     console.log('[NFC 서버 emit payload]', payload);
     io.emit('tag-read', payload); // 모든 연결된 클라이언트에게 전송
   });
