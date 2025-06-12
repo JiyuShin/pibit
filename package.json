@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"next dev\" \"node nfc-server.js\"",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "nfc:start": "pm2 start nfc-server.js --name nfc-server",
+    "nfc:stop": "pm2 stop nfc-server",
+    "nfc:status": "pm2 status"
   },
   "dependencies": {
     "@react-three/drei": "^9.74.3",
@@ -23,10 +26,18 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "latest",
     "styled-components": "^6.1.8",
-    "three": "^0.158.0"
+    "three": "^0.158.0",
+    "eslint-config-next": "14.2.3",
+    "typescript": "5.4.5"
   },
   "devDependencies": {
     "babel-plugin-styled-components": "^2.1.4",
     "concurrently": "^9.1.2"
+  },
+  "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/main/packages/create-next-app).",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/my-app.git"
   }
 }

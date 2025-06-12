@@ -3,6 +3,26 @@ import styled, { keyframes } from 'styled-components';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
+const BackButton = styled.div`
+  position: absolute;
+  top: 45px;
+  left: 23px;
+  width: 96px;
+  height: auto;
+  cursor: pointer;
+  z-index: 9999;
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+  
+  img {
+    width: 100%;
+    height: auto;
+  }
+`;
+
 // 습관 카드 데이터 (예시 5개, 나머지는 추가만 하면 됨)
 const CARD_WIDTH = 261;
 const CARD_GAP = 20;
@@ -47,16 +67,6 @@ const habitCards = [
   { text: "불안할 때 손이나 옷깃을 만져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 3px)`, top: 1040 },
   { text: "작은 소리나 변화에도 예민해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px + 3px)`, top: 1040 },
 ];
-
-// Figma Polygon 1: 흰색 라운딩 삼각형
-const Polygon1 = styled.div`
-  position: absolute;
-  width: 52px;
-  height: 52px;
-  left: 52px;
-  top: 62px;
-  z-index: 10;
-`;
 
 const Root = styled.div`
   position: relative;
@@ -388,10 +398,17 @@ const BottomButton = styled.button`
   border-radius: 50px;
   font-family: 'Pretendard Variable', sans-serif;
   font-weight: 600;
-  font-size: 26.4px;
+  font-size: 23.76px;
   color: #8B8B8B;
   cursor: pointer;
   z-index: 30;
+  transition: all 0.3s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 `;
 
 // 자유로운 곡선 움직임 keyframes (예시: x, y가 각각 sin/cos)
@@ -600,20 +617,11 @@ export default function PibitContext() {
         <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@600&display=swap" rel="stylesheet" />
       </Head>
       <Root>
+        <BackButton onClick={() => router.back()}>
+          <img src="/whiteb.png" alt="뒤로 가기" />
+        </BackButton>
         <BgImage />
         <Rectangle10 />
-        <Polygon1>
-          <svg width="52" height="52" viewBox="0 0 52 52" style={{ transform: 'rotate(-45deg)' }}>
-            <path
-              d="M26 12
-                 Q38 22, 42 40
-                 Q26 34, 10 40
-                 Q14 22, 26 12
-                 Z"
-              fill="#FAF9FB"
-            />
-          </svg>
-        </Polygon1>
         <Flower2 />
         <Puffy2 />
         <Wiggle2 />
@@ -670,9 +678,15 @@ export default function PibitContext() {
         ))}
         <BottomButton
           disabled={selectedIdxs.length !== 5}
-          style={{
-            opacity: selectedIdxs.length === 5 ? 1 : 0.5,
-            pointerEvents: selectedIdxs.length === 5 ? 'auto' : 'none',
+          onMouseEnter={(e) => {
+            if (selectedIdxs.length === 5) {
+              e.currentTarget.style.boxShadow = '6px 6px 28px 5px rgba(100, 61, 130, 0.35)';
+              e.currentTarget.style.transform = 'translateY(-3px)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '6px 6px 20px 3px rgba(100, 61, 130, 0.25)';
+            e.currentTarget.style.transform = 'translateY(0px)';
           }}
           onClick={() => {
             if (selectedIdxs.length === 5) {

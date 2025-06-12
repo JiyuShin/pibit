@@ -92,8 +92,8 @@ const MainTitle = styled.div`
 const MainButton = styled.button`
   position: absolute;
   left: 50%;
-  top: calc(60vh + 131px);
-  transform: translate(-50%, 0);
+  top: calc(60vh + 96px);
+  transform: translate(calc(-50% + 15px), 0);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 600;

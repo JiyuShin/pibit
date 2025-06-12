@@ -17,7 +17,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body, html {
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
   }
 `;
@@ -216,12 +216,12 @@ const FooterJourney = styled.div`
   position: absolute;
   width: 1086px;
   height: 43px;
-  left: calc(50% - 1086px/2 - 177px);
+  left: calc(50% - 1086px/2 - 192px);
   top: 822px;
   font-family: 'Pretendard Variable Custom';
   font-style: normal;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 14.58px;
   line-height: 36px;
   color: #B5AECA;
 `;

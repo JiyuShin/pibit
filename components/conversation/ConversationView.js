@@ -216,10 +216,6 @@ export default function ConversationView() {
   }, [name, router.isReady]);
 
   useEffect(() => {
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-    window.scrollTo(0, 0);
-
     socketRef.current = io({
       path: '/api/socket',
       transports: ['websocket'],
@@ -276,8 +272,6 @@ export default function ConversationView() {
     return () => {
       if (socketRef.current) socketRef.current.disconnect();
       if (nfcSocketRef.current) nfcSocketRef.current.disconnect();
-      document.documentElement.style.overflow = 'auto';
-      document.body.style.overflow = 'auto';
     };
   }, []);
 
@@ -488,9 +482,17 @@ export default function ConversationView() {
             </div>
             <Messages>
               {messages.slice(1).map((msg, index) => (
-                <Message key={index} me={msg.user !== 'PIBIT'}>
-                  {msg.text}
-                </Message>
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  style={{ alignSelf: msg.user !== 'PIBIT' ? 'flex-end' : 'flex-start' }}
+                >
+                  <Message me={msg.user !== 'PIBIT'}>
+                    {msg.text}
+                  </Message>
+                </motion.div>
               ))}
               <div ref={messagesEndRef} />
             </Messages>

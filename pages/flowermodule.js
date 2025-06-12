@@ -106,8 +106,7 @@ const FadeOverlay = styled.div`
 const Root = styled.div`
   position: relative;
   width: 1512px;
-  height: 982px;
-  overflow: hidden;
+  min-height: 982px;
   margin: 0 auto;
   animation: ${fadeIn} 0.8s ease-in-out;
 `;

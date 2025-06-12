@@ -302,8 +302,8 @@ const StartButton = styled.button`
   pointer-events: auto;
   z-index: 9999;
   position: fixed;
-  left: 50%;
-  bottom: 35px;
+  left: calc(50% + 10px);
+  bottom: 72px;
   transform: translateX(-50%);
 
   &:hover {

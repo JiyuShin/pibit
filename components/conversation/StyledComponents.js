@@ -156,7 +156,6 @@ export const Message = styled.div`
   padding: 10px 15px;
   border-radius: 20px;
   margin-bottom: 10px;
-  align-self: ${props => (props.me ? 'flex-end' : 'flex-start')};
   background: ${props => (props.me ? '#ffe082' : '#f3f0ff')};
   color: #333;
   border: 1.5px solid ${props => (props.me ? '#ffe082' : '#7b61ff')};
