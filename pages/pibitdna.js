@@ -63,7 +63,7 @@ function DnaStickModel() {
     }
 
     // Animate scale
-    const targetScale = 5.26284; // 3.50856 * 1.5
+    const targetScale = 5.789124; // 5.26284 * 1.1
     if (group.current.scale.x < targetScale) {
       const newScale = group.current.scale.x + targetScale * delta;
       group.current.scale.set(Math.min(newScale, targetScale), Math.min(newScale, targetScale), Math.min(newScale, targetScale));
@@ -122,7 +122,7 @@ function RecModel() {
     }
 
     // Animate scale
-    const targetScale = 1.578852; // (5.26284 / 3) * 0.9
+    const targetScale = 1.7367372; // 1.578852 * 1.1
     if (group.current.scale.x < targetScale) {
       const newScale = group.current.scale.x + targetScale * delta;
       group.current.scale.set(Math.min(newScale, targetScale), Math.min(newScale, targetScale), Math.min(newScale, targetScale));
@@ -147,6 +147,15 @@ function Model() {
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        child.material.emissive = new THREE.Color('white');
+        child.material.emissiveIntensity = 0.15;
+
+        if (child.material.color) {
+          const color = child.material.color;
+          const hsl = {};
+          color.getHSL(hsl);
+          color.setHSL(hsl.h, Math.min(hsl.s * 1.3, 1), hsl.l);
+        }
       }
     });
   }, [scene]);
@@ -190,7 +199,7 @@ export default function PibitDnaPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setStickVisible(true);
-    }, 3000);
+    }, 3500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -221,7 +230,7 @@ export default function PibitDnaPage() {
             </group>
             {stickVisible && (
               <>
-                <group position={[-5.6, 5.5, -4]}>
+                <group position={[-4.1, 5.5, -6]}>
                   <DnaStickModel />
                 </group>
                 <group position={[1.4, 7.5, 5]}>
