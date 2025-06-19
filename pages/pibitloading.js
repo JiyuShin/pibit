@@ -284,11 +284,12 @@ export default function PibitLoadingPage() {
                 <HeaderLine isExiting={isExiting} />
                 <BackButton onClick={() => router.back()} isExiting={isExiting} />
                 <CustomizeButton onClick={handleNavigation} isExiting={isExiting}>
-                    내 모듈 꾸미기
+                    피빗 커스터마이징
                 </CustomizeButton>
                 <CenterImageContainer isExiting={isExiting}/>
                 <CenterText isExiting={isExiting}>
-                    {name}님에게 딱 맞는<br/>습관 케어 루틴을 찾고 있어요
+                    손톱 물어뜯기’ 습관을 긴 시간동안 곁에서 신지유님과<br />
+                    함께 관리해줄 맞춤화 피빗 제작을 시작할게요!
                 </CenterText>
                 <FooterText isExiting={isExiting}>Journey to create habit-caretaker companion pibit</FooterText>
                 <CompanyText isExiting={isExiting}>© 2024 Pibit</CompanyText>

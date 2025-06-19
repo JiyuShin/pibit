@@ -474,7 +474,7 @@ export const DateText = styled.p`
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 23px;
+  font-size: 25.3px;
   line-height: 30px;
   text-align: center;
   color: #FFFFFF;
@@ -509,4 +509,18 @@ export const WelcomeMessage = styled.p`
   line-height: 25px;
   color: #828282;
   white-space: nowrap;
+`;
+
+export const YearDateText = styled.p`
+  width: 100%;
+  font-family: 'Pretendard Variable', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 19.8px;
+  line-height: 1.2;
+  text-align: center;
+  color: #FFFFFF;
+  margin: 0;
+  padding: 0;
+  margin-top: -8px;
 `;

@@ -38,6 +38,7 @@ import {
   ChatTitle,
   WelcomeMessage,
   GradientOverlay,
+  YearDateText,
 } from './StyledComponents';
 import { toneAndManner } from './constants';
 // teenReplies는 현재 이 컴포넌트에서 직접 사용되지 않으므로 import하지 않습니다.
@@ -419,12 +420,9 @@ export default function ConversationView() {
           <div style={{ position: 'absolute', top: 59, left: '50%', transform: 'translateX(-50%)', width: 400, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img src="/module/flower.png" alt="flower" style={{ position: 'absolute', left: -360, top: 'calc(50% + 110px)', transform: 'translateY(-50%)', width: 160, height: 160, zIndex: 2, objectFit: 'contain' }} />
             <DateBox>
+              <YearDateText>{currentDate.replace(/\s*\([^)]*\)/, '')}</YearDateText>
               <DateText>{currentDate}</DateText>
             </DateBox>
-          </div>
-          {/* 날짜 박스 위에 실제 접속 시의 년도와 날짜 표시 */}
-          <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-30px', fontFamily: 'Pretendard Variable, sans-serif', fontWeight: 600, fontSize: 18, color: '#828282', zIndex: 10000 }}>
-            {currentDate.replace(/\s*\([^)]*\)/, '')}
           </div>
           {showInitialMessage && (
             <>

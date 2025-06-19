@@ -19,8 +19,8 @@ body {
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: transparent;
+  font-family: 'Pretendard Variable', Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -58,4 +58,12 @@ div[style*="position:fixed"][style*="left:0px"][style*="bottom:0px"],
 div[style*="position: fixed"][style*="bottom: 0px"][style*="z-index: 9999999999"],
 div[style*="position:fixed"][style*="bottom:0px"][style*="z-index:9999999999"] {
   display: none !important;
+}
+
+/* Pretendard Variable 폰트 적용 */
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/PretendardVariable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
 }

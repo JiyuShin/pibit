@@ -109,21 +109,20 @@ const Root = styled.div`
   height: 982px;
   margin: 0 auto;
   animation: ${fadeIn} 0.8s ease-in-out;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
-const BgImage = styled.div`
+const Bk2Bg = styled.div`
   position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  left: 0;
-  top: 0;
-  background: url('/bk2.png');
+  background: url('/bk2.png') no-repeat center center;
   background-size: cover;
-  background-position: center;
-  filter: blur(35px);
-  z-index: -1;
+  z-index: -100;
 `;
 
 const BackgroundGradient1 = styled.div`
@@ -544,8 +543,7 @@ export default function FlowerModulePage() {
                 <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:opsz,wght@10..144,600&display=swap" rel="stylesheet" />
                 <link href="https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@700&display=swap" rel="stylesheet" />
             </Head>
-            <BgImage />
-            <FadeOverlay className={showOverlay ? 'fade-in' : ''} />
+            <Bk2Bg />
             <Root>
                 <BackgroundGradient1 />
                 <BackgroundGradient2 />

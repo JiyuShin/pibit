@@ -42,10 +42,9 @@ const BgImage = styled.div`
   height: 100vh;
   left: 0;
   top: 0;
-  background: url('/bk2.png');
+  background: url('/bk2.png') no-repeat center center;
   background-size: cover;
-  background-position: center;
-  z-index: -2;
+  z-index: -100;
 `;
 
 const LogoImage = styled.div`
@@ -229,23 +228,30 @@ const FooterJourney = styled.div`
 const Typewriter = memo(function Typewriter({ text, onComplete }) {
     const [displayText, setDisplayText] = useState('');
     const index = React.useRef(0);
+    const timerRef = React.useRef(null);
+
+    const type = React.useCallback(() => {
+        if (index.current < text.length) {
+            setDisplayText((prev) => prev + text.charAt(index.current));
+            index.current += 1;
+            timerRef.current = setTimeout(type, 200);
+        } else {
+            if (onComplete) onComplete();
+        }
+    }, [text, onComplete]);
 
     React.useEffect(() => {
-        index.current = 0;
         setDisplayText('');
-
-        const timer = setInterval(() => {
-            if (index.current < text.length) {
-                setDisplayText((prev) => prev + text.charAt(index.current));
-                index.current += 1;
-            } else {
-                clearInterval(timer);
-                if (onComplete) onComplete();
-            }
-        }, 100);
-
-        return () => clearInterval(timer);
-    }, [text, onComplete]);
+        index.current = 0;
+        if (text.length > 0) {
+            setDisplayText(text[0]);
+            index.current = 1;
+            timerRef.current = setTimeout(type, 200);
+        }
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, [text, type]);
 
     return (
         <>
@@ -269,8 +275,8 @@ export default function FlowerProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = "안녕! 만나서 반가워, 난 지수와 함께 지내며\n손톱물어뜯기를 곁에서 돌봐줄 따듯하고 포근한 존재야!";
-    const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
+    const fullText1 = " 안녕! 만나서 반가워, 난 지수와 함께 지내며\n손톱물어뜯기를 곁에서 돌봐줄 따듯하고 포근한 존재야!";
+    const fullText2 = " 대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
         if (router.isReady && queryName) {
