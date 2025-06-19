@@ -447,23 +447,31 @@ export const DividerLine = styled.div`
   height: 0px;
   left: calc(50% - 805px/2 - 2.5px);
   top: 80px;
-  border: 3px solid #C2BFBF;
+  border: 2px solid #C2BFBF;
 `;
 
 export const DateBox = styled.div`
   position: absolute;
   width: 305px;
   height: 43px;
-  top: 59px;
+  left: calc(50% - 305px/2 + 0.5px);
+  top: 4px;
   background: #DFDFDF;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 30px;
+  z-index: 9999;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding-top: 10px;
 `;
 
 export const DateText = styled.p`
+  position: absolute;
+  width: 127px;
+  height: 30px;
+  left: 696px;
+  top: 66px;
+  font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 23px;
@@ -474,17 +482,18 @@ export const DateText = styled.p`
 
 export const ChatTitle = styled.p`
   position: absolute;
-  width: 121px;
+  width: 300px;
   height: 30px;
-  left: 418px;
+  left: 266px;
   top: 172px;
-  font-family: 'Pretendard Variable';
+  font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 23px;
   line-height: 30px;
   text-align: center;
   color: #828282;
+  white-space: nowrap;
 `;
 
 export const WelcomeMessage = styled.p`
@@ -493,75 +502,11 @@ export const WelcomeMessage = styled.p`
   height: 25px;
   left: 418px;
   top: 215px;
-  font-family: 'Pretendard Variable';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 25px;
-  color: #828282;
-`;
-
-export const GradientOverlay = styled.div`
-  position: absolute;
-  left: -12.46%;
-  right: -7.74%;
-  top: 73.4%;
-  bottom: -3.72%;
-  background: linear-gradient(180deg, rgba(237, 241, 245, 0) 17.54%, #EDF1F5 85.96%);
-`;
-
-export const NewUIContainer = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
   font-family: 'Pretendard Variable', sans-serif;
-`;
-
-export const HorizontalLine = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 0px;
-  top: 120px;
-  border: 3px solid #C2BFBF;
-`;
-
-export const ContentBox = styled.div`
-  position: absolute;
-  top: 172px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-`;
-
-export const TitleText = styled.p`
+  font-style: normal;
   font-weight: 600;
-  font-size: 23px;
-  line-height: 30px;
-  color: #828282;
-  margin: 0;
-`;
-
-export const SubText = styled.p`
-  margin-top: 13px;
-  font-weight: 500;
   font-size: 16px;
   line-height: 25px;
   color: #828282;
+  white-space: nowrap;
 `;
-
-export const GradientBox = styled.div`
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 200px;
-  background: linear-gradient(180deg, rgba(237, 241, 245, 0) 17.54%, #EDF1F5 85.96%);
-  z-index: -1;
-`; 

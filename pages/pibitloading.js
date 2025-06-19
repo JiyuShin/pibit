@@ -126,28 +126,24 @@ const HeaderLine = styled.div`
   transition: opacity 1.5s ease-in-out;
 `;
 
-const BackArrow = () => (
-    <svg width="14" height="24" viewBox="0 0 14 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 12L12 22" stroke="#B5AECA" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
-
-const BackButtonContainer = styled.div`
+const BackButton = styled.div`
   position: absolute;
-  width: 52px;
-  height: 52px;
-  left: 34px;
-  top: 33px;
-  background: #FAF9FB;
-  border-radius: 6px;
+  top: 15px;
+  left: 20px;
+  width: 320px;
+  height: 80px;
+  background-image: url('/whiteb.png');
+  background-size: contain;
+  background-repeat: no-repeat;
   cursor: pointer;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: transform 0.2s ease-in-out, opacity 1.5s ease-in-out;
+  z-index: 10;
   opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
-  transition: opacity 1.5s ease-in-out;
   pointer-events: ${({ isExiting }) => (isExiting ? 'none' : 'auto')};
+
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
 
 const FooterText = styled.div`
@@ -274,11 +270,9 @@ export default function PibitLoadingPage() {
         <>
             <GlobalStyle />
             <Head>
-                <title>PIBIT - Loading Module</title>
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-                <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:opsz,wght@10..144,600..700&display=swap" rel="stylesheet" />
+                <title>PIBIT-로딩 중</title>
                 <link href="https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@700&display=swap" rel="stylesheet" />
+                <link rel="preload" href="/fonts/PretendardVariable.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
             </Head>
             <Root isExiting={isExiting}>
                 <BlobContainer>
@@ -288,23 +282,16 @@ export default function PibitLoadingPage() {
                 </BlobContainer>
                 <PibitLogo isExiting={isExiting}>PIBIT</PibitLogo>
                 <HeaderLine isExiting={isExiting} />
-                <BackButtonContainer isExiting={isExiting} onClick={() => router.back()}>
-                    <BackArrow />
-                </BackButtonContainer>
-
-                <CenterImageContainer isExiting={isExiting} />
-
-                <CenterText isExiting={isExiting}>
-                    {name}님의 '{habit}' 습관을 긴 시간동안 곁에서<br/>
-                    {name}님과 함께 관리해줄 맞춤화 피빗 제작을 시작할게요!
-                </CenterText>
-
-                <CustomizeButton isExiting={isExiting} onClick={handleNavigation}>
-                    피빗 커스터마이징
+                <BackButton onClick={() => router.back()} isExiting={isExiting} />
+                <CustomizeButton onClick={handleNavigation} isExiting={isExiting}>
+                    내 모듈 꾸미기
                 </CustomizeButton>
-                
+                <CenterImageContainer isExiting={isExiting}/>
+                <CenterText isExiting={isExiting}>
+                    {name}님에게 딱 맞는<br/>습관 케어 루틴을 찾고 있어요
+                </CenterText>
                 <FooterText isExiting={isExiting}>Journey to create habit-caretaker companion pibit</FooterText>
-                <CompanyText isExiting={isExiting}>PIBITCOMPANY @</CompanyText>
+                <CompanyText isExiting={isExiting}>© 2024 Pibit</CompanyText>
             </Root>
         </>
     );

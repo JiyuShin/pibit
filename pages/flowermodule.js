@@ -106,9 +106,11 @@ const FadeOverlay = styled.div`
 const Root = styled.div`
   position: relative;
   width: 1512px;
-  min-height: 982px;
+  height: 982px;
   margin: 0 auto;
   animation: ${fadeIn} 0.8s ease-in-out;
+  overflow: hidden;
+  text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
 const BgImage = styled.div`
@@ -180,7 +182,6 @@ const PibitLogo = styled.div`
   line-height: 102px;
   text-align: center;
   color: #FFFFFF;
-  text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
 const HeaderLine = styled.div`
@@ -201,28 +202,23 @@ const HeaderLine2 = styled.div`
   border: 1px solid #FFFFFF;
 `;
 
-const BackButton = styled.button`
+const BackButton = styled.div`
   position: absolute;
-  width: 52px;
-  height: 52px;
-  left: 35px;
-  top: 19px;
-  background: #FAF9FB;
-  border-radius: 6px;
-  border: none;
+  top: 15px;
+  left: 20px;
+  width: 320px;
+  height: 80px;
+  background-image: url('/whiteb.png');
+  background-size: contain;
+  background-repeat: no-repeat;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding:0;
+  transition: transform 0.2s ease-in-out;
+  z-index: 10;
+
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
-
-const BackArrow = () => (
-    <svg width="14" height="24" viewBox="0 0 14 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 12L12 22" stroke="#B5AECA" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
-
 
 const FooterText = styled.div`
   position: absolute;
@@ -501,6 +497,7 @@ export default function FlowerModulePage() {
     const [isExiting, setIsExiting] = useState(false);
     const [startTextAnimation, setStartTextAnimation] = useState(false);
     const [isImageAnimated, setIsImageAnimated] = useState(false);
+    const [showOverlay, setShowOverlay] = useState(false);
 
     useEffect(() => {
         setIsImageAnimated(true);
@@ -547,14 +544,16 @@ export default function FlowerModulePage() {
                 <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:opsz,wght@10..144,600&display=swap" rel="stylesheet" />
                 <link href="https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@700&display=swap" rel="stylesheet" />
             </Head>
+            <BgImage />
+            <FadeOverlay className={showOverlay ? 'fade-in' : ''} />
             <Root>
-                <BgImage />
                 <BackgroundGradient1 />
                 <BackgroundGradient2 />
                 <OrangeFlowerImage />
                 <YellowFlowerImage />
                 <HeaderLine />
-                <BackButton onClick={() => router.back()}><BackArrow/></BackButton>
+                <HeaderLine2 />
+                <BackButton onClick={() => router.back()} />
                 <FiveFlowerBgText className={startTextAnimation ? 'animated' : ''}>
                     {'Five Flower'.split('').map((char, index) => (
                         <span key={index} style={{ animationDelay: `${0.1 * (index + 1)}s` }}>
@@ -563,7 +562,6 @@ export default function FlowerModulePage() {
                     ))}
                 </FiveFlowerBgText>
                 <PibitLogo>PIBIT</PibitLogo>
-                <HeaderLine2/>
                 <FlowerImage className={isImageAnimated ? 'animated' : ''} />
                 <ModuleVersionText>Module 1st Ver.</ModuleVersionText>
                 <FiveFlowerTitle>Five Flower</FiveFlowerTitle>
@@ -595,7 +593,6 @@ export default function FlowerModulePage() {
                     </div>
                 </SensoryReliefText>
                 <FooterText>Journey to create habit-caretaker companion pibit</FooterText>
-                <FadeOverlay className={isExiting ? 'fade-in' : ''} />
             </Root>
         </>
     );

@@ -216,6 +216,10 @@ export default function ConversationView() {
   }, [name, router.isReady]);
 
   useEffect(() => {
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+
     socketRef.current = io({
       path: '/api/socket',
       transports: ['websocket'],
@@ -272,6 +276,8 @@ export default function ConversationView() {
     return () => {
       if (socketRef.current) socketRef.current.disconnect();
       if (nfcSocketRef.current) nfcSocketRef.current.disconnect();
+      document.documentElement.style.overflow = 'auto';
+      document.body.style.overflow = 'auto';
     };
   }, []);
 
@@ -347,171 +353,119 @@ export default function ConversationView() {
       <BackButton onClick={() => router.back()}>
         <img src="/whiteb.png" alt="뒤로 가기" />
       </BackButton>
-      
-      <AnimatePresence>
-        {!isChatStarted && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.5 } }}
-          >
-            <PreChatContainer show={true}>
-              <Ellipse26 />
-              <Ellipse29 />
-              <Ellipse31 />
-              <Ellipse32 />
-              <Ellipse33 />
-              <Ellipse28 />
-              <Greeting>
-                {greetingText.replace(/\\n/g, '\n')}
-              </Greeting>
-              <MainInstruction>
-                {mainInstructionText.split('\\n').map((line, index) => (
-                  <React.Fragment key={index}>
-                    {line}
-                    {index < mainInstructionText.split('\\n').length - 1 && <br />}
-                  </React.Fragment>
-                ))}
-              </MainInstruction>
-              <InfoBox1 />
-              <InfoBox2 />
-              <div style={{ position: 'absolute', left: '521px', top: '295px' }}>
-                <AnimatedContentImage
-                  src="/routine.png"
-                  alt="routine icon"
-                  width="167.9px"
-                />
-              </div>
-              <RoutineTitle>Routine Making</RoutineTitle>
-              <RoutineDescription>
-                생성하신 피빗 모듈의 구체적인 사용<br />
-                방법과 습관, 감정을 케어해줄 수 있는<br />
-                모듈 인터렉티브 스케줄을 제안해요
-              </RoutineDescription>
-              <div style={{ position: 'absolute', left: '780px', top: '295px', transform: 'none' }}>
-                <AnimatedContentImage
-                  src="/custom.png"
-                  alt="customize icon"
-                  width="120px"
-                />
-              </div>
-              <CustomizingTitle>Customizing</CustomizingTitle>
-              <CustomizingDescription>
-                모듈의 색상, 텍스쳐, 모듈과<br />
-                함께 사용 가능한 귀여운<br />
-                기능들을 선물하고 제안해요
-              </CustomizingDescription>
-              <NfcArea>
-                <AnimatedExampleImage src="/example1.png" alt="NFC 모듈 사용 예시" />
-              </NfcArea>
-              <NfcInstruction>
-                "모듈의 바닥면을 박스 안에 부착하여 대화를 시작해보세요!"
-              </NfcInstruction>
-            </PreChatContainer>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isChatStarted && (
-           <NewUIContainer
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.5, delay: 0.5 } }}
-            exit={{ opacity: 0 }}
-           >
-            <NewGradientBox />
-            <NewDateBox>
-              <NewDateText>{currentDate}</NewDateText>
-            </NewDateBox>
-            <HorizontalLine />
-            <div style={{ width: '100%', transform: 'translateX(-40px)', position: 'absolute', top: '100px' }}>
-              <AnimatePresence>
-                {showInitialMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <FirstTitleRow>
-                      <TitleText>{nfcData.name}</TitleText>
-                    </FirstTitleRow>
-                    <FirstMessageText>
-                      지수 안녕! 만나게 되서 너무 반가워!
-                    </FirstMessageText>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {showSecondMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <SecondTitleRow>
-                      <TitleText>{nfcData.name}</TitleText>
-                    </SecondTitleRow>
-                    <SecondMessageText>
-                      나와 대화를 통해 어떤것을 할 수 있는지 간략하게 설명할게!
-                    </SecondMessageText>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {showThirdMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <ThirdTitleRow>
-                      <TitleText>{nfcData.name}</TitleText>
-                    </ThirdTitleRow>
-                    <ThirdMessageText>
-                      난 앞으로 {nickname}의 일상 속 감정과 그 감정이 만들어낼 수 있는 미래의 습관 발현,
-                      <br />
-                      또는 현재 진행중인 습관들을 빠짐없이 캐치하고 맞춤화 케어를 통해 고쳐나가며,감정적으로 성장할 수 있도록
-                      <br />
-                      도와주는 작지만 강한 평생 동반자야! 이해했다면 "좋아" 를 전송해줘!
-                    </ThirdMessageText>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            <Messages>
-              {messages.slice(1).map((msg, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  style={{ alignSelf: msg.user !== 'PIBIT' ? 'flex-end' : 'flex-start' }}
-                >
-                  <Message me={msg.user !== 'PIBIT'}>
-                    {msg.text}
-                  </Message>
-                </motion.div>
+      {!isChatStarted && (
+        <>
+          <PreChatContainer show={true}>
+            <Ellipse26 />
+            <Ellipse29 />
+            <Ellipse31 />
+            <Ellipse32 />
+            <Ellipse33 />
+            <Ellipse28 />
+            <Greeting>
+              {greetingText.replace(/\n/g, '\n')}
+            </Greeting>
+            <MainInstruction>
+              {mainInstructionText.split('\\n').map((line, index) => (
+                <React.Fragment key={index}>
+                  {line}
+                  {index < mainInstructionText.split('\\n').length - 1 && <br />}
+                </React.Fragment>
               ))}
-              <div ref={messagesEndRef} />
-            </Messages>
-            <InputRow onSubmit={handleSend}>
-              <Input
-                type="text"
-                placeholder="메시지 보내기"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
+            </MainInstruction>
+            <InfoBox1 />
+            <InfoBox2 />
+            <div style={{ position: 'absolute', left: '521px', top: '295px' }}>
+              <AnimatedContentImage
+                src="/routine.png"
+                alt="routine icon"
+                width="167.9px"
               />
-              <SendButtonContainer type="submit">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 22V2M5 9L12 2L19 9" stroke="#B5AECA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </SendButtonContainer>
-            </InputRow>
-          </NewUIContainer>
-        )}
-      </AnimatePresence>
+            </div>
+            <RoutineTitle>Routine Making</RoutineTitle>
+            <RoutineDescription>
+              생성하신 피빗 모듈의 구체적인 사용<br />
+              방법과 습관, 감정을 케어해줄 수 있는<br />
+              모듈 인터렉티브 스케줄을 제안해요
+            </RoutineDescription>
+            <div style={{ position: 'absolute', left: '780px', top: '295px', transform: 'none' }}>
+              <AnimatedContentImage
+                src="/custom.png"
+                alt="customize icon"
+                width="120px"
+              />
+            </div>
+            <CustomizingTitle>Customizing</CustomizingTitle>
+            <CustomizingDescription>
+              모듈의 색상, 텍스쳐, 모듈과<br />
+              함께 사용 가능한 귀여운<br />
+              기능들을 선물하고 제안해요
+            </CustomizingDescription>
+            <NfcArea>
+              <AnimatedExampleImage src="/example1.png" alt="NFC 모듈 사용 예시" />
+            </NfcArea>
+            <NfcInstruction>
+              "모듈의 바닥면을 박스 안에 부착하여 대화를 시작해보세요!"
+            </NfcInstruction>
+          </PreChatContainer>
+        </>
+      )}
+      {isChatStarted && (
+        <>
+          {showInitialMessage && (
+            <FlowerImage />
+          )}
+          <DividerLine />
+          <div style={{ position: 'absolute', top: 59, left: '50%', transform: 'translateX(-50%)', width: 400, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/module/flower.png" alt="flower" style={{ position: 'absolute', left: -360, top: 'calc(50% + 110px)', transform: 'translateY(-50%)', width: 160, height: 160, zIndex: 2, objectFit: 'contain' }} />
+            <DateBox>
+              <DateText>{currentDate}</DateText>
+            </DateBox>
+          </div>
+          {/* 날짜 박스 위에 실제 접속 시의 년도와 날짜 표시 */}
+          <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-30px', fontFamily: 'Pretendard Variable, sans-serif', fontWeight: 600, fontSize: 18, color: '#828282', zIndex: 10000 }}>
+            {currentDate.replace(/\s*\([^)]*\)/, '')}
+          </div>
+          {showInitialMessage && (
+            <>
+              <ChatTitle style={{top: '172px', left: '266px'}}>Five Flower</ChatTitle>
+              <WelcomeMessage style={{top: '215px', left: '356px', width: '222px', height: '25px'}}>
+                지수 안녕! 만나게 되서 너무 반가워!
+              </WelcomeMessage>
+            </>
+          )}
+          {showSecondMessage && (
+            <>
+              <ChatTitle style={{top: '305px', left: '266px'}}>Five Flower</ChatTitle>
+              <WelcomeMessage style={{top: '348px', left: '356px', width: '368px', height: '25px'}}>
+                나와 대화를 통해 어떤것을 할 수 있는지 간략하게 설명할게!
+              </WelcomeMessage>
+            </>
+          )}
+          {showThirdMessage && (
+            <>
+              <ChatTitle style={{top: '437px', left: '266px'}}>Five Flower</ChatTitle>
+              <WelcomeMessage style={{top: '480px', left: '356px', width: '986px', height: '125px', whiteSpace: 'normal'}}>
+                난 앞으로 지수의 일상 속 감정과 그 감정이 만들어낼 수 있는 미래의 습관 발현, 또는 현재 진행중인 습관들을 빠짐없이 캐치하고<br />
+                맞춤화 케어를 통해 고쳐나가며,감정적으로 성장할 수 있도록 도와주는 작지만 강한 평생 동반자야! 이해했다면 "좋아" 를 전송해줘!
+              </WelcomeMessage>
+            </>
+          )}
+          <InputRow onSubmit={handleSend} style={{position: 'absolute', left: '50%', bottom: '40px', transform: 'translateX(-50%)', width: '80%'}}>
+            <Input
+              type="text"
+              placeholder="메시지 보내기"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <SendButtonContainer type="submit">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22V2M5 9L12 2L19 9" stroke="#B5AECA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </SendButtonContainer>
+          </InputRow>
+        </>
+      )}
     </Bg>
   );
 }

@@ -42,7 +42,7 @@ const BgImage = styled.div`
   height: 100vh;
   left: 0;
   top: 0;
-  background: url('/pbk.png');
+  background: url('/bk2.png');
   background-size: cover;
   background-position: center;
   z-index: -2;
