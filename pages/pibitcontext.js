@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -23,49 +23,64 @@ const BackButton = styled.div`
   }
 `;
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const blink = keyframes`
+  50% {
+    opacity: 0;
+  }
+`;
+
+const BlinkingCursor = styled.span`
+  animation: ${blink} 1s step-end infinite;
+`;
+
 // 습관 카드 데이터 (예시 5개, 나머지는 추가만 하면 됨)
 const CARD_WIDTH = 261;
 const CARD_GAP = 20;
 const habitCards = [
   // 첫째 줄
-  { text: "사람 많은 곳에 가기 전 괜히 긴장돼요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px)", top: 533 },
-  { text: "싫은 말이 있어도 그냥 참고 넘겨요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 533 },
-  { text: "실수할까봐 계획을 계속 다시 세워요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 533 },
-  { text: "조용히 반복되는 행동을 하면 편해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 533 },
-  { text: "손에 뭔가 없으면 허전해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px)`, top: 532 },
+  { text: "사람 많은 곳에 가기 전 괜히 긴장돼요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px)", top: 598 },
+  { text: "싫은 말이 있어도 그냥 참고 넘겨요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 598 },
+  { text: "실수할까봐 계획을 계속 다시 세워요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 598 },
+  { text: "조용히 반복되는 행동을 하면 편해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 598 },
+  { text: "손에 뭔가 없으면 허전해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px)`, top: 597 },
   // 둘째 줄
-  { text: "아무 생각 없이 다리를 떨어요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 615 },
-  { text: "혼자 있는게 더 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 615 },
-  { text: "긴장될 때 손이나 입술을 만져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 615 },
-  { text: "책상 물건이 딱 맞춰져 있어야 마음이 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 615 },
+  { text: "아무 생각 없이 다리를 떨어요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 680 },
+  { text: "혼자 있는게 더 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 680 },
+  { text: "긴장될 때 손이나 입술을 만져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 680 },
+  { text: "책상 물건이 딱 맞춰져 있어야 마음이 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 680 },
   // 셋째 줄
-  { text: "멍하니 있거나 시간을 잊고 있을 때가 많아요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px)", top: 700 },
-  { text: "물건이 잘 있는지 반복적으로 확인해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 700 },
-  { text: "내 감정을 말로 설명하기 어렵게 느껴져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 700 },
-  { text: "자리에 오래 앉아있는게 어려워요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 700 },
-  { text: "불편한 상황이면 자리를 피해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px)`, top: 700 },
+  { text: "멍하니 있거나 시간을 잊고 있을 때가 많아요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px)", top: 765 },
+  { text: "물건이 잘 있는지 반복적으로 확인해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 765 },
+  { text: "내 감정을 말로 설명하기 어렵게 느껴져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 765 },
+  { text: "자리에 오래 앉아있는게 어려워요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 765 },
+  { text: "불편한 상황이면 자리를 피해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px)`, top: 765 },
   // 넷째 줄(추가)
-  { text: "조용한 상황이 불편해서 뭐라도 틀어놔요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 140px)", top: 785 },
-  { text: "말은 안해도 속으로 오래 곱씹어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 785 },
-  { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 785 },
-  { text: "방이 어질러져 있으면 불안해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 785 },
+  { text: "조용한 상황이 불편해서 뭐라도 틀어놔요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 140px)", top: 850 },
+  { text: "말은 안해도 속으로 오래 곱씹어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 850 },
+  { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 850 },
+  { text: "방이 어질러져 있으면 불안해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 850 },
   // 다섯째 줄(추가)
-  { text: "메신저 답장을 여러 번 다시 읽어요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 3px)", top: 870 },
-  { text: "마음에 걸리는게 있어도 아무렇지 않게 넘겨요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 3px)`, top: 870 },
-  { text: "지저분한걸 보면 바로 치우고 싶어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 3px)`, top: 870 },
-  { text: "사람들과 함께 있어도 종종 다른 생각에 빠져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 3px)`, top: 870 },
-  { text: "지루하면 자꾸 말하거나 농담을 해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px + 3px)`, top: 870 },
+  { text: "메신저 답장을 여러 번 다시 읽어요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 3px)", top: 935 },
+  { text: "마음에 걸리는게 있어도 아무렇지 않게 넘겨요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 3px)`, top: 935 },
+  { text: "지저분한걸 보면 바로 치우고 싶어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 3px)`, top: 935 },
+  { text: "사람들과 함께 있어도 종종 다른 생각에 빠져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 3px)`, top: 935 },
+  { text: "지루하면 자꾸 말하거나 농담을 해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px + 3px)`, top: 935 },
   // 여섯째 줄(추가)
-  { text: "계획한것을 해내지 못하면 불안해요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 140px)", top: 955 },
-  { text: "머리카락을 아무 생각 없이 자주 만져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 955 },
-  { text: "사람들 속에 있어도 대화가 적어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 955 },
-  { text: "불안할 때 손이나 옷짓을 만져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 955 },
-  // 일곱째 줄(마지막 줄, 추가)
-  { text: "손을 자주 씻지 않으면 찝찝해요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 3px)", top: 1040 },
-  { text: "감정을 말하지 않고 글이나 물건으로 풀어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 3px)`, top: 1040 },
-  { text: "나만의 상상/혼잣말을 자주 해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 3px)`, top: 1040 },
-  { text: "불안할 때 손이나 옷깃을 만져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 3px)`, top: 1040 },
-  { text: "작은 소리나 변화에도 예민해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px + 3px)`, top: 1040 },
+  { text: "계획한것을 해내지 못하면 불안해요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 140px)", top: 1020 },
+  { text: "머리카락을 아무 생각 없이 자주 만져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 1020 },
+  { text: "사람들 속에 있어도 대화가 적어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 1020 },
+  { text: "불안할 때 손이나 옷짓을 만져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 1020 },
 ];
 
 const Root = styled.div`
@@ -75,6 +90,7 @@ const Root = styled.div`
   margin: 0 auto;
   background: linear-gradient(180deg, #D3E4FE 0%, #FFF7E0 100%);
   overflow-y: auto;
+  z-index: 2001;
 `;
 
 // 배경 이미지
@@ -179,6 +195,21 @@ const Logo = styled.div`
   color: #FFFFFF;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
   z-index: 2001;
+`;
+
+const InstructionText = styled.p`
+  position: absolute;
+  top: 490px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  font-family: 'Pretendard Variable', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  color: #666666;
+  z-index: 2002;
+  line-height: 1.6;
 `;
 
 const MainCard = styled.div`
@@ -377,9 +408,14 @@ const HabitCard = styled.div`
   transition: box-shadow 0.18s, border 0.18s;
   outline: none;
 
+  opacity: 0;
+  animation: ${props => props.visible ? fadeIn : 'none'} 0.5s ease-out forwards;
+  animation-delay: ${props => props.delay}s;
+
   &:hover {
     box-shadow: 3px 4px 20px rgba(255, 214, 77, 0.35), 3px 4px 18px rgba(0,0,0,0.35);
   }
+
   &.selected, &:focus-visible {
     border: 2.5px solid #FFD64D;
     box-shadow: 0 0 0 4px rgba(255, 214, 77, 0.18), 3px 4px 20px rgba(0,0,0,0.25);
@@ -388,28 +424,32 @@ const HabitCard = styled.div`
 
 const BottomButton = styled.button`
   position: absolute;
-  width: 252.56px;
-  height: 54.56px;
-  left: calc(50% - 252.56px/2 + 0.5px);
-  top: 1143px;
-  background: #FFF7E0;
-  border: 1px solid #FFD64D;
-  box-shadow: 6px 6px 20px 3px rgba(100, 61, 130, 0.25);
-  border-radius: 50px;
+  width: 288px;
+  height: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 1370px;
+  background: linear-gradient(180deg, #B994F9 0%, #A36BF6 100%);
+  box-shadow: 6px 6px 28px 5px rgba(100, 61, 130, 0.25);
+  border-radius: 30px;
+  border: none;
   font-family: 'Pretendard Variable', sans-serif;
-  font-weight: 600;
-  font-size: 23.76px;
-  color: #8B8B8B;
+  font-weight: 700;
+  font-size: 18px;
+  color: #FFFFFF;
   cursor: pointer;
-  z-index: 30;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-in-out;
+  z-index: 2001;
 
   &:disabled {
-    opacity: 0.5;
+    background: #E0E0E0;
+    color: #9E9E9E;
     cursor: not-allowed;
-    pointer-events: none;
+    box-shadow: none;
   }
 `;
+
+const Group = styled.div``;
 
 // 자유로운 곡선 움직임 keyframes (예시: x, y가 각각 sin/cos)
 const moveEllipse1 = keyframes`
@@ -606,8 +646,64 @@ const Rectangle10 = styled.div`
 `;
 
 export default function PibitContext() {
-  const [selectedIdxs, setSelectedIdxs] = useState([]);
+  const [selectedIndices, setSelectedIndices] = useState([]);
   const router = useRouter();
+
+  const line1 = "검사 결과는 무사히 도착했어요! 이제 하단 28가지의 일상적인 반복 행동 중";
+  const line2 = "사용자님의 일상에 해당된다고 생각하시는 카테고리를 5가지 선택해주세요!";
+  const [typedLine1, setTypedLine1] = useState('');
+  const [typedLine2, setTypedLine2] = useState('');
+  const typingSpeed = 50;
+  const [areCardsVisible, setAreCardsVisible] = useState(false);
+
+  useEffect(() => {
+    const timeouts = [];
+    
+    // Typing logic
+    const type = () => {
+      const fullText = line1 + line2;
+      for (let i = 0; i < fullText.length; i++) {
+        const timeout = setTimeout(() => {
+          if (i < line1.length) {
+            setTypedLine1(line1.slice(0, i + 1));
+          } else {
+            setTypedLine2(line2.slice(0, i - line1.length + 1));
+          }
+        }, i * typingSpeed);
+        timeouts.push(timeout);
+      }
+      
+      const cardAnimationTimeout = setTimeout(() => {
+        setAreCardsVisible(true);
+      }, fullText.length * typingSpeed + 200); // 텍스트 타이핑 후 0.2초 뒤 카드 표시
+      timeouts.push(cardAnimationTimeout);
+    };
+    
+    // Start after a short delay
+    const startTimeout = setTimeout(type, 500);
+    timeouts.push(startTimeout);
+
+    // Cleanup function to clear all timeouts
+    return () => {
+      timeouts.forEach(clearTimeout);
+    };
+  }, []);
+
+  const handleCardClick = (index) => {
+    setSelectedIndices(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(idx => idx !== index);
+      } else if (prev.length < 5) {
+        return [...prev, index];
+      } else {
+        return prev;
+      }
+    });
+  };
+
+  const rowTops = [...new Set(habitCards.map(card => card.top))].sort((a, b) => a - b);
+  const ROW_ANIMATION_DELAY = 0.2; // 각 줄의 애니메이션 지연 시간
+
   return (
     <>
       <Head>
@@ -629,6 +725,12 @@ export default function PibitContext() {
         <Finger2 />
         <Heart2 />
         <Logo>PIBIT</Logo>
+        <InstructionText>
+          {typedLine1}
+          {typedLine1.length === line1.length && <br />}
+          {typedLine2}
+          {(typedLine1.length + typedLine2.length) < (line1.length + line2.length) && <BlinkingCursor>_</BlinkingCursor>}
+        </InstructionText>
         <MainCard />
         <Ellipse4 style={{
           position: 'absolute',
@@ -650,36 +752,35 @@ export default function PibitContext() {
            <Ellipse12 />
            <TopTitle>pibit create helper</TopTitle>
         </CenterCircle>
-        {habitCards.map((card, i) => (
-          <HabitCard
-            key={i}
-            className={selectedIdxs.includes(i) ? 'selected' : ''}
-            style={
-              card.text === "책상 물건이 딱 맞춰져 있어야 마음이 편해요"
-                ? { left: card.left, top: card.top, fontSize: '13.145328px' }
-              : card.text === "마음에 걸리는게 있어도 아무렇지 않게 넘겨요" || card.text === "사람들과 함께 있어도 종종 다른 생각에 빠져요"
-                ? { left: card.left, top: card.top, fontSize: '13.482px' }
-                : { left: card.left, top: card.top }
-            }
-            onClick={() => {
-              setSelectedIdxs(prev => {
-                if (prev.includes(i)) {
-                  return prev.filter(idx => idx !== i);
-                } else if (prev.length < 5) {
-                  return [...prev, i];
-                } else {
-                  return prev;
+        <Group>
+          {habitCards.map((card, i) => {
+            const rowIndex = rowTops.indexOf(card.top);
+            const delay = rowIndex * ROW_ANIMATION_DELAY;
+
+            return (
+              <HabitCard
+                key={i}
+                className={selectedIndices.includes(i) ? 'selected' : ''}
+                style={
+                  card.text === "책상 물건이 딱 맞춰져 있어야 마음이 편해요"
+                 ? { left: card.left, top: card.top, fontSize: '13.145328px' }
+               : card.text === "마음에 걸리는게 있어도 아무렇지 않게 넘겨요" || card.text === "사람들과 함께 있어도 종종 다른 생각에 빠져요"
+                 ? { left: card.left, top: card.top, fontSize: '13.482px' }
+                    : { left: card.left, top: card.top }
                 }
-              });
-            }}
-          >
-            {card.text}
-          </HabitCard>
-        ))}
+                onClick={() => handleCardClick(i)}
+                visible={areCardsVisible}
+                delay={delay}
+              >
+                {card.text}
+              </HabitCard>
+            );
+          })}
+        </Group>
         <BottomButton
-          disabled={selectedIdxs.length !== 5}
+          disabled={selectedIndices.length !== 5}
           onMouseEnter={(e) => {
-            if (selectedIdxs.length === 5) {
+            if (selectedIndices.length === 5) {
               e.currentTarget.style.boxShadow = '6px 6px 28px 5px rgba(100, 61, 130, 0.35)';
               e.currentTarget.style.transform = 'translateY(-3px)';
             }
@@ -689,8 +790,8 @@ export default function PibitContext() {
             e.currentTarget.style.transform = 'translateY(0px)';
           }}
           onClick={() => {
-            if (selectedIdxs.length === 5) {
-              const selectedTexts = selectedIdxs.map(idx => habitCards[idx].text);
+            if (selectedIndices.length === 5) {
+              const selectedTexts = selectedIndices.map(idx => habitCards[idx].text);
               const params = new URLSearchParams();
               params.append('name', router.query.name || '');
               selectedTexts.forEach((text, i) => params.append(`habit${i+1}`, text));
