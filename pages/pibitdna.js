@@ -23,29 +23,27 @@ const InitialTextsContainer = styled.div`
   top: 0;
   left: 0;
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   animation: ${props => (props.visible ? fadeIn : fadeOut)} 0.5s ease-out forwards;
 `;
 
 const TitleText = styled.div`
-  position: absolute;
-  width: 1461px;
-  height: 174px;
-  left: 262px;
-  top: 29px;
   font-family: 'Pretendard Variable';
   font-style: normal;
   font-weight: 700;
   font-size: 55px;
   line-height: 70px;
   color: #B5B6FF;
+  text-align: center;
+  margin-bottom: 20px;
 `;
 
 const InstructionText = styled.div`
-  position: absolute;
   width: 498px;
   height: 60px;
-  left: 536px;
-  top: 116px;
   font-family: 'Pretendard Variable';
   font-style: normal;
   font-weight: 600;
@@ -53,6 +51,23 @@ const InstructionText = styled.div`
   line-height: 30px;
   text-align: center;
   color: #B5B6FF;
+`;
+
+const CompletionText = styled.div`
+  position: absolute;
+  width: 801px;
+  height: 90px;
+  left: 382px;
+  top: 663px;
+
+  font-family: 'Pretendard Variable';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 35px;
+  text-align: center;
+
+  color: #666464;
 `;
 
 const UIElementsContainer = styled.div`
@@ -154,8 +169,12 @@ const BackgroundContainer = styled.div`
 `;
 
 const ModelContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
+  z-index: 1;
 `;
 
 function DnaStickModel() {
@@ -353,11 +372,19 @@ function AnimatedModel({ onAnimationStart }) {
 export default function PibitDnaPage() {
   const [stickVisible, setStickVisible] = useState(false);
   const [initialTextsVisible, setInitialTextsVisible] = useState(true);
+  const [boxVisible, setBoxVisible] = useState(false);
   const [uiVisible, setUiVisible] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setInitialTextsVisible(false);
+      setBoxVisible(true);
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleAnimationStart = () => {
-    setInitialTextsVisible(false);
     setTimeout(() => {
       setStickVisible(true);
       setUiVisible(true);
@@ -374,7 +401,11 @@ export default function PibitDnaPage() {
             DNA 검사 키트가 도착했어요! 시작하시려면 키트를 눌러주세요!
           </InstructionText>
         </InitialTextsContainer>
-      <Canvas shadows camera={{ position: [0, 0, 35], fov: 50 }}>
+      <Canvas 
+        shadows 
+        camera={{ position: [0, 0, 35], fov: 50 }}
+        style={{ background: 'transparent' }}
+      >
         <SoftShadows size={25} samples={10} focus={0} />
         <Suspense fallback={null}>
           <ambientLight intensity={1.5} />
@@ -391,7 +422,7 @@ export default function PibitDnaPage() {
             shadow-camera-bottom={-20}
           />
           <group rotation={[Math.PI / 4, (2 * Math.PI) / 9, 0]} position={[0, 0, 0]} scale={1.00602}>
-            <AnimatedModel onAnimationStart={handleAnimationStart} />
+            {boxVisible && <AnimatedModel onAnimationStart={handleAnimationStart} />}
             {stickVisible && (
               <>
                 <group position={[-4.1, 5.5, -6]}>
@@ -408,6 +439,9 @@ export default function PibitDnaPage() {
       </Canvas>
       {uiVisible && (
         <UIElementsContainer>
+          <CompletionText>
+            검사를 모두 마치셨군요! pibit company로 사용자님의 키트를 전달해주세요
+          </CompletionText>
           <Button onClick={() => router.push('/pibitcontext')}>검사결과 전송하기</Button>
           <PIBITCompany>
             PIBITCOMPANY <span className="at-symbol">ⓐ</span>
