@@ -18,7 +18,6 @@
     "express": "^5.1.0",
     "framer-motion": "^12.17.0",
     "next": "14.2.3",
-    "nfc-pcsc": "^0.8.1",
     "open": "^10.1.2",
     "openai": "^4.98.0",
     "react": "18.2.0",
@@ -33,7 +32,8 @@
   },
   "devDependencies": {
     "babel-plugin-styled-components": "^2.1.4",
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "nfc-pcsc": "^0.8.1"
   },
   "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/main/packages/create-next-app).",
   "main": "index.js",
