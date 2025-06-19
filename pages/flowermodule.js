@@ -140,10 +140,10 @@ const BackgroundGradient2 = styled.div`
   position: absolute;
   width: 748.01px;
   height: 982px;
-  left: 794.94px;
-  top: -323.99px;
+  left: 854.94px;
+  top: -373.99px;
   background: linear-gradient(270deg, #DCD2E3 0%, rgba(255, 255, 255, 0) 100%);
-  transform: rotate(-52.69deg);
+  transform: rotate(-52.69deg) scale(1.15);
 `;
 
 const OrangeFlowerImage = styled.div`
@@ -492,11 +492,18 @@ const CompanionTypeDescription = styled.div`
 
 export default function FlowerModulePage() {
     const router = useRouter();
-    const { name = '지수', from } = router.query;
+    const { from } = router.query;
+    const [name, setName] = useState('');
     const [isExiting, setIsExiting] = useState(false);
     const [startTextAnimation, setStartTextAnimation] = useState(false);
     const [isImageAnimated, setIsImageAnimated] = useState(false);
     const [showOverlay, setShowOverlay] = useState(false);
+
+    useEffect(() => {
+        if (router.isReady) {
+            setName(router.query.name || '지수');
+        }
+    }, [router.isReady, router.query.name]);
 
     useEffect(() => {
         setIsImageAnimated(true);
@@ -531,8 +538,8 @@ export default function FlowerModulePage() {
         }
     }, [from]);
 
-    const line1 = 'Concentrated\u00A0finger\u00A0pressure';
-    const line2 = 'for\u00A0sensory\u00A0relief';
+    const line1 = 'Concentrated\\u00A0finger\\u00A0pressure';
+    const line2 = 'for\\u00A0sensory\\u00A0relief';
 
     return (
         <>
@@ -563,7 +570,10 @@ export default function FlowerModulePage() {
                 <FlowerImage className={isImageAnimated ? 'animated' : ''} />
                 <ModuleVersionText>Module 1st Ver.</ModuleVersionText>
                 <FiveFlowerTitle>Five Flower</FiveFlowerTitle>
-                <Description className={startTextAnimation ? 'animated' : ''}>{name}님께 'Five Flower Module'을 추천드려요!<br/>마음에 드신다면 맞춤화 피빗 생성을 시작할게요!</Description>
+                <Description className={startTextAnimation ? 'animated' : ''}>
+                    {name ? `${name}님께 'Five Flower Module'을 추천드려요!` : "잠시만 기다려주세요..."}<br/>
+                    마음에 드신다면 맞춤화 피빗 생성을 시작할게요!
+                </Description>
                 <CustomizeButton onClick={handleGenerateClick}>피빗 커스터마이징</CustomizeButton>
                 <GenerateButton onClick={handleProduceClick}>피빗 생성하기</GenerateButton>
                 <UserPreferenceCard />

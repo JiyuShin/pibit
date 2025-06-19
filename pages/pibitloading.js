@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import styled, { createGlobalStyle, keyframes } from 'styled-components';
+import styled, { createGlobalStyle, keyframes, css } from 'styled-components';
 import { useRouter } from 'next/router';
 
 const GlobalStyle = createGlobalStyle`
@@ -38,6 +38,15 @@ const rotate = keyframes`
   }
   to {
     transform: rotate(360deg);
+  }
+`;
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 `;
 
@@ -198,12 +207,14 @@ const CenterText = styled.div`
   right: 25.07%;
   top: calc(49.8% - 5px);
   bottom: 41.34%;
+
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
   line-height: 30px;
   text-align: center;
+
   color: #B5B5B5;
   z-index: 1;
   opacity: ${({ isExiting }) => (isExiting ? 0 : 1)};
@@ -235,9 +246,39 @@ const CustomizeButton = styled.button`
   pointer-events: ${({ isExiting }) => (isExiting ? 'none' : 'auto')};
 `;
 
+const Container = styled.div`
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5;
+  flex-direction: column;
+`;
+
+const Spinner = styled.div`
+  width: 150px;
+  height: 150px;
+  background-image: url('/load.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: ${rotate} 2s linear infinite;
+`;
+
+const LoadingText = styled.div`
+  margin-top: 40px;
+  font-family: 'Pretendard Variable';
+  font-size: 24px;
+  font-weight: 600;
+  color: #555;
+  animation: ${fadeIn} 1.5s ease-out;
+  text-align: center;
+  line-height: 1.6;
+`;
+
 export default function PibitLoadingPage() {
     const router = useRouter();
-    const { name = '지수', habit = '선택된 습관 없음' } = router.query;
+    const { name = '사용자', habit = '선택된 습관 없음' } = router.query;
     const [isExiting, setIsExiting] = useState(false);
 
     const handleNavigation = () => {
@@ -245,13 +286,8 @@ export default function PibitLoadingPage() {
     };
 
     useEffect(() => {
-        const exitTimer = setTimeout(() => {
-            handleNavigation();
-        }, 5000); // Start fade out after 5 seconds
-
-        return () => {
-            clearTimeout(exitTimer);
-        };
+        const timer = setTimeout(handleNavigation, 5000);
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
@@ -260,11 +296,9 @@ export default function PibitLoadingPage() {
                 router.push({ pathname: '/flowermodule', query: { name, habit } });
             }, 1500); // animation duration
 
-            return () => {
-                clearTimeout(navTimer);
-            };
+            return () => clearTimeout(navTimer);
         }
-    }, [isExiting, router]);
+    }, [isExiting, router, name, habit]);
 
     return (
         <>
@@ -288,7 +322,7 @@ export default function PibitLoadingPage() {
                 </CustomizeButton>
                 <CenterImageContainer isExiting={isExiting}/>
                 <CenterText isExiting={isExiting}>
-                    손톱 물어뜯기’ 습관을 긴 시간동안 곁에서 신지유님과<br />
+                    '{habit}' 습관을 긴 시간동안 곁에서 {name}님과<br />
                     함께 관리해줄 맞춤화 피빗 제작을 시작할게요!
                 </CenterText>
                 <FooterText isExiting={isExiting}>Journey to create habit-caretaker companion pibit</FooterText>
