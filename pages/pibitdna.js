@@ -91,29 +91,38 @@ function DnaStickModel() {
   const group = useRef();
   const { scene } = useGLTF('/dnastick.glb');
 
+  // No longer setting transparency on mount
   useEffect(() => {
+    // Optional: Log material names if needed for future debugging.
     scene.traverse((child) => {
       if (child.isMesh) {
-        child.material = child.material.clone();
-        child.material.transparent = true;
-        child.material.opacity = 0;
+        console.log(`DnaStickModel material found: '${child.material.name}'`);
       }
     });
   }, [scene]);
 
   useFrame((state, delta) => {
     if (!group.current) return;
-    const targetScale = 7.088; // 0.443 * 16
+
+    // Animate X-axis rotation
+    const targetRotationX = -Math.PI / 6; // -30 degrees
+    if (group.current.rotation.x > targetRotationX) {
+      group.current.rotation.x = Math.max(group.current.rotation.x - delta, targetRotationX);
+    }
+
+    // Animate Z-axis rotation for tilting left
+    const targetRotationZ = (12 * Math.PI) / 180; // 12 degrees
+    if (group.current.rotation.z < targetRotationZ) {
+      group.current.rotation.z = Math.min(group.current.rotation.z + delta, targetRotationZ);
+    }
+
+    // Animate scale
+    const targetScale = 5.26284; // 3.50856 * 1.5
     if (group.current.scale.x < targetScale) {
       const newScale = group.current.scale.x + targetScale * delta;
-      const finalScale = Math.min(newScale, targetScale);
-      group.current.scale.set(finalScale, finalScale, finalScale);
+      group.current.scale.set(Math.min(newScale, targetScale), Math.min(newScale, targetScale), Math.min(newScale, targetScale));
     }
-    group.current.traverse((child) => {
-      if (child.isMesh && child.material.opacity < 1) {
-        child.material.opacity += delta;
-      }
-    });
+    // Opacity animation is removed.
   });
 
   return (
@@ -188,7 +197,7 @@ export default function PibitDnaPage() {
               <Model />
             </Center>
             {stickVisible && (
-              <group position={[0, -0.2, -12]}>
+              <group position={[-5.6, 5.5, -4]}>
                 <DnaStickModel />
               </group>
             )}
