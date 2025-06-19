@@ -472,82 +472,86 @@ export default function PibitEmotion() {
   }, []);
 
   return (
-    <>
+    <div style={{ backgroundColor: '#F2F2F2' }}>
       <Head>
-        <title>PIBIT - 습관 유형 결과</title>
+        <title>PIBIT</title>
+        <meta name="description" content="PIBIT" />
+        <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:opsz,wght@10..144,600&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@700&display=swap" rel="stylesheet" />
       </Head>
-      <Root>
-        <FullImage src="/full.png" alt="full" />
-        <FullImageRight src="/full.png" alt="full-right" />
-        <TopLayer>
-          <TopImage />
-          <TopRect />
-          <TopRect43 />
-        </TopLayer>
-        <BgImage />
-        <Logo>PIBIT</Logo>
-        <Line1 />
-        <Rectangle10 />
-        <EmotionTypeText>감정유형 알아가기</EmotionTypeText>
-        <Company>PIBITCOMPANY ⓐ</Company>
-        <CompanyEng>Journey to create habit-caretaker companion pibit</CompanyEng>
-        {/* 타이틀, 설명, 결과, 카드, 버튼, 데코레이션 등 */}
-        <UserTitle>{name ? `${name}님은` : '님은'}</UserTitle>
-        <UserEtc>에 따라</UserEtc>
-        <MainTitle>불안민감형에 해당할 확률이 높아요!</MainTitle>
-        <SubDesc>불안 민감형은 작은 변화나 예기치 않은 상황에도 마음이 쉽게 긴장되고 조급해질 수 있어요. 그로 인해 손톱을 뜯거나 입술을 만지는 등의 습관이 무의식중에 나타나기도 해요. 자꾸 확인하거나, 대답을 기다리며 걱정이 많아지는 모습도 자주 보일 수 있어요. 이런 행동들은 마음을 진정시키려는 나름의 방식이지만, 나도 모르게 반복되기 쉬워요.</SubDesc>
-        <UserDesc>
-          {name ? `${name}님께 익숙할 수 있는 습관들이에요.` : '님께 익숙할 수 있는 습관들이에요.'}<br />
-          해당되는 항목이 있다면 선택해주시고, 없거나 더 떠오르는 게 있다면 자유롭게 입력해 주세요!
-        </UserDesc>
-        <Line2 />
-        <Ellipse19 />
-        <Rectangle45 />
-        <CardRow dynamicLeft={dynamicLeft}>
-          {cardItems.map((text, i) => (
-            <CardButton
-              key={i}
-              type="button"
-              selected={selectedIdx === i}
-              hovered={hoveredIdx === i}
-              onClick={() => handleCardSelection(i)}
-              onMouseEnter={() => setHoveredIdx(i)}
-              onMouseLeave={() => setHoveredIdx(null)}
-              ref={i === cardItems.length - 1 ? lastCardRef : undefined}
-            >
-              {text}
-            </CardButton>
-          ))}
-        </CardRow>
-        {/* 상단 5개 습관 멘트 카드 - flex로 균일하게 배치, 두 줄로 분리 */}
-        <HabitCardRow>
-          {habits.slice(0, 3).map((text, i) => (
-            <HabitCard key={i}>{text}</HabitCard>
-          ))}
-        </HabitCardRow>
-        <HabitCardRow style={{ top: '240px', left: '-15px' }}>
-          {habits.slice(3, 5).map((text, i) => (
-            <HabitCard key={i + 3}>{text}</HabitCard>
-          ))}
-        </HabitCardRow>
-        
-        <ExploreButton 
-          show={selectedIdx !== null} 
-          onClick={() => {
-            const selectedHabit = selectedIdx !== null ? cardItems[selectedIdx] : '';
-            router.push({ 
-              pathname: '/pibitloading', 
-              query: { name, habit: selectedHabit } 
-            })
-          }}
-        >
-          모듈 탐색하기
-        </ExploreButton>
-      </Root>
-    </>
+
+      <main>
+        <Root>
+          <FullImage src="/full.png" alt="full" />
+          <FullImageRight src="/full.png" alt="full-right" />
+          <TopLayer>
+            <TopImage />
+            <TopRect />
+            <TopRect43 />
+          </TopLayer>
+          <BgImage />
+          <Logo>PIBIT</Logo>
+          <Line1 />
+          <Rectangle10 />
+          <EmotionTypeText>감정유형 알아가기</EmotionTypeText>
+          <Company>PIBITCOMPANY ⓐ</Company>
+          <CompanyEng>Journey to create habit-caretaker companion pibit</CompanyEng>
+          {/* 타이틀, 설명, 결과, 카드, 버튼, 데코레이션 등 */}
+          <UserTitle>{name ? `${name}님은` : '님은'}</UserTitle>
+          <UserEtc>에 따라</UserEtc>
+          <MainTitle>불안민감형에 해당할 확률이 높아요!</MainTitle>
+          <SubDesc>불안 민감형은 작은 변화나 예기치 않은 상황에도 마음이 쉽게 긴장되고 조급해질 수 있어요. 그로 인해 손톱을 뜯거나 입술을 만지는 등의 습관이 무의식중에 나타나기도 해요. 자꾸 확인하거나, 대답을 기다리며 걱정이 많아지는 모습도 자주 보일 수 있어요. 이런 행동들은 마음을 진정시키려는 나름의 방식이지만, 나도 모르게 반복되기 쉬워요.</SubDesc>
+          <UserDesc>
+            {name ? `${name}님께 익숙할 수 있는 습관들이에요.` : '님께 익숙할 수 있는 습관들이에요.'}<br />
+            해당되는 항목이 있다면 선택해주시고, 없거나 더 떠오르는 게 있다면 자유롭게 입력해 주세요!
+          </UserDesc>
+          <Line2 />
+          <Ellipse19 />
+          <Rectangle45 />
+          <CardRow dynamicLeft={dynamicLeft}>
+            {cardItems.map((text, i) => (
+              <CardButton
+                key={i}
+                type="button"
+                selected={selectedIdx === i}
+                hovered={hoveredIdx === i}
+                onClick={() => handleCardSelection(i)}
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                ref={i === cardItems.length - 1 ? lastCardRef : undefined}
+              >
+                {text}
+              </CardButton>
+            ))}
+          </CardRow>
+          {/* 상단 5개 습관 멘트 카드 - flex로 균일하게 배치, 두 줄로 분리 */}
+          <HabitCardRow>
+            {habits.slice(0, 3).map((text, i) => (
+              <HabitCard key={i}>{text}</HabitCard>
+            ))}
+          </HabitCardRow>
+          <HabitCardRow style={{ top: '240px', left: '-15px' }}>
+            {habits.slice(3, 5).map((text, i) => (
+              <HabitCard key={i + 3}>{text}</HabitCard>
+            ))}
+          </HabitCardRow>
+          
+          <ExploreButton 
+            show={selectedIdx !== null} 
+            onClick={() => {
+              const selectedHabit = selectedIdx !== null ? cardItems[selectedIdx] : '';
+              router.push({ 
+                pathname: '/pibitloading', 
+                query: { name, habit: selectedHabit } 
+              })
+            }}
+          >
+            모듈 탐색하기
+          </ExploreButton>
+        </Root>
+      </main>
+    </div>
   );
 } 

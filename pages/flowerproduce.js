@@ -308,15 +308,15 @@ export default function FlowerProducePage() {
 
     return (
         <>
-            <GlobalStyle />
             <Head>
-                <title>PIBIT - 피빗 생성 완료</title>
+                <title>PIBIT - Flower Produce</title>
+                <link rel="icon" href="/favicon.ico" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-                <link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:opsz,wght@10..144,600&display=swap" rel="stylesheet" />
             </Head>
+            <GlobalStyle />
+            <BgImage />
             <Root>
-                <BgImage />
                 <LogoImage onClick={handleGoBack} />
                 <FlowerModelView onModelClick={handleStartConversation}/>
                 <Title>{name}님의 첫 맞춤형 피빗이 태어났어요!</Title>

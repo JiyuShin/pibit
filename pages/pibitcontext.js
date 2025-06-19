@@ -689,99 +689,103 @@ export default function PibitContext() {
   const ROW_ANIMATION_DELAY = 0.2; // 각 줄의 애니메이션 지연 시간
 
   return (
-    <>
+    <div style={{ backgroundColor: '#F2F2F2', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       <Head>
-        {/* Pretendard Google Fonts CDN */}
+        <title>PIBIT</title>
+        <meta name="description" content="PIBIT" />
+        <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@600&display=swap" rel="stylesheet" />
       </Head>
-      <Root>
-        <BackButton onClick={() => router.back()}>
-          <img src="/whiteb.png" alt="뒤로 가기" />
-        </BackButton>
-        <BgImage />
-        <Rectangle10 />
-        <Flower2 />
-        <Puffy2 />
-        <Wiggle2 />
-        <Pinch2 />
-        <Finger2 />
-        <Heart2 />
-        <Logo>PIBIT</Logo>
-        <InstructionText>
-          {typedText}
-          {(typedText.length < fullText.length) && <BlinkingCursor>_</BlinkingCursor>}
-        </InstructionText>
-        <MainCard />
-        <Ellipse4 style={{
-          position: 'absolute',
-          width: '283.3425px',
-          height: '283.3425px',
-          left: '612.29875px',
-          top: '172.32875px',
-          zIndex: 1
-        }} />
-        <CenterCircle>
-           <Ellipse3 />
-           <Ellipse8 />
-           <Ellipse5 />
-           <Ellipse6 />
-           <Ellipse9 />
-           <Ellipse10 />
-           <Ellipse11 />
-           <Ellipse7 />
-           <Ellipse12 />
-           <TopTitle>pibit create helper</TopTitle>
-        </CenterCircle>
-        <Group>
-          {habitCards.map((card, i) => {
-            const rowIndex = rowTops.indexOf(card.top);
-            const delay = rowIndex * ROW_ANIMATION_DELAY;
 
-            return (
-              <HabitCard
-                key={i}
-                className={selectedHabits.includes(i) ? 'selected' : ''}
-                style={
-                  card.text === "책상 물건이 딱 맞춰져 있어야 마음이 편해요"
-                 ? { left: card.left, top: card.top, fontSize: '13.145328px' }
-               : card.text === "마음에 걸리는게 있어도 아무렇지 않게 넘겨요" || card.text === "사람들과 함께 있어도 종종 다른 생각에 빠져요"
-                 ? { left: card.left, top: card.top, fontSize: '13.482px' }
-                    : { left: card.left, top: card.top }
-                }
-                onClick={() => handleCardClick(i)}
-                visible={showCards}
-                delay={delay}
-              >
-                {card.text}
-              </HabitCard>
-            );
-          })}
-        </Group>
-        <BottomButton
-          disabled={selectedHabits.length !== 5}
-          onMouseEnter={(e) => {
-            if (selectedHabits.length === 5) {
-              e.currentTarget.style.boxShadow = '6px 6px 28px 5px rgba(100, 61, 130, 0.35)';
-              e.currentTarget.style.transform = 'translateY(-3px)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = '6px 6px 20px 3px rgba(100, 61, 130, 0.25)';
-            e.currentTarget.style.transform = 'translateY(0px)';
-          }}
-          onClick={() => {
-            if (selectedHabits.length === 5) {
-              const selectedTexts = selectedHabits.map(idx => habitCards[idx].text);
-              const params = new URLSearchParams();
-              params.append('name', router.query.name || '');
-              selectedTexts.forEach((text, i) => params.append(`habit${i+1}`, text));
-              router.push(`/pibitemotion?${params.toString()}`);
-            }
-          }}
-        >습관 유형 탐색하기</BottomButton>
-      </Root>
-    </>
+      <main>
+        <Root>
+          <BackButton onClick={() => router.back()}>
+            <img src="/whiteb.png" alt="뒤로 가기" />
+          </BackButton>
+          <BgImage />
+          <Rectangle10 />
+          <Flower2 />
+          <Puffy2 />
+          <Wiggle2 />
+          <Pinch2 />
+          <Finger2 />
+          <Heart2 />
+          <Logo>PIBIT</Logo>
+          <InstructionText>
+            {typedText}
+            {(typedText.length < fullText.length) && <BlinkingCursor>_</BlinkingCursor>}
+          </InstructionText>
+          <MainCard />
+          <Ellipse4 style={{
+            position: 'absolute',
+            width: '283.3425px',
+            height: '283.3425px',
+            left: '612.29875px',
+            top: '172.32875px',
+            zIndex: 1
+          }} />
+          <CenterCircle>
+             <Ellipse3 />
+             <Ellipse8 />
+             <Ellipse5 />
+             <Ellipse6 />
+             <Ellipse9 />
+             <Ellipse10 />
+             <Ellipse11 />
+             <Ellipse7 />
+             <Ellipse12 />
+             <TopTitle>pibit create helper</TopTitle>
+          </CenterCircle>
+          <Group>
+            {habitCards.map((card, i) => {
+              const rowIndex = rowTops.indexOf(card.top);
+              const delay = rowIndex * ROW_ANIMATION_DELAY;
+
+              return (
+                <HabitCard
+                  key={i}
+                  className={selectedHabits.includes(i) ? 'selected' : ''}
+                  style={
+                    card.text === "책상 물건이 딱 맞춰져 있어야 마음이 편해요"
+                   ? { left: card.left, top: card.top, fontSize: '13.145328px' }
+                 : card.text === "마음에 걸리는게 있어도 아무렇지 않게 넘겨요" || card.text === "사람들과 함께 있어도 종종 다른 생각에 빠져요"
+                   ? { left: card.left, top: card.top, fontSize: '13.482px' }
+                      : { left: card.left, top: card.top }
+                  }
+                  onClick={() => handleCardClick(i)}
+                  visible={showCards}
+                  delay={delay}
+                >
+                  {card.text}
+                </HabitCard>
+              );
+            })}
+          </Group>
+          <BottomButton
+            disabled={selectedHabits.length !== 5}
+            onMouseEnter={(e) => {
+              if (selectedHabits.length === 5) {
+                e.currentTarget.style.boxShadow = '6px 6px 28px 5px rgba(100, 61, 130, 0.35)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '6px 6px 20px 3px rgba(100, 61, 130, 0.25)';
+              e.currentTarget.style.transform = 'translateY(0px)';
+            }}
+            onClick={() => {
+              if (selectedHabits.length === 5) {
+                const selectedTexts = selectedHabits.map(idx => habitCards[idx].text);
+                const params = new URLSearchParams();
+                params.append('name', router.query.name || '');
+                selectedTexts.forEach((text, i) => params.append(`habit${i+1}`, text));
+                router.push(`/pibitemotion?${params.toString()}`);
+              }
+            }}
+          >습관 유형 탐색하기</BottomButton>
+        </Root>
+      </main>
+    </div>
   );
 } 

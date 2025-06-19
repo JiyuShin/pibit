@@ -5,6 +5,8 @@ import { useRouter } from 'next/router';
 import { Canvas, useLoader, useFrame } from '@react-three/fiber';
 import { Text3D, PresentationControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
 const float = keyframes`
   0% { transform: translate(0, 0) rotate(0deg); }
@@ -632,14 +634,15 @@ function getRandomFurColor() {
 
 function generateNoiseTexture(size = 128) {
   const size2 = size * size;
-  const data = new Uint8Array(size2 * 3);
+  const data = new Uint8Array(size2 * 4);
   for (let i = 0; i < size2; i++) {
     const shade = Math.floor(Math.random() * 256);
-    data[i * 3] = shade;
-    data[i * 3 + 1] = shade;
-    data[i * 3 + 2] = shade;
+    data[i * 4] = shade;
+    data[i * 4 + 1] = shade;
+    data[i * 4 + 2] = shade;
+    data[i * 4 + 3] = 255;
   }
-  const texture = new THREE.DataTexture(data, size, size, THREE.RGBFormat);
+  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
   texture.needsUpdate = true;
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
@@ -652,7 +655,7 @@ function generateDisplacementTexture(size = 128) {
   for (let i = 0; i < size2; i++) {
     data[i] = Math.floor(Math.random() * 256);
   }
-  const texture = new THREE.DataTexture(data, size, size, THREE.LuminanceFormat);
+  const texture = new THREE.DataTexture(data, size, size, THREE.RedFormat);
   texture.needsUpdate = true;
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
@@ -660,6 +663,7 @@ function generateDisplacementTexture(size = 128) {
 }
 
 function CushionText({ isFur, furColor, onPointerOver, onPointerOut, currentColor, setCurrentColor }) {
+  const font = useLoader(THREE.FontLoader, '/fonts/Fredoka_Regular.json');
   const textRef = useRef();
   const materialRef = useRef();
   const noiseTexture = useMemo(() => generateNoiseTexture(128), []);
@@ -713,7 +717,7 @@ function CushionText({ isFur, furColor, onPointerOver, onPointerOut, currentColo
     <group onPointerOver={onPointerOver} onPointerOut={onPointerOut}>
       <Text3D
         ref={textRef}
-        font="/fonts/Fredoka_Regular.json"
+        font={font}
         size={8.78}
         height={4}
         curveSegments={64}
