@@ -356,74 +356,6 @@ const Rectangle45 = styled.div`
   z-index: 20;
 `;
 
-const InputWrapper = styled.div`
-  position: absolute;
-  width: 257px;
-  height: 51px;
-  left: calc(50% - 257px/2 + 0.5px);
-  top: 843px;
-  background: #FFF7E0;
-  border: 1px solid #FFD64D;
-  box-shadow: 2px 2px 8px 3px rgba(0, 0, 0, 0.1);
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  z-index: 40;
-  transform-origin: right;
-  overflow: hidden;
-  transition: transform 0.4s ease-out 0.2s;
-  transform: ${({ show }) => (show ? 'scaleX(1)' : 'scaleX(0)')};
-  pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
-`;
-
-const InputField = styled.input`
-  flex: 1;
-  height: 100%;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
-  font-size: 20px;
-  font-weight: 500;
-  color: #707070;
-  &::placeholder {
-    color: #D3D3D3;
-    opacity: 1;
-  }
-  padding: 0 24px;
-  white-space: nowrap;
-`;
-
-const InputCircle = styled.div`
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  left: 838px;
-  top: 848px;
-  background: #FFD64D;
-  border-radius: 50%;
-  z-index: 41;
-  transition: opacity 0.3s ease-in;
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
-`;
-
-const ArrowIcon = styled.div`
-  position: absolute;
-  width: 40.656px;
-  height: 30.492px;
-  left: 834px;
-  top: 860px;
-  transform: rotate(90deg);
-  z-index: 42;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.3s ease-in;
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
-`;
-
 const TopLayer = styled.div`
   position: absolute;
   width: 503px;
@@ -472,27 +404,6 @@ const TopRect43 = styled.div`
   z-index: 2147483647;
 `;
 
-const AddCardButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 51px;
-  height: 51px;
-  background: #FFD64D;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 0;
-  margin-left: 25px;
-  transition: opacity 0.3s ease-out;
-  opacity: ${({ fadingOut }) => (fadingOut ? 0 : 1)};
-
-  &:hover {
-    filter: brightness(0.95);
-  }
-`;
-
 const ExploreButton = styled.button`
   position: absolute;
   left: calc(50% - 257px/2 + 0.5px);
@@ -510,16 +421,8 @@ const ExploreButton = styled.button`
   box-shadow: 2px 2px 8px 3px rgba(0, 0, 0, 0.1);
   z-index: 40;
   opacity: ${({ show }) => (show ? 1 : 0)};
-  transition: opacity 0.5s ease-in;
   pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
 `;
-
-const PlusIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 5V19" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M5 12H19" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
 
 export default function PibitEmotion() {
   const router = useRouter();
@@ -548,57 +451,12 @@ export default function PibitEmotion() {
   ]);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-  const [isInputVisible, setIsInputVisible] = useState(false);
-  const [showInputUI, setShowInputUI] = useState(false);
-  const [showExploreButton, setShowExploreButton] = useState(false);
-  const [isButtonFadingOut, setIsButtonFadingOut] = useState(false);
   const lastCardRef = useRef(null);
   const [dynamicLeft, setDynamicLeft] = useState('210px');
 
-  const handleShowInput = () => {
-    setIsButtonFadingOut(true);
-    setTimeout(() => {
-      setIsInputVisible(true);
-    }, 300); // match fade out duration
-  };
-
   const handleCardSelection = (i) => {
-    setSelectedIdx(prev => (prev === i ? null : i));
+    setSelectedIdx(i);
   };
-
-  useEffect(() => {
-    if (!isInputVisible) {
-      setShowInputUI(false);
-      setShowExploreButton(false);
-      return;
-    }
-
-    const wasInputVisible = showInputUI;
-    const wasButtonVisible = showExploreButton;
-
-    if (selectedIdx !== null) {
-      const needsTransition = wasInputVisible && !wasButtonVisible;
-      if (needsTransition) {
-        setShowInputUI(false);
-        setTimeout(() => {
-          setShowExploreButton(true);
-        }, 400);
-      } else {
-        setShowExploreButton(true);
-      }
-    } else { // selectedIdx is null
-      const needsTransition = !wasInputVisible && wasButtonVisible;
-      if (needsTransition) {
-        setShowExploreButton(false);
-        setTimeout(() => {
-          setShowInputUI(true);
-        }, 500);
-      } else {
-        setShowInputUI(true);
-      }
-    }
-  }, [isInputVisible, selectedIdx]);
 
   useEffect(() => {
     if (cardItems.length === 5) {
@@ -608,14 +466,6 @@ export default function PibitEmotion() {
       setDynamicLeft(`calc(210px - ${width}px)`);
     }
   }, [cardItems.length, cardItems[cardItems.length - 1]]);
-
-  // 입력값을 4번째 항목 옆에 추가
-  const handleAddCard = () => {
-    const value = inputValue.trim();
-    if (!value) return;
-    setCardItems(prev => [...prev, value]);
-    setInputValue('');
-  };
 
   return (
     <>
@@ -668,11 +518,6 @@ export default function PibitEmotion() {
               {text}
             </CardButton>
           ))}
-          {!isInputVisible && (
-            <AddCardButton onClick={handleShowInput} fadingOut={isButtonFadingOut}>
-              <PlusIcon />
-            </AddCardButton>
-          )}
         </CardRow>
         {/* 상단 5개 습관 멘트 카드 - flex로 균일하게 배치, 두 줄로 분리 */}
         <HabitCardRow>
@@ -685,39 +530,19 @@ export default function PibitEmotion() {
             <HabitCard key={i + 3}>{text}</HabitCard>
           ))}
         </HabitCardRow>
-        {isInputVisible && (
-          <>
-            <InputWrapper show={showInputUI}>
-              <InputField
-                placeholder="입력해 주세요!"
-                value={inputValue}
-                onChange={e => setInputValue(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleAddCard();
-                }}
-              />
-            </InputWrapper>
-            <InputCircle show={showInputUI} />
-            <ArrowIcon show={showInputUI} onClick={handleAddCard} style={{ cursor: 'pointer' }}>
-              <svg width="40.656" height="30.492" viewBox="0 0 40.656 30.492" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 3V18" stroke="#FFF7E0" strokeWidth="2" strokeLinecap="round" />
-                <path d="M7 10L14 3L21 10" stroke="#FFF7E0" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </ArrowIcon>
-            <ExploreButton 
-              show={showExploreButton} 
-              onClick={() => {
-                const selectedHabit = selectedIdx !== null ? cardItems[selectedIdx] : '';
-                router.push({ 
-                  pathname: '/pibitloading', 
-                  query: { name, habit: selectedHabit } 
-                })
-              }}
-            >
-              모듈 탐색하기
-            </ExploreButton>
-          </>
-        )}
+        
+        <ExploreButton 
+          show={selectedIdx !== null} 
+          onClick={() => {
+            const selectedHabit = selectedIdx !== null ? cardItems[selectedIdx] : '';
+            router.push({ 
+              pathname: '/pibitloading', 
+              query: { name, habit: selectedHabit } 
+            })
+          }}
+        >
+          모듈 탐색하기
+        </ExploreButton>
       </Root>
     </>
   );

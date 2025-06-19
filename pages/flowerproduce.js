@@ -268,8 +268,7 @@ Typewriter.displayName = 'Typewriter';
 
 export default function FlowerProducePage() {
     const router = useRouter();
-    const { name: queryName, selectedHabits } = router.query;
-    const [name, setName] = useState("당신");
+    const { name = '지수', selectedHabits } = router.query;
     const [showRectangle1, setShowRectangle1] = useState(false);
     const [showBubbleText1, setShowBubbleText1] = useState(false);
     const [showRectangle2, setShowRectangle2] = useState(false);
@@ -277,12 +276,6 @@ export default function FlowerProducePage() {
 
     const fullText1 = " 안녕! 만나서 반가워, 난 지수와 함께 지내며\n손톱물어뜯기를 곁에서 돌봐줄 따듯하고 포근한 존재야!";
     const fullText2 = " 대화를 시작하고 싶다면 나를 클릭해줘 !";
-
-    useEffect(() => {
-        if (router.isReady && queryName) {
-            setName(queryName);
-        }
-    }, [router.isReady, queryName]);
 
     useEffect(() => {
         const timer1 = setTimeout(() => setShowRectangle1(true), 500);

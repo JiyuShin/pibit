@@ -247,14 +247,15 @@ export const MainInstruction = styled.p`
   position: absolute;
   width: 900px;
   left: calc(50% - 900px/2 + 3.5px);
-  top: 176px;
+  top: 131px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 30px;
   line-height: 1.5;
   text-align: center;
   color: #828282;
+  white-space: pre-wrap;
 `;
 
 export const InfoBox1 = styled.div`
@@ -290,7 +291,7 @@ export const RoutineTitle = styled.h3`
   position: absolute;
   width: 567px;
   left: calc(50% - 567px/2 - 76.5px);
-  top: calc(37.78% - 55px);
+  top: calc(37.78% - 80px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -304,7 +305,7 @@ export const RoutineDescription = styled.p`
   position: absolute;
   width: 210px;
   left: 528.5px;
-  top: calc(42.36% - 55px);
+  top: calc(42.36% - 70px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -501,14 +502,20 @@ export const WelcomeMessage = styled.p`
   width: 222px;
   height: 25px;
   left: 418px;
-  top: 215px;
+  top: 200px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 16px;
-  line-height: 25px;
+  font-size: 24px;
   color: #828282;
-  white-space: nowrap;
+  font-weight: 600;
+  width: 222px;
+  height: 25px;
+  font-family: 'Pretendard Variable', sans-serif;
+  font-style: normal;
+  line-height: 25px;
+  text-align: center;
+  white-space: pre-wrap;
 `;
 
 export const YearDateText = styled.p`

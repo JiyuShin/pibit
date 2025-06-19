@@ -426,17 +426,16 @@ const BottomButton = styled.button`
   position: absolute;
   width: 288px;
   height: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 1370px;
-  background: linear-gradient(180deg, #B994F9 0%, #A36BF6 100%);
-  box-shadow: 6px 6px 28px 5px rgba(100, 61, 130, 0.25);
+  left: calc(50% - 144px);
+  top: 1140px;
+  background: #FFF7E0;
+  border: 1px solid #FFD64D;
+  box-shadow: 6px 6px 28px 5px rgba(255, 214, 77, 0.35);
   border-radius: 30px;
-  border: none;
   font-family: 'Pretendard Variable', sans-serif;
   font-weight: 700;
   font-size: 18px;
-  color: #FFFFFF;
+  color: #8B8B8B;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   z-index: 2001;
@@ -650,13 +649,21 @@ export default function PibitContext() {
   const router = useRouter();
 
   const line1 = "검사 결과는 무사히 도착했어요! 이제 하단 28가지의 일상적인 반복 행동 중";
-  const line2 = "사용자님의 일상에 해당된다고 생각하시는 카테고리를 5가지 선택해주세요!";
+  const line2 = `${router.query.name || '사용자'}님의 일상에 해당된다고 생각하시는 카테고리를 5가지 선택해주세요!`;
   const [typedLine1, setTypedLine1] = useState('');
   const [typedLine2, setTypedLine2] = useState('');
   const typingSpeed = 50;
   const [areCardsVisible, setAreCardsVisible] = useState(false);
 
   useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
+    setTypedLine1('');
+    setTypedLine2('');
+    setAreCardsVisible(false);
+
     const timeouts = [];
     
     // Typing logic
@@ -687,7 +694,7 @@ export default function PibitContext() {
     return () => {
       timeouts.forEach(clearTimeout);
     };
-  }, []);
+  }, [router.isReady, router.query.name]);
 
   const handleCardClick = (index) => {
     setSelectedIndices(prev => {

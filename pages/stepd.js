@@ -328,9 +328,20 @@ const ArrowImage = styled.img`
 
 export default function StepdPage() {
     const router = useRouter();
+    const { name, habit } = router.query;
     const [isExiting, setIsExiting] = useState(false);
 
     const handleReturnClick = () => {
+        setIsExiting(true);
+        setTimeout(() => {
+            router.push({
+                pathname: '/flowermodule',
+                query: { name, habit, from: 'stepd' }
+            });
+        }, 800);
+    };
+
+    const handleCustomizeClick = () => {
         setIsExiting(true);
     };
 

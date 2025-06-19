@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import styled, { keyframes } from 'styled-components';
 import { useRouter } from 'next/router';
@@ -492,18 +492,26 @@ const CompanionTypeDescription = styled.div`
 
 export default function FlowerModulePage() {
     const router = useRouter();
-    const { from } = router.query;
-    const [name, setName] = useState('');
+    const { name = '지수', habit = '', from } = router.query;
     const [isExiting, setIsExiting] = useState(false);
     const [startTextAnimation, setStartTextAnimation] = useState(false);
     const [isImageAnimated, setIsImageAnimated] = useState(false);
     const [showOverlay, setShowOverlay] = useState(false);
+    const textRef = useRef(null);
 
     useEffect(() => {
-        if (router.isReady) {
-            setName(router.query.name || '지수');
+        window.scrollTo(0, 0);
+
+        if (from !== 'stepd') {
+            const timer = setTimeout(() => {
+                router.push({
+                    pathname: '/stepd',
+                    query: { name, habit }
+                });
+            }, 6000);
+            return () => clearTimeout(timer);
         }
-    }, [router.isReady, router.query.name]);
+    }, [from, name, habit, router]);
 
     useEffect(() => {
         setIsImageAnimated(true);
@@ -516,8 +524,7 @@ export default function FlowerModulePage() {
     }, []);
 
     const handleGenerateClick = () => {
-        if (isExiting) return;
-        setIsExiting(true);
+        setShowOverlay(true);
         setTimeout(() => {
             router.push('/stepd');
         }, 1500);
@@ -530,13 +537,6 @@ export default function FlowerModulePage() {
             router.push(`/flowerproduce?name=${name}`);
         }, 1500);
     };
-
-    useEffect(() => {
-        if (from !== 'stepd') {
-            const timer = setTimeout(handleGenerateClick, 7000);
-            return () => clearTimeout(timer);
-        }
-    }, [from]);
 
     const line1 = 'Concentrated finger pressure';
     const line2 = 'for sensory relief';
