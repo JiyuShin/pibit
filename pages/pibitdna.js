@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useAnimations, Center } from '@react-three/drei';
+import { OrbitControls, useGLTF, useAnimations, Center, SoftShadows } from '@react-three/drei';
 import styled from 'styled-components';
 import * as THREE from 'three';
 
@@ -31,6 +31,8 @@ function DnaStickModel() {
         child.material = child.material.clone();
         child.material.transparent = true;
         child.material.opacity = 0;
+        child.castShadow = true;
+        child.receiveShadow = true;
       }
     });
   }, [scene]);
@@ -88,6 +90,8 @@ function RecModel() {
           transparent: true,
           opacity: 0,
         });
+        child.castShadow = true;
+        child.receiveShadow = true;
       }
     });
   }, [scene]);
@@ -139,6 +143,15 @@ function Model() {
   const [isOpening, setIsOpening] = useState(false);
 
   useEffect(() => {
+    scene.traverse(child => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+  }, [scene]);
+
+  useEffect(() => {
     const allActions = Object.values(actions);
     if (allActions.length === 0) return;
 
@@ -184,10 +197,22 @@ export default function PibitDnaPage() {
   return (
     <ModelContainer>
       <BackgroundContainer />
-      <Canvas camera={{ position: [0, 0, 35], fov: 50 }}>
+      <Canvas shadows camera={{ position: [0, 0, 35], fov: 50 }}>
+        <SoftShadows size={25} samples={10} focus={0} />
         <Suspense fallback={null}>
-          <ambientLight intensity={2.5} />
-          <directionalLight position={[10, 10, 5]} intensity={2} />
+          <ambientLight intensity={1.5} />
+          <directionalLight
+            castShadow
+            position={[10, 15, 5]}
+            intensity={2.5}
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            shadow-camera-far={50}
+            shadow-camera-left={-20}
+            shadow-camera-right={20}
+            shadow-camera-top={20}
+            shadow-camera-bottom={-20}
+          />
           <group rotation={[Math.PI / 4, (2 * Math.PI) / 9, 0]} position={[0, 0, 0]} scale={1.00602}>
             <group position={[0, 4, 0]}>
               <Center>
