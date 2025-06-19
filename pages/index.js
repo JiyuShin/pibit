@@ -663,7 +663,7 @@ function generateDisplacementTexture(size = 128) {
 }
 
 function CushionText({ isFur, furColor, onPointerOver, onPointerOut, currentColor, setCurrentColor }) {
-  const font = useLoader(THREE.FontLoader, '/fonts/Fredoka_Regular.json');
+  const font = useLoader(FontLoader, '/fonts/Fredoka_Regular.json');
   const textRef = useRef();
   const materialRef = useRef();
   const noiseTexture = useMemo(() => generateNoiseTexture(128), []);
