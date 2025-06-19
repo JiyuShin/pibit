@@ -205,7 +205,9 @@ function DnaStickModel() {
       const newScale = group.current.scale.x + targetScale * delta;
       group.current.scale.set(Math.min(newScale, targetScale), Math.min(newScale, targetScale), Math.min(newScale, targetScale));
     }
-    // Opacity animation is removed.
+    
+    // Floating animation
+    group.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.2;
   });
 
   return (
@@ -264,6 +266,9 @@ function RecModel() {
       const newScale = group.current.scale.x + targetScale * delta;
       group.current.scale.set(Math.min(newScale, targetScale), Math.min(newScale, targetScale), Math.min(newScale, targetScale));
     }
+
+    // Floating animation
+    group.current.position.y = Math.sin(state.clock.elapsedTime * 1.5 + Math.PI) * 0.2;
   });
 
   return (
