@@ -538,8 +538,8 @@ export default function FlowerModulePage() {
         }
     }, [from]);
 
-    const line1 = 'Concentrated\\u00A0finger\\u00A0pressure';
-    const line2 = 'for\\u00A0sensory\\u00A0relief';
+    const line1 = 'Concentrated finger pressure';
+    const line2 = 'for sensory relief';
 
     return (
         <>

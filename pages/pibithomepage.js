@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { useRouter } from 'next/router';
+import { useAudio } from './_app.js';
 
 const TOTAL_DURATION = 9.3; // 3.5s sequence + 5s hold + 0.8s fade-out
 const FADE_DURATION = 0.8;
@@ -245,19 +246,22 @@ const CompanyLogoText = styled.div`
 export default function PibitHomePage() {
   const router = useRouter();
   const [isFadingOut, setIsFadingOut] = useState(false);
-
-  const handleNavigate = () => {
-    setIsFadingOut(true);
-  };
+  const { playAudio } = useAudio();
 
   useEffect(() => {
-    if (isFadingOut) {
-      const timer = setTimeout(() => {
-        router.push('/pibitintro');
-      }, 500); // Animation duration
-      return () => clearTimeout(timer);
-    }
-  }, [isFadingOut, router]);
+    // 페이지 로드 시 자동 재생 시도
+    playAudio();
+  }, [playAudio]);
+
+  const handleNavigate = () => {
+    // 사용자의 상호작용(클릭) 시 다시 한번 재생 시도
+    playAudio();
+
+    setIsFadingOut(true);
+    setTimeout(() => {
+      router.push('/pibitintro');
+    }, 500);
+  };
 
   return (
     <>
