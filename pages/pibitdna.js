@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useAnimations, Center, SoftShadows } from '@react-three/drei';
 import styled from 'styled-components';
 import * as THREE from 'three';
+import { useSpring, a } from '@react-spring/three';
 
 const BackgroundContainer = styled.div`
   position: absolute;
@@ -136,20 +137,26 @@ function RecModel() {
   );
 }
 
-function Model() {
-  const group = useRef();
+function AnimatedModel() {
   const { scene, animations } = useGLTF('/dnakit7.glb');
-  const { actions, mixer } = useAnimations(animations, group);
+  const { actions } = useAnimations(animations, scene);
   const [isOpening, setIsOpening] = useState(false);
+
+  // Position animation for the whole group
+  const [groupProps, setGroupApi] = useSpring(() => ({
+    from: { position: [0, -10, 0] },
+    to: { position: [0, 4, 0] },
+    config: { mass: 1, tension: 20, friction: 20 },
+  }));
 
   useEffect(() => {
     scene.traverse(child => {
       if (child.isMesh) {
+        child.material = child.material.clone();
         child.castShadow = true;
         child.receiveShadow = true;
         child.material.emissive = new THREE.Color('white');
         child.material.emissiveIntensity = 0.15;
-
         if (child.material.color) {
           const color = child.material.color;
           const hsl = {};
@@ -160,37 +167,36 @@ function Model() {
     });
   }, [scene]);
 
+  // Set up timer for box opening animation
   useEffect(() => {
-    const allActions = Object.values(actions);
-    if (allActions.length === 0) return;
-
-    allActions.forEach((action) => {
-      action.setLoop(THREE.LoopOnce);
-      action.clampWhenFinished = true;
-      action.timeScale = 1;
-    });
     const timer = setTimeout(() => {
-      allActions.forEach((action) => action.reset().play());
+      const allActions = Object.values(actions);
+      if (allActions.length === 0) return;
+
+      allActions.forEach((action) => {
+        action.setLoop(THREE.LoopOnce);
+        action.clampWhenFinished = true;
+        action.timeScale = 1;
+        action.reset().play();
+      });
       setIsOpening(true);
     }, 3000);
+    return () => clearTimeout(timer);
+  }, [actions]);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [actions, mixer]);
+  // Scaling Animation (after opening starts)
+  const [scaleProps] = useSpring(() => ({
+    scale: isOpening ? 0.4873 * 1.2 : 0.4873,
+    config: { mass: 1, tension: 170, friction: 26 }
+  }), [isOpening]);
 
-  useFrame((state, delta) => {
-    if (isOpening && group.current) {
-      const targetScale = 0.4873 * 1.2; // (0.443 * 1.1) * 1.2
-      if (group.current.scale.x < targetScale) {
-        const newScale = group.current.scale.x + 0.4873 * 0.2 * delta; // Animate over ~1 second
-        const finalScale = Math.min(newScale, targetScale);
-        group.current.scale.set(finalScale, finalScale, finalScale);
-      }
-    }
-  });
-
-  return <primitive object={scene} ref={group} scale={0.4873} />;
+  return (
+    <a.group position={groupProps.position}>
+      <Center>
+        <a.primitive object={scene} scale={scaleProps.scale} />
+      </Center>
+    </a.group>
+  );
 }
 
 export default function PibitDnaPage() {
@@ -223,11 +229,7 @@ export default function PibitDnaPage() {
             shadow-camera-bottom={-20}
           />
           <group rotation={[Math.PI / 4, (2 * Math.PI) / 9, 0]} position={[0, 0, 0]} scale={1.00602}>
-            <group position={[0, 4, 0]}>
-              <Center>
-                <Model />
-              </Center>
-            </group>
+            <AnimatedModel />
             {stickVisible && (
               <>
                 <group position={[-4.1, 5.5, -6]}>

@@ -4,6 +4,7 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  transpilePackages: ['react-spring', '@react-spring/three'],
 };
 
 export default nextConfig;
