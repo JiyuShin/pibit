@@ -233,7 +233,7 @@ export const Greeting = styled.p`
   position: absolute;
   width: 567px;
   left: calc(50% - 567px/2 + 3.5px);
-  top: calc(17.92% - 55px);
+  top: calc(17.92% - 75px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -291,7 +291,7 @@ export const RoutineTitle = styled.h3`
   position: absolute;
   width: 567px;
   left: calc(50% - 567px/2 - 76.5px);
-  top: calc(37.78% - 80px);
+  top: calc(37.78% - 64px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -319,7 +319,7 @@ export const CustomizingTitle = styled.h3`
   position: absolute;
   width: 567px;
   left: calc(50% - 567px/2 + 205.5px);
-  top: calc(37.68% - 55px);
+  top: calc(37.68% - 62px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -333,7 +333,7 @@ export const CustomizingDescription = styled.p`
   position: absolute;
   width: 200px;
   left: 810px;
-  top: calc(42.36% - 55px);
+  top: calc(42.36% - 68px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
