@@ -10,76 +10,10 @@ const BackgroundContainer = styled.div`
   height: 100%;
   top: 0;
   left: 0;
-  overflow: hidden;
+  background-image: url('/introbk.png');
+  background-size: cover;
+  background-position: center;
   z-index: -1;
-`;
-
-const EllipseBase = styled.div`
-  position: absolute;
-  border-radius: 50%;
-`;
-
-const Ellipse26 = styled(EllipseBase)`
-  width: 669px;
-  height: 669px;
-  left: -167px;
-  top: -159px;
-  background: linear-gradient(180deg, #CBDFFA 0%, #FFFFFF 100%);
-  filter: blur(65px);
-`;
-
-const Ellipse29 = styled(EllipseBase)`
-  width: 263px;
-  height: 263px;
-  left: 1163px;
-  top: 443px;
-  background: #DFDEF1;
-  filter: blur(60px);
-`;
-
-const Ellipse32 = styled(EllipseBase)`
-  width: 530px;
-  height: 530px;
-  left: 765px;
-  top: 717px;
-  background: #EDF2FC;
-  filter: blur(60px);
-`;
-
-const Ellipse31 = styled(EllipseBase)`
-  width: 384px;
-  height: 384px;
-  left: 48px;
-  top: 683px;
-  background: #E2D5E9;
-  filter: blur(65px);
-`;
-
-const Ellipse33 = styled(EllipseBase)`
-  width: 469px;
-  height: 469px;
-  left: -209px;
-  top: 598px;
-  background: #E2D5E9;
-  filter: blur(65px);
-`;
-
-const Ellipse28 = styled(EllipseBase)`
-  width: 480px;
-  height: 480px;
-  left: 1102px;
-  top: 587px;
-  background: linear-gradient(132.87deg, #F5B4E0 0%, #CBDFFA 104%);
-  filter: blur(100px);
-`;
-
-const Ellipse30 = styled(EllipseBase)`
-  width: 369px;
-  height: 369px;
-  left: 756px;
-  top: -206px;
-  background: #F6F7FC;
-  filter: blur(65px);
 `;
 
 const ModelContainer = styled.div`
@@ -91,18 +25,28 @@ function DnaStickModel() {
   const group = useRef();
   const { scene } = useGLTF('/dnastick.glb');
 
-  // No longer setting transparency on mount
   useEffect(() => {
-    // Optional: Log material names if needed for future debugging.
     scene.traverse((child) => {
       if (child.isMesh) {
-        console.log(`DnaStickModel material found: '${child.material.name}'`);
+        child.material = child.material.clone();
+        child.material.transparent = true;
+        child.material.opacity = 0;
       }
     });
   }, [scene]);
 
   useFrame((state, delta) => {
     if (!group.current) return;
+
+    let isFading = false;
+    scene.traverse(child => {
+        if (child.isMesh && child.material.opacity < 1) {
+            isFading = true;
+            child.material.opacity = Math.min(child.material.opacity + delta * 3, 1);
+        }
+    });
+
+    if (isFading) return;
 
     // Animate X-axis rotation
     const targetRotationX = -Math.PI / 6; // -30 degrees
@@ -132,6 +76,62 @@ function DnaStickModel() {
   );
 }
 
+function RecModel() {
+  const group = useRef();
+  const { scene } = useGLTF('/rec.glb');
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshStandardMaterial({
+          color: 'lightblue',
+          transparent: true,
+          opacity: 0,
+        });
+      }
+    });
+  }, [scene]);
+
+  useFrame((state, delta) => {
+    if (!group.current) return;
+
+    let isFading = false;
+    scene.traverse(child => {
+        if (child.isMesh && child.material.opacity < 1) {
+            isFading = true;
+            child.material.opacity = Math.min(child.material.opacity + delta * 3, 1);
+        }
+    });
+
+    if (isFading) return;
+
+    // Animate X-axis rotation
+    const targetRotationX = -Math.PI / 6; // -30 degrees
+    if (group.current.rotation.x > targetRotationX) {
+      group.current.rotation.x = Math.max(group.current.rotation.x - delta, targetRotationX);
+    }
+
+    // Animate Z-axis rotation for tilting left
+    const targetRotationZ = (5 * Math.PI) / 180; // 5 degrees
+    if (group.current.rotation.z < targetRotationZ) {
+      group.current.rotation.z = Math.min(group.current.rotation.z + delta, targetRotationZ);
+    }
+
+    // Animate scale
+    const targetScale = 1.578852; // (5.26284 / 3) * 0.9
+    if (group.current.scale.x < targetScale) {
+      const newScale = group.current.scale.x + targetScale * delta;
+      group.current.scale.set(Math.min(newScale, targetScale), Math.min(newScale, targetScale), Math.min(newScale, targetScale));
+    }
+  });
+
+  return (
+    <group ref={group} scale={0.001}>
+      <primitive object={scene} />
+    </group>
+  );
+}
+
 function Model() {
   const group = useRef();
   const { scene, animations } = useGLTF('/dnakit7.glb');
@@ -141,6 +141,7 @@ function Model() {
   useEffect(() => {
     const allActions = Object.values(actions);
     if (allActions.length === 0) return;
+
     allActions.forEach((action) => {
       action.setLoop(THREE.LoopOnce);
       action.clampWhenFinished = true;
@@ -150,21 +151,24 @@ function Model() {
       allActions.forEach((action) => action.reset().play());
       setIsOpening(true);
     }, 3000);
-    return () => clearTimeout(timer);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, [actions, mixer]);
 
   useFrame((state, delta) => {
     if (isOpening && group.current) {
-      const targetScale = 0.443 * 1.2; // 20% larger
+      const targetScale = 0.4873 * 1.2; // (0.443 * 1.1) * 1.2
       if (group.current.scale.x < targetScale) {
-        const newScale = group.current.scale.x + 0.443 * 0.2 * delta; // Animate over ~1 second
+        const newScale = group.current.scale.x + 0.4873 * 0.2 * delta; // Animate over ~1 second
         const finalScale = Math.min(newScale, targetScale);
         group.current.scale.set(finalScale, finalScale, finalScale);
       }
     }
   });
 
-  return <primitive object={scene} ref={group} scale={0.443} />;
+  return <primitive object={scene} ref={group} scale={0.4873} />;
 }
 
 export default function PibitDnaPage() {
@@ -173,33 +177,32 @@ export default function PibitDnaPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setStickVisible(true);
-    }, 4500);
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <ModelContainer>
-      <BackgroundContainer>
-        <Ellipse26 />
-        <Ellipse29 />
-        <Ellipse32 />
-        <Ellipse31 />
-        <Ellipse33 />
-        <Ellipse28 />
-        <Ellipse30 />
-      </BackgroundContainer>
+      <BackgroundContainer />
       <Canvas camera={{ position: [0, 0, 35], fov: 50 }}>
         <Suspense fallback={null}>
           <ambientLight intensity={2.5} />
           <directionalLight position={[10, 10, 5]} intensity={2} />
-          <group rotation={[Math.PI / 4, (2 * Math.PI) / 9, 0]} position={[4, 2, 0]} scale={0.729}>
-            <Center>
-              <Model />
-            </Center>
+          <group rotation={[Math.PI / 4, (2 * Math.PI) / 9, 0]} position={[0, 0, 0]} scale={1.00602}>
+            <group position={[0, 4, 0]}>
+              <Center>
+                <Model />
+              </Center>
+            </group>
             {stickVisible && (
-              <group position={[-5.6, 5.5, -4]}>
-                <DnaStickModel />
-              </group>
+              <>
+                <group position={[-5.6, 5.5, -4]}>
+                  <DnaStickModel />
+                </group>
+                <group position={[1.4, 7.5, 5]}>
+                  <RecModel />
+                </group>
+              </>
             )}
           </group>
           <OrbitControls />
