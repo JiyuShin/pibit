@@ -467,6 +467,10 @@ export default function PibitEmotion() {
     }
   }, [cardItems.length, cardItems[cardItems.length - 1]]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
       <Head>

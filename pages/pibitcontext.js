@@ -645,59 +645,36 @@ const Rectangle10 = styled.div`
 `;
 
 export default function PibitContext() {
-  const [selectedIndices, setSelectedIndices] = useState([]);
   const router = useRouter();
-
-  const line1 = "검사 결과는 무사히 도착했어요! 이제 하단 28가지의 일상적인 반복 행동 중";
-  const line2 = `${router.query.name || '사용자'}님의 일상에 해당된다고 생각하시는 카테고리를 5가지 선택해주세요!`;
-  const [typedLine1, setTypedLine1] = useState('');
-  const [typedLine2, setTypedLine2] = useState('');
-  const typingSpeed = 50;
-  const [areCardsVisible, setAreCardsVisible] = useState(false);
+  const { name } = router.query;
+  const [typedText, setTypedText] = useState('');
+  const [selectedHabits, setSelectedHabits] = useState([]);
+  const fullText = `${name}님이 평소에 가지고 있던 사소한 습관이나 생각들을 알려주세요!`;
+  const [showCards, setShowCards] = useState(false);
+  const [showInstruction, setShowInstruction] = useState(false);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (fullText) {
+      let i = 0;
+      const type = () => {
+        if (i < fullText.length) {
+          setTypedText(fullText.slice(0, i + 1));
+          i++;
+          setTimeout(type, 50);
+        } else {
+          setShowCards(true);
+        }
+      };
+      type();
     }
-
-    setTypedLine1('');
-    setTypedLine2('');
-    setAreCardsVisible(false);
-
-    const timeouts = [];
-    
-    // Typing logic
-    const type = () => {
-      const fullText = line1 + line2;
-      for (let i = 0; i < fullText.length; i++) {
-        const timeout = setTimeout(() => {
-          if (i < line1.length) {
-            setTypedLine1(line1.slice(0, i + 1));
-          } else {
-            setTypedLine2(line2.slice(0, i - line1.length + 1));
-          }
-        }, i * typingSpeed);
-        timeouts.push(timeout);
-      }
-      
-      const cardAnimationTimeout = setTimeout(() => {
-        setAreCardsVisible(true);
-      }, fullText.length * typingSpeed + 200); // 텍스트 타이핑 후 0.2초 뒤 카드 표시
-      timeouts.push(cardAnimationTimeout);
-    };
-    
-    // Start after a short delay
-    const startTimeout = setTimeout(type, 500);
-    timeouts.push(startTimeout);
-
-    // Cleanup function to clear all timeouts
-    return () => {
-      timeouts.forEach(clearTimeout);
-    };
-  }, [router.isReady, router.query.name]);
+  }, [fullText]);
 
   const handleCardClick = (index) => {
-    setSelectedIndices(prev => {
+    setSelectedHabits(prev => {
       if (prev.includes(index)) {
         return prev.filter(idx => idx !== index);
       } else if (prev.length < 5) {
@@ -733,10 +710,8 @@ export default function PibitContext() {
         <Heart2 />
         <Logo>PIBIT</Logo>
         <InstructionText>
-          {typedLine1}
-          {typedLine1.length === line1.length && <br />}
-          {typedLine2}
-          {(typedLine1.length + typedLine2.length) < (line1.length + line2.length) && <BlinkingCursor>_</BlinkingCursor>}
+          {typedText}
+          {(typedText.length < fullText.length) && <BlinkingCursor>_</BlinkingCursor>}
         </InstructionText>
         <MainCard />
         <Ellipse4 style={{
@@ -767,7 +742,7 @@ export default function PibitContext() {
             return (
               <HabitCard
                 key={i}
-                className={selectedIndices.includes(i) ? 'selected' : ''}
+                className={selectedHabits.includes(i) ? 'selected' : ''}
                 style={
                   card.text === "책상 물건이 딱 맞춰져 있어야 마음이 편해요"
                  ? { left: card.left, top: card.top, fontSize: '13.145328px' }
@@ -776,7 +751,7 @@ export default function PibitContext() {
                     : { left: card.left, top: card.top }
                 }
                 onClick={() => handleCardClick(i)}
-                visible={areCardsVisible}
+                visible={showCards}
                 delay={delay}
               >
                 {card.text}
@@ -785,9 +760,9 @@ export default function PibitContext() {
           })}
         </Group>
         <BottomButton
-          disabled={selectedIndices.length !== 5}
+          disabled={selectedHabits.length !== 5}
           onMouseEnter={(e) => {
-            if (selectedIndices.length === 5) {
+            if (selectedHabits.length === 5) {
               e.currentTarget.style.boxShadow = '6px 6px 28px 5px rgba(100, 61, 130, 0.35)';
               e.currentTarget.style.transform = 'translateY(-3px)';
             }
@@ -797,8 +772,8 @@ export default function PibitContext() {
             e.currentTarget.style.transform = 'translateY(0px)';
           }}
           onClick={() => {
-            if (selectedIndices.length === 5) {
-              const selectedTexts = selectedIndices.map(idx => habitCards[idx].text);
+            if (selectedHabits.length === 5) {
+              const selectedTexts = selectedHabits.map(idx => habitCards[idx].text);
               const params = new URLSearchParams();
               params.append('name', router.query.name || '');
               selectedTexts.forEach((text, i) => params.append(`habit${i+1}`, text));
