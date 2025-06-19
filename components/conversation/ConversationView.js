@@ -443,9 +443,15 @@ export default function ConversationView() {
           {showThirdMessage && (
             <>
               <ChatTitle style={{top: '437px', left: '266px'}}>Five Flower</ChatTitle>
-              <WelcomeMessage style={{top: '480px', left: '356px', width: '986px', height: '125px', whiteSpace: 'normal'}}>
-                난 앞으로 지수의 일상 속 감정과 그 감정이 만들어낼 수 있는 미래의 습관 발현, 또는 현재 진행중인 습관들을 빠짐없이 캐치하고<br />
-                맞춤화 케어를 통해 고쳐나가며,감정적으로 성장할 수 있도록 도와주는 작지만 강한 평생 동반자야! 이해했다면 "좋아" 를 전송해줘!
+              <WelcomeMessage style={{
+                top: '480px',
+                left: '353px',
+                textAlign: 'left',
+                whiteSpace: 'normal',
+                height: 'auto',
+                lineHeight: '1.5'
+              }}>
+                난 앞으로 지수의 일상 속 감정과 그 감정이 만들어낼 수 있는 미래의 습관 발현, 또는 현재 진행중인 습관들을 빠짐없이 캐치하고<br />맞춤화 케어를 통해 고쳐나가며,감정적으로 성장할 수 있도록 도와주는 작지만 강한 평생 동반자야! 이해했다면 "좋아" 를 전송해줘!
               </WelcomeMessage>
             </>
           )}

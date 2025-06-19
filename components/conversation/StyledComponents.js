@@ -250,7 +250,7 @@ export const MainInstruction = styled.p`
   top: 131px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 700;
   font-size: 30px;
   line-height: 1.5;
   text-align: center;
@@ -499,23 +499,18 @@ export const ChatTitle = styled.p`
 
 export const WelcomeMessage = styled.p`
   position: absolute;
-  width: 222px;
+  width: auto;
   height: 25px;
   left: 418px;
   top: 200px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 20px;
   color: #828282;
-  font-weight: 600;
-  width: 222px;
-  height: 25px;
-  font-family: 'Pretendard Variable', sans-serif;
-  font-style: normal;
   line-height: 25px;
   text-align: center;
-  white-space: pre-wrap;
+  white-space: nowrap;
 `;
 
 export const YearDateText = styled.p`
