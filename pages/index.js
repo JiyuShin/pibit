@@ -663,11 +663,13 @@ function generateDisplacementTexture(size = 128) {
 }
 
 function CushionText({ isFur, furColor, onPointerOver, onPointerOut, currentColor, setCurrentColor }) {
-  const font = useLoader(FontLoader, '/fonts/Fredoka_Regular.json');
   const textRef = useRef();
   const materialRef = useRef();
-  const noiseTexture = useMemo(() => generateNoiseTexture(128), []);
-  const displacementTexture = useMemo(() => generateDisplacementTexture(128), []);
+
+  const { displacementMap, noiseMap } = useMemo(() => ({
+    displacementMap: generateDisplacementTexture(128),
+    noiseMap: generateNoiseTexture(128)
+  }), []);
 
   // 컬러 그라데이션(lerp)
   useFrame(() => {
@@ -714,47 +716,35 @@ function CushionText({ isFur, furColor, onPointerOver, onPointerOut, currentColo
   }, [isFur]);
 
   return (
-    <group onPointerOver={onPointerOver} onPointerOut={onPointerOut}>
-      <Text3D
-        ref={textRef}
-        font={font}
-        size={8.78}
-        height={4}
-        curveSegments={64}
-        bevelEnabled
-        bevelThickness={1.2}
-        bevelSize={0.6}
-        bevelOffset={0}
-        bevelSegments={48}
-      >
-        PIBIT
-        <meshPhysicalMaterial
-          ref={materialRef}
-          attach="material"
-          color={currentColor}
-          roughness={isFur ? 0.95 : 0.2}
-          metalness={0.1}
-          bumpMap={noiseTexture}
-          bumpScale={isFur ? 0.7 : 0.1}
-          displacementMap={displacementTexture}
-          displacementScale={isFur ? 1.2 : 0.0}
-          sheen={isFur ? 2.5 : 0.5}
-          sheenRoughness={isFur ? 0.7 : 0.2}
-          clearcoat={isFur ? 0.1 : 0.8}
-          clearcoatRoughness={isFur ? 0.7 : 0.1}
-        />
-      </Text3D>
-      <pointLight position={[-5, 5, 5]} intensity={0.6} />
-      <pointLight position={[5, -5, 5]} intensity={0.5} />
-      <spotLight
-        position={[0, 10, 0]}
-        intensity={1}
-        angle={0.5}
-        penumbra={1}
-        decay={2}
+    <Text3D
+      ref={textRef}
+      font="/fonts/Fredoka_Regular.json"
+      size={8.78}
+      height={4}
+      curveSegments={32}
+      bevelEnabled
+      bevelThickness={1.2}
+      bevelSize={0.6}
+      bevelOffset={0}
+      bevelSegments={48}
+    >
+      PIBIT
+      <meshPhysicalMaterial
+        ref={materialRef}
+        attach="material"
+        color={currentColor}
+        roughness={isFur ? 0.95 : 0.2}
+        metalness={0.1}
+        bumpMap={noiseMap}
+        bumpScale={isFur ? 0.7 : 0.1}
+        displacementMap={displacementMap}
+        displacementScale={isFur ? 1.2 : 0.0}
+        sheen={isFur ? 2.5 : 0.5}
+        sheenRoughness={isFur ? 0.7 : 0.2}
+        clearcoat={isFur ? 0.1 : 0.8}
+        clearcoatRoughness={isFur ? 0.7 : 0.1}
       />
-      <ambientLight intensity={0.6} />
-    </group>
+    </Text3D>
   );
 }
 
