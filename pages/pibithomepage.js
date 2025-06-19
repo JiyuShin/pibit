@@ -1,5 +1,47 @@
-import styled, { createGlobalStyle } from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { useRouter } from 'next/router';
+
+const TOTAL_DURATION = 9.3; // 3.5s sequence + 5s hold + 0.8s fade-out
+const FADE_DURATION = 0.8;
+const LAST_ANIMATION_DELAY = 2.7;
+const SEQUENCE_END_TIME = LAST_ANIMATION_DELAY + FADE_DURATION; // 3.5s
+const HOLD_DURATION = 5.0;
+const FADE_OUT_START_TIME = SEQUENCE_END_TIME + HOLD_DURATION; // 8.5s
+
+const createLoopingFadeInOut = (delay, finalOpacity = 1) => keyframes`
+  0%, ${(delay / TOTAL_DURATION) * 100}% {
+    opacity: 0;
+  }
+
+  ${((delay + FADE_DURATION) / TOTAL_DURATION) * 100}% {
+    opacity: ${finalOpacity};
+  }
+
+  ${(FADE_OUT_START_TIME / TOTAL_DURATION) * 100}% {
+    opacity: ${finalOpacity};
+  }
+
+  100% {
+    opacity: 0;
+  }
+`;
+
+const anim_puffy2 = createLoopingFadeInOut(0, 0.2);
+const anim_flower2 = createLoopingFadeInOut(0.3, 0.6);
+const anim_wiggle1 = createLoopingFadeInOut(0.6, 0.7);
+const anim_heart = createLoopingFadeInOut(0.9, 1);
+const anim_pinch1 = createLoopingFadeInOut(1.2, 1);
+const anim_wiggle2 = createLoopingFadeInOut(1.5, 1);
+const anim_flower1 = createLoopingFadeInOut(1.8, 1);
+const anim_finger = createLoopingFadeInOut(2.1, 1);
+const anim_puffy = createLoopingFadeInOut(2.4, 1);
+const anim_pinch_right = createLoopingFadeInOut(2.7, 1);
+
+const fadeOutAnimation = keyframes`
+  from { opacity: 1; }
+  to { opacity: 0; }
+`;
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -22,6 +64,8 @@ const Root = styled.div`
   overflow: hidden;
   background: transparent;
   transform-origin: top left;
+  animation: ${props => props.isFadingOut ? fadeOutAnimation : 'none'} 0.5s ease-out forwards;
+
   &::before {
     content: '';
     position: absolute;
@@ -36,10 +80,48 @@ const Root = styled.div`
 
 const PngImg = styled.img`
   position: absolute;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
   pointer-events: none;
+`;
+
+const AnimatedPuffy = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_puffy} 9.3s ease-out 0s infinite;
+`;
+const AnimatedFinger = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_finger} 9.3s ease-out 0s infinite;
+`;
+const AnimatedPinch1 = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_pinch1} 9.3s ease-out 0s infinite;
+`;
+const AnimatedFlower2 = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_flower2} 9.3s ease-out 0s infinite;
+`;
+const AnimatedWiggle1 = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_wiggle1} 9.3s ease-out 0s infinite;
+`;
+const AnimatedFlower1 = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_flower1} 9.3s ease-out 0s infinite;
+`;
+const AnimatedHeart = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_heart} 9.3s ease-out 0s infinite;
+`;
+const AnimatedPuffy2 = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_puffy2} 9.3s ease-out 0s infinite;
+`;
+const AnimatedWiggle2 = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_wiggle2} 9.3s ease-out 0s infinite;
+`;
+const AnimatedPinchRight = styled(PngImg)`
+  opacity: 0;
+  animation: ${anim_pinch_right} 9.3s ease-out 0s infinite;
 `;
 
 const PibitLogo = styled.div`
@@ -50,7 +132,7 @@ const PibitLogo = styled.div`
   font-family: 'Pretendard', 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 700;
-  font-size: 352px; /* 370px * 0.95 */
+  font-size: 370px; /* 370px * 0.95 */
   line-height: 1;
   text-align: center;
   color: #fff;
@@ -79,7 +161,7 @@ const EngTitle = styled.div`
 const MainTitle = styled.div`
   position: absolute;
   left: 756px; /* 50% */
-  top: 126px; /* 76px + 50px */
+  top: 81px; /* 76px + 50px */
   transform: translate(-50%, 0);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
@@ -112,6 +194,7 @@ const MainButton = styled.button`
   cursor: pointer;
   z-index: 3;
   transition: background 0.2s;
+  
   &:hover {
     background: #ece6d9;
   }
@@ -159,29 +242,46 @@ const CompanyLogoText = styled.div`
   z-index: 20;
 `;
 
-export default function PibitHomepage() {
+export default function PibitHomePage() {
   const router = useRouter();
+  const [isFadingOut, setIsFadingOut] = useState(false);
+
+  const handleNavigate = () => {
+    setIsFadingOut(true);
+  };
+
+  useEffect(() => {
+    if (isFadingOut) {
+      const timer = setTimeout(() => {
+        router.push('/pibitintro');
+      }, 500); // Animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [isFadingOut, router]);
+
   return (
     <>
       <GlobalStyle />
-      <Root>
-        <PngImg src="/module/puffy.png" style={{left: '1140px', top: '520px', width: '431px', height: '317px', zIndex: 1, transform: 'rotate(-11deg)'}} alt="puffy" />
-        <PngImg src="/module/finger.png" style={{left: '900px', top: '475px', width: '605px', height: '413px', zIndex: 1, filter: 'brightness(1.15) drop-shadow(0px 10px 30px rgba(0,0,0,0.1))', transform: 'rotate(61deg)'}} alt="finger" />
-        <PngImg src="/module/pinch.png" style={{left: '-112px', top: '312px', width: '612px', height: '428px', zIndex: 10, transform: 'matrix(-1,0.02,0.02,1,0,0)'}} alt="pinch1" />
-        <PngImg src="/module/flower.png" style={{left: '570px', top: '610px', width: '225px', height: '163px', zIndex: 1, filter: 'drop-shadow(0px 9px 40px rgba(0,0,0,0.13))', transform: 'rotate(15deg)', opacity: 0.6}} alt="flower2" />
-        <PngImg src="/module/wiggle.png" style={{left: '310px', top: '586px', width: '509px', height: '347px', zIndex: 1, transform: 'rotate(143deg)', opacity: 0.7}} alt="wiggle1" />
-        <PngImg src="/module/flower.png" style={{left: '1180px', top: '260px', width: '699px', height: '476px', zIndex: 1, filter: 'drop-shadow(0px 9px 40px rgba(0,0,0,0.13))', transform: 'rotate(-14deg)'}} alt="flower1" />
-        <PngImg src="/module/heart.png" style={{left: '120px', top: '570px', width: '521px', height: '365px', zIndex: 11, transform: 'rotate(0.3deg)'}} alt="heart" />
-        <PngImg src="/module/puffy.png" style={{left: '650px', top: '590px', width: '151px', height: '105px', zIndex: 1, transform: 'rotate(175deg)', opacity: 0.2}} alt="puffy2" />
-        <PngImg src="/module/wiggle.png" style={{left: '-413px', top: '-268px', width: '1048px', height: '733px', zIndex: 0, filter: 'drop-shadow(0px 10px 40px rgba(0,0,0,0.15))', transform: 'rotate(22deg)'}} alt="wiggle2" />
-        <PngImg src="/module/pinch.png" style={{left: '650px', top: '760px', width: '339px', height: '242px', zIndex: 1, transform: 'rotate(-25deg)'}} alt="pinch-right" />
+      <Root isFadingOut={isFadingOut}>
+        <AnimatedPuffy src="/module/puffy.png" style={{left: '720px', top: '620px', width: '431px', height: '317px', zIndex: 1, transform: 'rotate(-11deg)'}} />
+        <AnimatedFinger src="/module/finger.png" style={{left: '900px', top: '475px', width: '605px', height: '413px', zIndex: 1, filter: 'brightness(1.15) drop-shadow(0px 10px 30px rgba(0,0,0,0.1))', transform: 'rotate(61deg)'}} />
+        <AnimatedPinch1 src="/module/pinch.png" style={{left: '-112px', top: '307px', width: '612px', height: '428px', zIndex: 10, transform: 'matrix(-1,0.02,0.02,1,0,0)'}} />
+        <AnimatedFlower2 src="/module/flower.png" style={{left: '570px', top: '610px', width: '225px', height: '163px', zIndex: 1, filter: 'drop-shadow(0px 9px 40px rgba(0,0,0,0.13))', transform: 'rotate(15deg)'}} />
+        <AnimatedWiggle1 src="/module/wiggle.png" style={{left: '310px', top: '586px', width: '509px', height: '347px', zIndex: 1, transform: 'rotate(143deg)' }} />
+        <AnimatedFlower1 src="/module/flower.png" style={{left: '1070px', top: '260px', width: '699px', height: '476px', zIndex: 1, filter: 'drop-shadow(0px 9px 40px rgba(0,0,0,0.13))', transform: 'rotate(-14deg)'}} />
+        <AnimatedHeart src="/module/heart.png" style={{left: '120px', top: '570px', width: '521px', height: '365px', zIndex: 11, transform: 'rotate(0.3deg)'}} />
+        <AnimatedPuffy2 src="/module/puffy.png" style={{left: '650px', top: '590px', width: '151px', height: '105px', zIndex: 1, transform: 'rotate(175deg)'}} />
+        <AnimatedWiggle2 src="/module/wiggle.png" style={{left: '-413px', top: '-208px', width: '1048px', height: '733px', zIndex: 0, filter: 'drop-shadow(0px 10px 40px rgba(0,0,0,0.15))', transform: 'rotate(22deg)'}} />
+        <AnimatedPinchRight src="/module/pinch.png" style={{left: '650px', top: '760px', width: '339px', height: '242px', zIndex: 1, transform: 'rotate(-25deg)'}} />
+        
         <PibitLogo>PIBIT</PibitLogo>
-        <MainTitle>나만의 습관개선 감각 동반자를 만나다. 'Pibit'에 오신 것을 환영해요!<br/>당신의 긴 삶의 여정을 함께 도와줄 동반자가 기다리고 있어요.</MainTitle>
+        <MainTitle>
+          나만의 습관개선 감각 동반자를 만나다. 'Pibit'에 오신 것을 환영해요!
+          <br />
+          당신의 긴 삶의 여정을 함께 도와줄 동반자가 기다리고 있어요.
+        </MainTitle>
         <EngTitle>Your Future Habit Carer</EngTitle>
-        <MainButton onClick={() => router.push('/pibitintro')}>새로운 동반자 만나기</MainButton>
-        <BottomDesc>
-          Welcome to your journey of creating your next future companion. A habit-caretaker companion pibit
-        </BottomDesc>
+        <MainButton onClick={handleNavigate}>새로운 동반자 만나기</MainButton>
         <BottomLeftDesc>Journey to create habit-caretaker companion pibit</BottomLeftDesc>
         <CompanyLogoText>PIBITCOMPANY ⓐ</CompanyLogoText>
       </Root>

@@ -205,7 +205,7 @@ export default function PibitDnaPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setStickVisible(true);
-    }, 3500);
+    }, 4400);
     return () => clearTimeout(timer);
   }, []);
 

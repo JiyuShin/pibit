@@ -1,6 +1,28 @@
-import styled, { createGlobalStyle } from 'styled-components';
-import React, { useState } from 'react';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+
+const fadeInAnimation = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const fadeOutAnimation = keyframes`
+  from { opacity: 1; }
+  to { opacity: 0; }
+`;
+
+const floatAnimation = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
+
+const floatAnimationUp = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(10px); }
+  100% { transform: translateY(0px); }
+`;
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -8,12 +30,26 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const Root = styled.div`
+const Container = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/introbk.png') center center / cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: ${props => props.isFadingOut ? fadeOutAnimation : fadeInAnimation} 0.5s ease-out forwards;
+`;
+
+const ContentWrapper = styled.div`
   position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
   background: url('/introbk.png') center center / cover no-repeat #FFFFFF;
+  transform: scale(${props => props.scale});
 `;
 
 const BgImage = styled.div`
@@ -62,6 +98,8 @@ const Flower = styled.div`
   background-size: contain;
   background-repeat: no-repeat;
   pointer-events: none;
+  animation: ${floatAnimationUp} 2.5s ease-in-out infinite;
+  animation-delay: 0.1s;
 `;
 
 const Puffy = styled.div`
@@ -75,6 +113,8 @@ const Puffy = styled.div`
   background-repeat: no-repeat;
   transform: rotate(26.64deg);
   pointer-events: none;
+  animation: ${floatAnimation} 2.5s ease-in-out infinite;
+  animation-delay: 0.6s;
 `;
 
 const WhiteRect = styled.div`
@@ -172,6 +212,8 @@ const Wiggle = styled.div`
   background-repeat: no-repeat;
   transform: rotate(19.68deg);
   pointer-events: none;
+  animation: ${floatAnimationUp} 2.5s ease-in-out infinite;
+  animation-delay: 0.3s;
 `;
 
 const Pinch = styled.div`
@@ -185,6 +227,8 @@ const Pinch = styled.div`
   background-repeat: no-repeat;
   transform: matrix(0.7, -0.72, -0.72, -0.7, 0, 0);
   pointer-events: none;
+  animation: ${floatAnimationUp} 2.5s ease-in-out infinite;
+  animation-delay: 0.8s;
 `;
 
 const Finger = styled.div`
@@ -200,6 +244,8 @@ const Finger = styled.div`
   filter: brightness(1.12);
   z-index: 3000;
   pointer-events: none;
+  animation: ${floatAnimation} 2.5s ease-in-out infinite;
+  animation-delay: 0.5s;
 `;
 
 const Heart = styled.div`
@@ -213,6 +259,8 @@ const Heart = styled.div`
   background-repeat: no-repeat;
   transform: rotate(21.31deg);
   pointer-events: none;
+  animation: ${floatAnimation} 2.5s ease-in-out infinite;
+  animation-delay: 0.4s;
 `;
 
 const Company = styled.div`
@@ -313,54 +361,68 @@ const StartButton = styled.button`
   }
 `;
 
-export default function PibitIntro() {
+const PibitIntro = () => {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const router = useRouter();
+  const [isFadingOut, setIsFadingOut] = useState(false);
+
+  const handleNavigate = () => {
+    setIsFadingOut(true);
+  };
+
+  useEffect(() => {
+    if (isFadingOut) {
+      const timer = setTimeout(() => {
+        router.push('/pibitdna');
+      }, 500); // Animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [isFadingOut, router]);
 
   return (
     <>
       <GlobalStyle />
-      <Root>
-        <BgImage />
-        <Flower />
-        <Puffy />
-        <PinchBetween />
-        <WhiteRect>
-          <WhiteRectTitle>
-            본격적으로 시작하기 전 원활한<br />
-            피빗 생성을 위해 이름과 나이를 입력해주세요!
-          </WhiteRectTitle>
-          <InputRow>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 0, width: 'calc(100% - 65px)', marginLeft: 23 }}>
-              <Label style={{ minWidth: 60 }}>이름</Label>
-              <InputRect value={name} onChange={e => setName(e.target.value)} />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 0, width: 'calc(100% - 65px)', marginLeft: 23 }}>
-              <Label style={{ minWidth: 60 }}>나이</Label>
-              <InputRect value={age} onChange={e => setAge(e.target.value)} />
-            </div>
-          </InputRow>
-        </WhiteRect>
-        <StartButton
-          onClick={() => {
-            router.push(`/pibitcontext?name=${encodeURIComponent(name)}&age=${encodeURIComponent(age)}`);
-          }}
-        >시작하기</StartButton>
-        <FindYourOwnPibit>FindYourOwnPibit</FindYourOwnPibit>
-        <Desc>
-          이곳은 당신의 감정과 습관을 조금 더 정확히 이해해보는 공간입니다. 알고 있었지만 놓치고 있던, 혹은 아직 눈치채지 못한 감정과 습관들을<br />
-          피빗과 함께 하나씩 들여다보는 과정을 통해 당신만의 습관개선 피빗을 형성해보세요!
-        </Desc>
-        <Wiggle />
-        <Pinch />
-        <Finger />
-        <Heart />
-        <Company>PIBITCOMPANY</Company>
-        <Company2>a</Company2>
-        <Ellipse />
-        <Journey>Journey to create habit-caretaker companion pibit</Journey>
-      </Root>
+      <Container isFadingOut={isFadingOut}>
+        <ContentWrapper>
+          <BgImage />
+          <Flower />
+          <Puffy />
+          <PinchBetween />
+          <WhiteRect>
+            <WhiteRectTitle>
+              본격적으로 시작하기 전 원활한<br />
+              피빗 생성을 위해 이름과 나이를 입력해주세요!
+            </WhiteRectTitle>
+            <InputRow>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 0, width: 'calc(100% - 65px)', marginLeft: 23 }}>
+                <Label style={{ minWidth: 60 }}>이름</Label>
+                <InputRect value={name} onChange={e => setName(e.target.value)} />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 0, width: 'calc(100% - 65px)', marginLeft: 23 }}>
+                <Label style={{ minWidth: 60 }}>나이</Label>
+                <InputRect value={age} onChange={e => setAge(e.target.value)} />
+              </div>
+            </InputRow>
+          </WhiteRect>
+          <StartButton onClick={handleNavigate}>시작하기</StartButton>
+          <FindYourOwnPibit>FindYourOwnPibit</FindYourOwnPibit>
+          <Desc>
+            이곳은 당신의 감정과 습관을 조금 더 정확히 이해해보는 공간입니다. 알고 있었지만 놓치고 있던, 혹은 아직 눈치채지 못한 감정과 습관들을<br />
+            피빗과 함께 하나씩 들여다보는 과정을 통해 당신만의 습관개선 피빗을 형성해보세요!
+          </Desc>
+          <Wiggle />
+          <Pinch />
+          <Finger />
+          <Heart />
+          <Company>PIBITCOMPANY</Company>
+          <Company2>a</Company2>
+          <Ellipse />
+          <Journey>Journey to create habit-caretaker companion pibit</Journey>
+        </ContentWrapper>
+      </Container>
     </>
   );
-}
+};
+
+export default PibitIntro;
