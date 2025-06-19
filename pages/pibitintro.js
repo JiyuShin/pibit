@@ -374,11 +374,14 @@ const PibitIntro = () => {
   useEffect(() => {
     if (isFadingOut) {
       const timer = setTimeout(() => {
-        router.push('/pibitdna');
+        router.push({
+          pathname: '/pibitdna',
+          query: { name: name },
+        });
       }, 500); // Animation duration
       return () => clearTimeout(timer);
     }
-  }, [isFadingOut, router]);
+  }, [isFadingOut, router, name]);
 
   return (
     <>

@@ -442,7 +442,10 @@ export default function PibitDnaPage() {
           <CompletionText>
             검사를 모두 마치셨군요! pibit company로 사용자님의 키트를 전달해주세요
           </CompletionText>
-          <Button onClick={() => router.push('/pibitcontext')}>검사결과 전송하기</Button>
+          <Button onClick={() => router.push({
+            pathname: '/pibitcontext',
+            query: { name: router.query.name }
+          })}>검사결과 전송하기</Button>
           <PIBITCompany>
             PIBITCOMPANY <span className="at-symbol">ⓐ</span>
           </PIBITCompany>
