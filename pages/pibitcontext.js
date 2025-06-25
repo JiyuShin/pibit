@@ -70,17 +70,6 @@ const habitCards = [
   { text: "말은 안해도 속으로 오래 곱씹어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 850 },
   { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 850 },
   { text: "방이 어질러져 있으면 불안해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 850 },
-  // 다섯째 줄(추가)
-  { text: "메신저 답장을 여러 번 다시 읽어요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 3px)", top: 935 },
-  { text: "마음에 걸리는게 있어도 아무렇지 않게 넘겨요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 3px)`, top: 935 },
-  { text: "지저분한걸 보면 바로 치우고 싶어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 3px)`, top: 935 },
-  { text: "사람들과 함께 있어도 종종 다른 생각에 빠져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 3px)`, top: 935 },
-  { text: "지루하면 자꾸 말하거나 농담을 해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px + 3px)`, top: 935 },
-  // 여섯째 줄(추가)
-  { text: "계획한것을 해내지 못하면 불안해요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 140px)", top: 1020 },
-  { text: "머리카락을 아무 생각 없이 자주 만져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 1020 },
-  { text: "사람들 속에 있어도 대화가 적어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 1020 },
-  { text: "불안할 때 손이나 옷짓을 만져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 1020 },
 ];
 
 const Root = styled.div`
@@ -210,6 +199,9 @@ const InstructionText = styled.p`
   color: #666666;
   z-index: 2002;
   line-height: 1.6;
+  white-space: pre-line;
+  transition: opacity 0.5s ease-in-out;
+  opacity: ${props => props.show ? 1 : 0};
 `;
 
 const MainCard = styled.div`
@@ -649,8 +641,13 @@ export default function PibitContext() {
   const { name } = router.query;
   const [typedText, setTypedText] = useState('');
   const [selectedHabits, setSelectedHabits] = useState([]);
-  const fullText = `${name}님이 평소에 가지고 있던 사소한 습관이나 생각들을 알려주세요!`;
+  const fullText1 = `${name}님의 Dna 검사 키트는 안전하게 잘 도착했어요!\n더욱 정확한 감정 유형을 파악하기 위해 18가지 카테고리를 기반으로 간단한 조사를 진행할게요!`;
+  const fullText2 = `${name}님에게 해당된다고 생각하는 사소한 습관이나 일상적인 생각 2가지를 선택해주세요!`;
+  const [currentText, setCurrentText] = useState(fullText1);
+  const [showText, setShowText] = useState(true);
+
   const [showCards, setShowCards] = useState(false);
+  const [showRemainingCards, setShowRemainingCards] = useState(false);
   const [showInstruction, setShowInstruction] = useState(false);
 
   useEffect(() => {
@@ -658,20 +655,36 @@ export default function PibitContext() {
   }, []);
 
   useEffect(() => {
-    if (fullText) {
-      let i = 0;
-      const type = () => {
-        if (i < fullText.length) {
-          setTypedText(fullText.slice(0, i + 1));
-          i++;
-          setTimeout(type, 50);
+    if (selectedHabits.length === 2 && !showRemainingCards) {
+      setShowRemainingCards(true);
+    }
+  }, [selectedHabits, showRemainingCards]);
+
+  useEffect(() => {
+    let i = 0;
+    setTypedText('');
+    setShowText(true);
+
+    const type = () => {
+      if (i < currentText.length) {
+        setTypedText(currentText.slice(0, i + 1));
+        i++;
+        setTimeout(type, 50);
+      } else {
+        if (currentText === fullText1) {
+          setTimeout(() => {
+            setShowText(false);
+            setTimeout(() => {
+              setCurrentText(fullText2);
+            }, 500);
+          }, 1000); 
         } else {
           setShowCards(true);
         }
-      };
-      type();
-    }
-  }, [fullText]);
+      }
+    };
+    type();
+  }, [currentText]);
 
   const handleCardClick = (index) => {
     setSelectedHabits(prev => {
@@ -688,10 +701,17 @@ export default function PibitContext() {
   const rowTops = [...new Set(habitCards.map(card => card.top))].sort((a, b) => a - b);
   const ROW_ANIMATION_DELAY = 0.2; // 각 줄의 애니메이션 지연 시간
 
+  const handleBack = () => {
+    router.push({
+      pathname: '/pibitdna',
+      query: { name: name }
+    });
+  };
+
   return (
     <div style={{ backgroundColor: '#F2F2F2', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       <Head>
-        <title>PIBIT</title>
+        <title>PIBIT-습관 선택</title>
         <meta name="description" content="PIBIT" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -712,9 +732,9 @@ export default function PibitContext() {
           <Finger2 />
           <Heart2 />
           <Logo>PIBIT</Logo>
-          <InstructionText>
+          <InstructionText show={showText}>
             {typedText}
-            {(typedText.length < fullText.length) && <BlinkingCursor>_</BlinkingCursor>}
+            {(typedText.length < currentText.length) && <BlinkingCursor>_</BlinkingCursor>}
           </InstructionText>
           <MainCard />
           <Ellipse4 style={{
@@ -740,7 +760,20 @@ export default function PibitContext() {
           <Group>
             {habitCards.map((card, i) => {
               const rowIndex = rowTops.indexOf(card.top);
-              const delay = rowIndex * ROW_ANIMATION_DELAY;
+              const isInitialGroup = card.top < 700;
+              
+              const isVisible = (showCards && isInitialGroup) || (showRemainingCards && !isInitialGroup);
+
+              let animationDelay = 0;
+              if (isVisible) {
+                if (isInitialGroup) {
+                  const initialRowIndex = rowTops.findIndex(top => top === card.top);
+                  animationDelay = initialRowIndex * ROW_ANIMATION_DELAY;
+                } else {
+                  const remainingRowIndex = rowTops.slice(2).findIndex(top => top === card.top);
+                  animationDelay = remainingRowIndex * ROW_ANIMATION_DELAY;
+                }
+              }
 
               return (
                 <HabitCard
@@ -754,8 +787,8 @@ export default function PibitContext() {
                       : { left: card.left, top: card.top }
                   }
                   onClick={() => handleCardClick(i)}
-                  visible={showCards}
-                  delay={delay}
+                  visible={isVisible}
+                  delay={animationDelay}
                 >
                   {card.text}
                 </HabitCard>
