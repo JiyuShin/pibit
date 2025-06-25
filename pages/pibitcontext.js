@@ -34,6 +34,17 @@ const fadeIn = keyframes`
   }
 `;
 
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+`;
+
 const blink = keyframes`
   50% {
     opacity: 0;
@@ -397,12 +408,13 @@ const HabitCard = styled.div`
   z-index: 20;
   border: 2px solid transparent;
   cursor: pointer;
-  transition: box-shadow 0.18s, border 0.18s;
+  transition: box-shadow 0.18s, border 0.18s, opacity 0.5s ease-in-out;
   outline: none;
-
-  opacity: 0;
-  animation: ${props => props.visible ? fadeIn : 'none'} 0.5s ease-out forwards;
+  opacity: ${props => props.visible ? 1 : 0};
+  transform: ${props => props.visible ? 'translateY(0)' : 'translateY(10px)'};
+  animation: ${props => props.isFadingOut ? fadeOut : (props.visible ? fadeIn : 'none')} 0.5s ease-out forwards;
   animation-delay: ${props => props.delay}s;
+  pointer-events: ${props => props.visible ? 'auto' : 'none'};
 
   &:hover {
     box-shadow: 3px 4px 20px rgba(255, 214, 77, 0.35), 3px 4px 18px rgba(0,0,0,0.35);
@@ -419,7 +431,7 @@ const BottomButton = styled.button`
   width: 288px;
   height: 60px;
   left: calc(50% - 144px);
-  top: 1140px;
+  top: 780px;
   background: #FFF7E0;
   border: 1px solid #FFD64D;
   box-shadow: 6px 6px 28px 5px rgba(255, 214, 77, 0.35);
@@ -429,8 +441,11 @@ const BottomButton = styled.button`
   font-size: 18px;
   color: #8B8B8B;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out, opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   z-index: 2001;
+  opacity: ${props => props.visible ? 1 : 0};
+  transform: ${props => props.visible ? 'translateY(0)' : 'translateY(20px)'};
+  pointer-events: ${props => props.visible ? 'auto' : 'none'};
 
   &:disabled {
     background: #E0E0E0;
@@ -638,29 +653,57 @@ const Rectangle10 = styled.div`
 
 export default function PibitContext() {
   const router = useRouter();
-  const { name } = router.query;
+  const { name: rawName } = router.query;
   const [typedText, setTypedText] = useState('');
   const [selectedHabits, setSelectedHabits] = useState([]);
-  const fullText1 = `${name}님의 Dna 검사 키트는 안전하게 잘 도착했어요!\n더욱 정확한 감정 유형을 파악하기 위해 18가지 카테고리를 기반으로 간단한 조사를 진행할게요!`;
-  const fullText2 = `${name}님에게 해당된다고 생각하는 사소한 습관이나 일상적인 생각 2가지를 선택해주세요!`;
-  const [currentText, setCurrentText] = useState(fullText1);
-  const [showText, setShowText] = useState(true);
 
-  const [showCards, setShowCards] = useState(false);
-  const [showRemainingCards, setShowRemainingCards] = useState(false);
-  const [showInstruction, setShowInstruction] = useState(false);
+  const [fullText1, setFullText1] = useState('');
+  const [fullText2, setFullText2] = useState('');
+  const [fullText3, setFullText3] = useState('');
+
+  const [currentText, setCurrentText] = useState('');
+  const [showText, setShowText] = useState(false);
+  const [step, setStep] = useState(0); // 0:init, 1:text1, 2:cards1, 3:text3, 4:cards2
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    if (selectedHabits.length === 2 && !showRemainingCards) {
-      setShowRemainingCards(true);
+    if (router.isReady) {
+      const name = rawName || '사용자';
+      const text1 = `${name}님의 Dna 검사 키트는 안전하게 잘 도착했어요!\n더욱 정확한 감정 유형을 파악하기 위해 18가지 카테고리를 기반으로 간단한 조사를 진행할게요!`;
+      const text2 = `${name}님에게 해당된다고 생각하는 사소한 습관이나 일상적인 생각 2가지를 선택해주세요!`;
+      const text3 = `흥미롭네요! 이제 남은 2가지를 선택하신 후, 습관 유형 탐색하기 버튼을 눌러 조사를 마무리해주세요!`;
+
+      setFullText1(text1);
+      setFullText2(text2);
+      setFullText3(text3);
+      
+      setSelectedHabits([]);
+      setIsFadingOut(false);
+      setStep(1);
+      setCurrentText(text1);
     }
-  }, [selectedHabits, showRemainingCards]);
+  }, [router.isReady, rawName]);
 
   useEffect(() => {
+    if (step === 2 && selectedHabits.length === 2) {
+      setIsFadingOut(true);
+      setShowText(false);
+
+      setTimeout(() => {
+        setStep(3);
+        setCurrentText(fullText3);
+        setIsFadingOut(false);
+      }, 500);
+    }
+  }, [selectedHabits.length, step, fullText3]);
+
+  useEffect(() => {
+    if (!currentText || step === 0) return;
+
     let i = 0;
     setTypedText('');
     setShowText(true);
@@ -677,9 +720,11 @@ export default function PibitContext() {
             setTimeout(() => {
               setCurrentText(fullText2);
             }, 500);
-          }, 1000); 
-        } else {
-          setShowCards(true);
+          }, 1000);
+        } else if (currentText === fullText2) {
+          setTimeout(() => setStep(2), 100);
+        } else if (currentText === fullText3) {
+          setTimeout(() => setStep(4), 100);
         }
       }
     };
@@ -687,10 +732,12 @@ export default function PibitContext() {
   }, [currentText]);
 
   const handleCardClick = (index) => {
+    if (step !== 2 && step !== 4) return;
+
     setSelectedHabits(prev => {
       if (prev.includes(index)) {
         return prev.filter(idx => idx !== index);
-      } else if (prev.length < 5) {
+      } else if (prev.length < 4) {
         return [...prev, index];
       } else {
         return prev;
@@ -699,12 +746,24 @@ export default function PibitContext() {
   };
 
   const rowTops = [...new Set(habitCards.map(card => card.top))].sort((a, b) => a - b);
-  const ROW_ANIMATION_DELAY = 0.2; // 각 줄의 애니메이션 지연 시간
+  const group1Cards = habitCards.filter(card => card.top < 700);
+  const group2Cards = habitCards.filter(card => card.top >= 700);
+
+  const remappedGroup2Cards = group2Cards.map((card, index) => {
+    const originalCardInGroup1 = group1Cards[index];
+    if (!originalCardInGroup1) return card;
+    return {
+      ...card,
+      top: originalCardInGroup1.top,
+      left: originalCardInGroup1.left,
+    };
+  });
+  const ROW_ANIMATION_DELAY = 0.2;
 
   const handleBack = () => {
     router.push({
       pathname: '/pibitdna',
-      query: { name: name }
+      query: { name: rawName }
     });
   };
 
@@ -758,37 +817,32 @@ export default function PibitContext() {
              <TopTitle>pibit create helper</TopTitle>
           </CenterCircle>
           <Group>
-            {habitCards.map((card, i) => {
-              const rowIndex = rowTops.indexOf(card.top);
-              const isInitialGroup = card.top < 700;
-              
-              const isVisible = (showCards && isInitialGroup) || (showRemainingCards && !isInitialGroup);
-
-              let animationDelay = 0;
-              if (isVisible) {
-                if (isInitialGroup) {
-                  const initialRowIndex = rowTops.findIndex(top => top === card.top);
-                  animationDelay = initialRowIndex * ROW_ANIMATION_DELAY;
-                } else {
-                  const remainingRowIndex = rowTops.slice(2).findIndex(top => top === card.top);
-                  animationDelay = remainingRowIndex * ROW_ANIMATION_DELAY;
-                }
-              }
-
+            {group1Cards.map((card, i) => {
+              const originalIndex = habitCards.findIndex(c => c.text === card.text);
               return (
                 <HabitCard
-                  key={i}
-                  className={selectedHabits.includes(i) ? 'selected' : ''}
-                  style={
-                    card.text === "책상 물건이 딱 맞춰져 있어야 마음이 편해요"
-                   ? { left: card.left, top: card.top, fontSize: '13.145328px' }
-                 : card.text === "마음에 걸리는게 있어도 아무렇지 않게 넘겨요" || card.text === "사람들과 함께 있어도 종종 다른 생각에 빠져요"
-                   ? { left: card.left, top: card.top, fontSize: '13.482px' }
-                      : { left: card.left, top: card.top }
-                  }
-                  onClick={() => handleCardClick(i)}
-                  visible={isVisible}
-                  delay={animationDelay}
+                  key={`g1-${i}`}
+                  className={selectedHabits.includes(originalIndex) ? 'selected' : ''}
+                  style={{ left: card.left, top: card.top }}
+                  onClick={() => handleCardClick(originalIndex)}
+                  visible={step === 2}
+                  isFadingOut={isFadingOut}
+                  delay={(i < 5 ? 0 : 1) * ROW_ANIMATION_DELAY}
+                >
+                  {card.text}
+                </HabitCard>
+              );
+            })}
+            {remappedGroup2Cards.map((card, i) => {
+              const originalIndex = habitCards.findIndex(c => c.text === card.text);
+              return (
+                <HabitCard
+                  key={`g2-${i}`}
+                  className={selectedHabits.includes(originalIndex) ? 'selected' : ''}
+                  style={{ left: card.left, top: card.top }}
+                  onClick={() => handleCardClick(originalIndex)}
+                  visible={step === 4}
+                  delay={(i < 5 ? 0 : 1) * ROW_ANIMATION_DELAY}
                 >
                   {card.text}
                 </HabitCard>
@@ -796,9 +850,10 @@ export default function PibitContext() {
             })}
           </Group>
           <BottomButton
-            disabled={selectedHabits.length !== 5}
+            visible={selectedHabits.length === 4}
+            disabled={selectedHabits.length !== 4}
             onMouseEnter={(e) => {
-              if (selectedHabits.length === 5) {
+              if (selectedHabits.length === 4) {
                 e.currentTarget.style.boxShadow = '6px 6px 28px 5px rgba(100, 61, 130, 0.35)';
                 e.currentTarget.style.transform = 'translateY(-3px)';
               }
@@ -808,10 +863,10 @@ export default function PibitContext() {
               e.currentTarget.style.transform = 'translateY(0px)';
             }}
             onClick={() => {
-              if (selectedHabits.length === 5) {
+              if (selectedHabits.length === 4) {
                 const selectedTexts = selectedHabits.map(idx => habitCards[idx].text);
                 const params = new URLSearchParams();
-                params.append('name', router.query.name || '');
+                params.append('name', rawName || '');
                 selectedTexts.forEach((text, i) => params.append(`habit${i+1}`, text));
                 router.push(`/pibitemotion?${params.toString()}`);
               }
