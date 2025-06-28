@@ -26,7 +26,7 @@ const BackButton = styled.div`
 const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -41,7 +41,7 @@ const fadeOut = keyframes`
   }
   to {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(15px);
   }
 `;
 
@@ -198,7 +198,7 @@ const Logo = styled.div`
 
 const InstructionText = styled.p`
   position: absolute;
-  top: 525px;
+  top: 537px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -232,7 +232,7 @@ const Ellipse4 = styled.div`
   width: 283.3425px;
   height: 283.3425px;
   left: 612.29875px;
-  top: 172.32875px;
+  top: 206.32875px;
   background: #E4C9EE;
   filter: blur(20px);
   border-radius: 50%;
@@ -244,7 +244,7 @@ const CenterCircle = styled.div`
   width: 257px;
   height: 257px;
   left: 625.97px;
-  top: 186px;
+  top: 220px;
   border-radius: 50%;
   overflow: hidden;
   background: transparent;
@@ -407,13 +407,21 @@ const HabitCard = styled.div`
   z-index: 20;
   border: 2px solid transparent;
   cursor: pointer;
-  transition: box-shadow 0.18s, border 0.18s, opacity 0.5s ease-in-out;
+  transition: box-shadow 0.18s, border 0.18s;
   outline: none;
-  opacity: ${props => props.visible ? 1 : 0};
-  transform: ${props => props.visible ? 'translateY(0)' : 'translateY(10px)'};
-  animation: ${props => props.isFadingOut ? fadeOut : (props.visible ? fadeIn : 'none')} 0.5s ease-out forwards;
+
+  opacity: 0;
+  transform: translateY(15px);
+  will-change: opacity, transform;
+
+  animation: ${props => {
+    if (props.isFadingOut) return fadeOut;
+    if (props.visible) return fadeIn;
+    return 'none';
+  }} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+
   animation-delay: ${props => props.delay}s;
-  pointer-events: ${props => props.visible ? 'auto' : 'none'};
+  pointer-events: ${props => (props.visible && !props.isFadingOut ? 'auto' : 'none')};
 
   &:hover {
     box-shadow: 3px 4px 20px rgba(255, 214, 77, 0.35), 3px 4px 18px rgba(0,0,0,0.35);
@@ -430,7 +438,7 @@ const BottomButton = styled.button`
   width: 230.4px;
   height: 48px;
   left: calc(50% - 115.2px);
-  top: 1010px;
+  top: 850px;
   background: #D4C2F2;
   border: 1px solid #C0AEE8;
   box-shadow: 0px 8px 32px 0px rgba(212, 194, 242, 0.37);
@@ -713,6 +721,9 @@ export default function PibitContext() {
         setStep(3);
         setCurrentText(fullText3);
       }, 500);
+    } else if (step === 4 && selectedHabits.length === 4) {
+      // 4단계에서 4개가 모두 선택되면 버튼이 나타나도록 상태 업데이트
+      // (실제 버튼 표시는 selectedHabits.length === 4 조건으로 이미 처리됨)
     }
   }, [selectedHabits.length, step, fullText3]);
 
@@ -840,7 +851,7 @@ export default function PibitContext() {
             width: '283.3425px',
             height: '283.3425px',
             left: '612.29875px',
-            top: '172.32875px',
+            top: '206.32875px',
             zIndex: 1
           }} />
           <CenterCircle>
@@ -866,7 +877,7 @@ export default function PibitContext() {
                   onClick={() => handleCardClick(originalIndex)}
                   visible={step === 2}
                   isFadingOut={isFadingOut}
-                  delay={(i < 5 ? 0 : 1) * ROW_ANIMATION_DELAY}
+                  delay={(i < 4 ? 0 : 1) * ROW_ANIMATION_DELAY}
                 >
                   {card.text}
                 </HabitCard>
@@ -881,7 +892,8 @@ export default function PibitContext() {
                   style={{ left: card.left, top: card.top }}
                   onClick={() => handleCardClick(originalIndex)}
                   visible={step === 4}
-                  delay={(i < 5 ? 0 : 1) * ROW_ANIMATION_DELAY}
+                  isFadingOut={isFadingOut}
+                  delay={(i < 4 ? 0 : 1) * ROW_ANIMATION_DELAY}
                 >
                   {card.text}
                 </HabitCard>
