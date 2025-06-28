@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useAnimations, Center, SoftShadows } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls, useGLTF, useAnimations, Center } from '@react-three/drei';
 import styled, { keyframes } from 'styled-components';
 import * as THREE from 'three';
 import { useSpring, a } from '@react-spring/three';
@@ -184,11 +184,18 @@ function DnaStickModel() {
   useEffect(() => {
     scene.traverse((child) => {
       if (child.isMesh) {
-        child.material = child.material.clone();
-        child.material.transparent = true;
-        child.material.opacity = 0;
+        const material = child.material.clone();
+        material.transparent = true;
+        material.opacity = 0;
         child.castShadow = true;
         child.receiveShadow = true;
+        
+        // A more reliable way: The stick is the part that does NOT have a texture map.
+        if (!material.map) {
+          material.isStick = true;
+          material.color.set('#9370DB');
+        }
+        child.material = material;
       }
     });
   }, [scene]);
@@ -198,9 +205,13 @@ function DnaStickModel() {
 
     let isFading = false;
     scene.traverse(child => {
-        if (child.isMesh && child.material.opacity < 1) {
-            isFading = true;
-            child.material.opacity = Math.min(child.material.opacity + delta * 3, 1);
+        if (child.isMesh) {
+            // The stick will be semi-transparent (0.3), others will be opaque (1).
+            const targetOpacity = child.material.isStick ? 0.3 : 1;
+            if (child.material.opacity < targetOpacity) {
+                isFading = true;
+                child.material.opacity = Math.min(child.material.opacity + delta * 3, targetOpacity);
+            }
         }
     });
 
@@ -298,8 +309,9 @@ function RecModel() {
 }
 
 function AnimatedModel({ onAnimationStart }) {
-  const { scene, animations } = useGLTF('/dnakit27.glb');
+  const { scene, animations } = useGLTF('/dnakit7.glb');
   const { actions } = useAnimations(animations, scene);
+  const { gl } = useThree();
   const [isOpening, setIsOpening] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -312,23 +324,46 @@ function AnimatedModel({ onAnimationStart }) {
   }));
 
   useEffect(() => {
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
     scene.traverse(child => {
       if (child.isMesh) {
+        child.material = child.material.clone();
         child.castShadow = true;
         child.receiveShadow = true;
-        
-        // Apply a new, standard material that correctly reacts to light
-        // while preserving the original color and texture map.
-        const oldMaterial = child.material;
-        child.material = new THREE.MeshStandardMaterial({
-          color: oldMaterial.color,
-          map: oldMaterial.map,
-          roughness: 0.5,
-          metalness: 0.1,
-        });
+
+        // Check if this is the cover (it has a texture map)
+        if (child.material.map) {
+          // Sharpen texture to prevent blurriness
+          child.material.map.anisotropy = maxAnisotropy;
+          child.material.map.needsUpdate = true;
+
+          // Make the graphic itself glow with controlled intensity
+          child.material.emissiveMap = child.material.map;
+          child.material.emissive = new THREE.Color('white');
+          child.material.emissiveIntensity = 0.7; // Moderate glow for the graphic
+
+          // Apply high saturation to the base color, which will be amplified by the emission
+          if (child.material.color) {
+            const color = child.material.color;
+            const hsl = {};
+            color.getHSL(hsl);
+            // High saturation, original brightness (controlled by emissive)
+            color.setHSL(hsl.h, Math.min(hsl.s * 5.0, 1), hsl.l);
+          }
+        } else {
+          // Keep other parts as they were
+          child.material.emissive = new THREE.Color('white');
+          child.material.emissiveIntensity = 0.15;
+          if (child.material.color) {
+            const color = child.material.color;
+            const hsl = {};
+            color.getHSL(hsl);
+            color.setHSL(hsl.h, Math.min(hsl.s * 1.3, 1), hsl.l);
+          }
+        }
       }
     });
-  }, [scene]);
+  }, [scene, gl]);
 
   const handleClick = () => {
     if (hasStarted) return; // Prevent multiple triggers
@@ -407,13 +442,12 @@ export default function PibitDnaPage() {
         camera={{ position: [0, 0, 35], fov: 50 }}
         style={{ background: 'transparent' }}
       >
-        <SoftShadows size={25} samples={10} focus={0} />
         <Suspense fallback={null}>
-          <ambientLight intensity={1.5} />
+          <ambientLight intensity={1.2} />
           <directionalLight
             castShadow
-            position={[10, 15, 5]}
-            intensity={2.5}
+            position={[15, 20, 10]}
+            intensity={3.5}
             shadow-mapSize-width={2048}
             shadow-mapSize-height={2048}
             shadow-camera-far={50}

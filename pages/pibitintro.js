@@ -152,31 +152,17 @@ const InputRow = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  margin-top: 42px;
-`;
-
-const Label = styled.div`
-  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 32px;
-  color: #939393;
-  margin-top: 10px;
-  margin-bottom: 8px;
-  padding-left: 0;
-  min-width: 60px;
-  margin-left: 0;
+  margin-top: 20px;
 `;
 
 const InputRect = styled.input`
-  width: 229px;
-  height: 54px;
+  width: 281px;
+  height: 63px;
   background: #E6E2EA;
-  border-radius: 12px;
+  border-radius: 14px;
   border: none;
-  font-size: 20px;
-  padding: 0 20px;
+  font-size: 24px;
+  padding: 0 24px;
   margin-bottom: 0;
   display: block;
   margin-left: 0;
@@ -252,7 +238,7 @@ const Heart = styled.div`
   position: absolute;
   width: 545.05px;
   height: 384.17px;
-  left: 112.61px;
+  left: 153.61px;
   top: 405px;
   background: url('/module/heart.png');
   background-size: contain;
@@ -350,8 +336,8 @@ const StartButton = styled.button`
   pointer-events: auto;
   z-index: 9999;
   position: fixed;
-  left: calc(50% + 10px);
-  bottom: 106px;
+  left: calc(50% + 5px);
+  bottom: 146px;
   transform: translateX(-50%);
 
   &:hover {
@@ -359,6 +345,33 @@ const StartButton = styled.button`
     border: 3px solid #B5AECA;
     color: #8B6AD9;
   }
+`;
+
+const BottomLeftDesc = styled.div`
+  position: absolute;
+  left: 25px;
+  bottom: 14px;
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 500;
+  font-size: 11.7px;
+  color: #B5AECA;
+  text-align: left;
+  letter-spacing: 0.01em;
+  z-index: 20;
+  text-transform: none;
+`;
+
+const CompanyLogoText = styled.div`
+  position: absolute;
+  right: 22px;
+  bottom: 14px;
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #B5AECA;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  z-index: 20;
 `;
 
 const PibitIntro = () => {
@@ -393,14 +406,16 @@ const PibitIntro = () => {
           <PinchBetween />
           <WhiteRect>
             <WhiteRectTitle>
-              본격적으로 시작하기 전 가장 맞춤화된<br />
-              피빗 생성을 위해 사용자의 이름을 알려주세요!
+              본격적으로 시작하기 전<br />
+              가장 맞춤화된 피빗 생성을 위해<br />
+              사용자의 이름을 알려주세요!
             </WhiteRectTitle>
             <InputRow>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 0, width: 'calc(100% - 65px)', marginLeft: 23 }}>
-                <Label style={{ minWidth: 60 }}>이름</Label>
-                <InputRect value={name} onChange={e => setName(e.target.value)} />
-              </div>
+              <InputRect 
+                value={name} 
+                onChange={e => setName(e.target.value)}
+                placeholder="이름"
+              />
             </InputRow>
           </WhiteRect>
           <StartButton onClick={handleNavigate}>시작하기</StartButton>
@@ -413,10 +428,8 @@ const PibitIntro = () => {
           <Pinch />
           <Finger />
           <Heart />
-          <Company>PIBITCOMPANY</Company>
-          <Company2>a</Company2>
-          <Ellipse />
-          <Journey>Journey to create habit-caretaker companion pibit</Journey>
+          <BottomLeftDesc>Journey to create habit-caretaker companion pibit</BottomLeftDesc>
+          <CompanyLogoText>PIBITCOMPANY ⓐ</CompanyLogoText>
         </ContentWrapper>
       </Container>
     </>
