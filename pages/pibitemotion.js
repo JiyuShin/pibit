@@ -21,9 +21,21 @@ const rotateRight = keyframes`
   }
 `;
 
+const moveGradient = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
+
 const PageContainer = styled.div`
   transition: opacity 0.5s ease-in-out;
-  opacity: ${({ isFadingIn }) => (isFadingIn ? 1 : 0)};
+  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -135,7 +147,7 @@ const MainTitle = styled.div`
   width: 1086px;
   height: 87px;
   left: calc(50% - 1086px/2);
-  top: 350px;
+  top: 395px;
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -150,7 +162,7 @@ const SubDesc = styled.div`
   width: 717px;
   height: 81px;
   left: calc(50% - 717px/2 + 0.5px);
-  top: 416px;
+  top: 461px;
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -164,7 +176,7 @@ const UserTitle = styled.div`
   position: absolute;
   width: 431px;
   left: calc(50% - 431px/2 - 5px);
-  top: calc(16.35% - 30px);
+  top: calc(16.35% - 30px + 45px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-weight: 600;
   font-size: 38px;
@@ -176,7 +188,7 @@ const UserTitle = styled.div`
 const UserEtc = styled.div`
   position: absolute;
   left: calc(61.9% + 20px);
-  top: calc(28.27% - 30px);
+  top: calc(28.27% - 30px + 45px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-weight: 600;
   font-size: 38px;
@@ -189,7 +201,7 @@ const UserDesc = styled.div`
   position: absolute;
   width: 905px;
   left: calc(50% - 905px/2 + 0.5px);
-  top: calc(61.3% - 30px);
+  top: calc(61.3% - 30px + 45px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-weight: 700;
   font-size: 20px;
@@ -205,9 +217,13 @@ const CardButton = styled.button`
   position: static;
   width: 247px;
   height: 69px;
-  background: #FFFFFF;
+  
+  background: linear-gradient(270deg, #ffffff, #fffde7, #fff59d, #fffde7, #ffffff);
+  background-size: 400% 400%;
+  animation: ${moveGradient} 8s ease infinite;
+
   border: 3px solid
-    ${({ selected }) => (selected ? '#FFE066' : '#FFFFFF')};
+    ${({ selected }) => (selected ? '#FFE066' : 'transparent')};
   box-shadow: 3px 3px 10px
     ${({ hovered, selected }) =>
       hovered || selected
@@ -255,7 +271,7 @@ const CardRow = styled.div`
 
 const HabitCardRow = styled.div`
   position: absolute;
-  top: 190px;
+  top: 235px;
   left: -50px;
   width: 1530px;
   display: flex;
@@ -336,7 +352,7 @@ const Line2 = styled.div`
   width: 54px;
   height: 0px;
   left: calc(50% - 54px/2 - 0.5px);
-  top: 526px;
+  top: 571px;
   border: 0.5px solid #9A9A9A;
   transform: rotate(90deg);
   z-index: 22;
@@ -347,7 +363,7 @@ const Ellipse19 = styled.div`
   width: 9px;
   height: 9px;
   left: calc(50% - 9px/2);
-  top: 552px;
+  top: 597px;
   background: #9A9A9A;
   border-radius: 50%;
   z-index: 23;
@@ -390,7 +406,7 @@ const TopImage = styled.div`
 const TopRect = styled.div`
   position: absolute;
   left: 50%;
-  top: -65px;
+  top: -20px;
   width: 689px;
   height: 689px;
   background: url('/circle.png');
@@ -405,7 +421,7 @@ const TopRect43 = styled.div`
   position: absolute;
   left: calc(-12.46% + 60px);
   right: -7.74%;
-  top: calc(73.4% - 27px);
+  top: calc(73.4% - 27px + 45px);
   bottom: -3.72%;
   background: linear-gradient(180deg, rgba(237, 241, 245, 0) 17.54%, #EDF1F5 85.96%);
   height: 26.04%;
@@ -416,7 +432,7 @@ const TopRect43 = styled.div`
 const ExploreButton = styled.button`
   position: absolute;
   left: calc(50% - 257px/2 + 0.5px);
-  top: 843px;
+  top: 888px;
   width: 200px;
   height: 51px;
   background: #FFF7E0;
@@ -446,10 +462,10 @@ export default function PibitEmotion() {
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);
   const lastCardRef = useRef(null);
-  const [isFadingIn, setIsFadingIn] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsFadingIn(true);
+    setIsVisible(true);
     if (habitsJson) {
       try {
         const parsedHabits = JSON.parse(habitsJson);
@@ -463,14 +479,27 @@ export default function PibitEmotion() {
 
   const handleCardSelection = (i) => {
     setSelectedIdx(i);
+    setIsVisible(false);
   };
+
+  useEffect(() => {
+    if (!isVisible && selectedIdx !== null) {
+      const selectedHabit = cardItems[selectedIdx];
+      setTimeout(() => {
+        router.push({
+          pathname: '/pibitloading',
+          query: { name, habits: habitsJson, selectedHabit }
+        });
+      }, 500); // fade-out 시간과 일치
+    }
+  }, [isVisible, selectedIdx]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <PageContainer isFadingIn={isFadingIn}>
+    <PageContainer isVisible={isVisible}>
       <Head>
         <title>PIBIT-감정 유형</title>
         <meta name="description" content="PIBIT" />
@@ -502,8 +531,8 @@ export default function PibitEmotion() {
           <MainTitle>불안민감형에 해당할 확률이 높아요!</MainTitle>
           <SubDesc>불안 민감형은 작은 변화나 예기치 않은 상황에도 마음이 쉽게 긴장되고 조급해질 수 있어요. 그로 인해 손톱을 뜯거나 입술을 만지는 등의 습관이 무의식중에 나타나기도 해요. 자꾸 확인하거나, 대답을 기다리며 걱정이 많아지는 모습도 자주 보일 수 있어요. 이런 행동들은 마음을 진정시키려는 나름의 방식이지만, 나도 모르게 반복되기 쉬워요.</SubDesc>
           <UserDesc>
-            신지유님의 감정유형과 습관 분석이 완료되었어요!<br />
-            평소에 익숙할 수도, 예상치 못한 습관일 수도 있는 이 습관을 선택하여 새로운 모듈을 만나보세요.
+            신지유님의 감정유형에 따른 습관 분석이 완료되었어요!<br />
+            평소에 익숙할 수도, 예상치 못한 습관일 수도 있는 이 습관을 선택하여 따듯한 동반자 피빗을 만나보세요.
           </UserDesc>
           <Line2 />
           <Ellipse19 />
@@ -533,24 +562,12 @@ export default function PibitEmotion() {
               <HabitCard key={i}>{text}</HabitCard>
             ))}
           </HabitCardRow>
-          <HabitCardRow style={{ top: '240px' }}>
+          <HabitCardRow style={{ top: '285px' }}>
             {selectedHabits.slice(2, 4).map((text, i) => (
               <HabitCard key={i + 2}>{text}</HabitCard>
             ))}
           </HabitCardRow>
           
-          <ExploreButton 
-            show={selectedIdx !== null} 
-            onClick={() => {
-              const selectedHabit = selectedIdx !== null ? cardItems[selectedIdx] : '';
-              router.push({ 
-                pathname: '/pibitloading', 
-                query: { name, habit: selectedHabit } 
-              })
-            }}
-          >
-            모듈 탐색하기
-          </ExploreButton>
         </Root>
       </main>
     </PageContainer>

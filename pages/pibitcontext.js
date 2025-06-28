@@ -69,17 +69,16 @@ const habitCards = [
   { text: "혼자 있는게 더 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 735 },
   { text: "긴장될 때 손이나 입술을 만져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 735 },
   { text: "책상 물건이 딱 맞춰져 있어야 마음이 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 735 },
-  // 셋째 줄
-  { text: "멍하니 있거나 시간을 잊고 있을 때가 많아요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px)", top: 820 },
-  { text: "물건이 잘 있는지 반복적으로 확인해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 820 },
-  { text: "내 감정을 말로 설명하기 어렵게 느껴져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 820 },
-  { text: "자리에 오래 앉아있는게 어려워요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 820 },
-  { text: "불편한 상황이면 자리를 피해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px)`, top: 820 },
-  // 넷째 줄(추가)
-  { text: "조용한 상황이 불편해서 뭐라도 틀어놔요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 140px)", top: 905 },
-  { text: "말은 안해도 속으로 오래 곱씹어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 905 },
-  { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 905 },
-  { text: "방이 어질러져 있으면 불안해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 905 },
+  // 셋째 줄 (정렬 수정)
+  { text: "물건이 잘 있는지 반복적으로 확인해요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 820 },
+  { text: "내 감정을 말로 설명하기 어렵게 느껴져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 820 },
+  { text: "자리에 오래 앉아있는게 어려워요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 820 },
+  { text: "불편한 상황이면 자리를 피해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 820 },
+  // 넷째 줄(정렬 수정)
+  { text: "조용한 상황이 불편해서 뭐라도 틀어놔요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 905 },
+  { text: "말은 안해도 속으로 오래 곱씹어요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 905 },
+  { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 905 },
+  { text: "방이 어질러져 있으면 불안해져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 905 },
 ];
 
 const Root = styled.div`
@@ -771,15 +770,15 @@ export default function PibitContext() {
     });
   };
 
-  const rowTops = [...new Set(habitCards.map(card => card.top))].sort((a, b) => a - b);
-  const group1Cards = habitCards.filter(card => card.top < 800);
-  const group2Cards = habitCards.filter(card => card.top >= 800);
+  const cardsInFirstStep = 8;
+  const group1Cards = habitCards.slice(0, cardsInFirstStep);
+  const group2Cards = habitCards.slice(cardsInFirstStep);
 
   // group2 카드들의 위치를 group1 카드들의 위치에 매핑
   const remappedGroup2Cards = group2Cards.map((card, index) => {
-    // group1Cards의 개수가 더 적으므로, 순환해서 위치를 참조하도록 변경
-    const originalCardInGroup1 = group1Cards[index % group1Cards.length];
-    if (!originalCardInGroup1) return card; // 혹시 모를 에러 방지
+    const originalCardInGroup1 = group1Cards[index];
+    // group1과 group2 모두 8개이므로, 이 부분은 항상 참이 됨
+    if (!originalCardInGroup1) return card; 
     return {
       ...card,
       top: originalCardInGroup1.top,
@@ -876,7 +875,7 @@ export default function PibitContext() {
                   style={{ left: card.left, top: card.top }}
                   onClick={() => handleCardClick(originalIndex)}
                   visible={step === 2}
-                  isFadingOut={isFadingOut}
+                  isFadingOut={isFadingOut || (step === 2 && selectedHabits.length === 2)}
                   delay={(i < 4 ? 0 : 1) * ROW_ANIMATION_DELAY}
                 >
                   {card.text}

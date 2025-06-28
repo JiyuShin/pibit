@@ -20,6 +20,11 @@ const GlobalStyle = createGlobalStyle`
     overflow-y: hidden;
     overflow-x: hidden;
   }
+  
+  body {
+    background: url('/bk2.png') no-repeat center center fixed;
+    background-size: cover;
+  }
 `;
 
 const fadeIn = keyframes`
@@ -36,20 +41,9 @@ const Root = styled.div`
   animation: ${fadeIn} 1.5s ease-in-out;
 `;
 
-const BgImage = styled.div`
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  left: 0;
-  top: 0;
-  background: url('/bk2.png') no-repeat center center;
-  background-size: cover;
-  z-index: -100;
-`;
-
 const LogoImage = styled.div`
   position: absolute;
-  top: 15px;
+  top: 95px;
   left: 20px;
   width: 320px;
   height: 80px;
@@ -70,7 +64,7 @@ const Title = styled.h1`
   width: 876px;
   left: 50%;
   transform: translateX(-50%);
-  top: 5.5%;
+  top: calc(5.5% + 80px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -87,7 +81,7 @@ const Subtitle = styled.p`
   height: 60px;
   left: 50%;
   transform: translateX(-50%);
-  top: 113px;
+  top: 193px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -103,7 +97,7 @@ const Rectangle1 = styled.div`
   width: 406px;
   height: 100px;
   left: 86px;
-  top: 262px;
+  top: 342px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50px 50px 0px 50px;
@@ -118,7 +112,7 @@ const Rectangle2 = styled.div`
   width: 325px;
   height: 63px;
   left: 1115px;
-  top: 354px;
+  top: 434px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 30px 30px 0px 30px;
@@ -132,7 +126,7 @@ const BubbleText1 = styled.p`
   position: absolute;
   width: 380px;
   left: 102px;
-  top: 288px;
+  top: 368px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -151,7 +145,7 @@ const BubbleButton = styled.button`
   position: absolute;
   width: 280px;
   left: 1141px;
-  top: 370px;
+  top: 450px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -175,11 +169,11 @@ const FooterBrand = styled.div`
   width: 458px;
   height: 43px;
   left: calc(50% - 458px/2 + 658px);
-  top: 831px;
+  top: 926px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 17px;
+  font-size: 15.3px;
   line-height: 20px;
   text-align: center;
   color: #B5AECA;
@@ -190,11 +184,11 @@ const CopyrightSymbol = styled.div`
     width: 458px;
     height: 43px;
     left: calc(50% - 458px / 2 + 733px);
-    top: 829px;
+    top: 924px;
     font-family: 'Pretendard Variable', sans-serif;
     font-style: normal;
     font-weight: 600;
-    font-size: 17px;
+    font-size: 15.3px;
     line-height: 20px;
     text-align: center;
     color: #B5AECA;
@@ -206,7 +200,7 @@ const CopyrightCircle = styled.div`
   width: 18px;
   height: 18px;
   left: 1480px;
-  top: 832px;
+  top: 927px;
   border: 2px solid #B5AECA;
   border-radius: 50%;
 `;
@@ -216,11 +210,11 @@ const FooterJourney = styled.div`
   width: 1086px;
   height: 43px;
   left: calc(50% - 1086px/2 - 192px);
-  top: 822px;
+  top: 917px;
   font-family: 'Pretendard Variable Custom';
   font-style: normal;
   font-weight: 600;
-  font-size: 14.58px;
+  font-size: 13.12px;
   line-height: 36px;
   color: #B5AECA;
 `;
@@ -315,7 +309,6 @@ export default function FlowerProducePage() {
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
             </Head>
             <GlobalStyle />
-            <BgImage />
             <Root>
                 <LogoImage onClick={handleGoBack} />
                 <FlowerModelView onModelClick={handleStartConversation}/>
