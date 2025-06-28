@@ -11,7 +11,7 @@ const ModelContainer = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
-  top: calc(50% + 80px);
+  top: calc(50% + 100px);
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
@@ -54,7 +54,7 @@ export default function FlowerModelView({ onModelClick }) {
         <directionalLight position={[10, 10, 5]} intensity={2} />
         <directionalLight position={[-10, -10, -5]} intensity={1} />
         <Center>
-          <Model onModelClick={onModelClick} scale={0.0703} />
+          <Model onModelClick={onModelClick} scale={0.07733} />
         </Center>
         <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={4.8} />
       </Canvas>

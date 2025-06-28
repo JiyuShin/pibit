@@ -43,7 +43,7 @@ const Root = styled.div`
 
 const LogoImage = styled.div`
   position: absolute;
-  top: 95px;
+  top: 60px;
   left: 20px;
   width: 320px;
   height: 80px;
@@ -64,7 +64,7 @@ const Title = styled.h1`
   width: 876px;
   left: 50%;
   transform: translateX(-50%);
-  top: calc(5.5% + 80px);
+  top: calc(5.5% + 30px);
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -81,7 +81,7 @@ const Subtitle = styled.p`
   height: 60px;
   left: 50%;
   transform: translateX(-50%);
-  top: 193px;
+  top: 143px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -169,7 +169,7 @@ const FooterBrand = styled.div`
   width: 458px;
   height: 43px;
   left: calc(50% - 458px/2 + 658px);
-  top: 926px;
+  top: 911px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -184,7 +184,7 @@ const CopyrightSymbol = styled.div`
     width: 458px;
     height: 43px;
     left: calc(50% - 458px / 2 + 733px);
-    top: 924px;
+    top: 909px;
     font-family: 'Pretendard Variable', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -200,7 +200,7 @@ const CopyrightCircle = styled.div`
   width: 18px;
   height: 18px;
   left: 1480px;
-  top: 927px;
+  top: 912px;
   border: 2px solid #B5AECA;
   border-radius: 50%;
 `;
@@ -210,7 +210,7 @@ const FooterJourney = styled.div`
   width: 1086px;
   height: 43px;
   left: calc(50% - 1086px/2 - 192px);
-  top: 917px;
+  top: 902px;
   font-family: 'Pretendard Variable Custom';
   font-style: normal;
   font-weight: 600;
@@ -221,31 +221,25 @@ const FooterJourney = styled.div`
 
 const Typewriter = memo(function Typewriter({ text, onComplete }) {
     const [displayText, setDisplayText] = useState('');
-    const index = React.useRef(0);
-    const timerRef = React.useRef(null);
 
-    const type = React.useCallback(() => {
-        if (index.current < text.length) {
-            setDisplayText((prev) => prev + text.charAt(index.current));
-            index.current += 1;
-            timerRef.current = setTimeout(type, 200);
-        } else {
-            if (onComplete) onComplete();
-        }
-    }, [text, onComplete]);
+    useEffect(() => {
+        let i = 0;
+        const timerId = setInterval(() => {
+            if (i < text.length) {
+                setDisplayText(text.slice(0, i + 1));
+                i++;
+            } else {
+                clearInterval(timerId);
+                if (onComplete) {
+                    onComplete();
+                }
+            }
+        }, 100);
 
-    React.useEffect(() => {
-        setDisplayText('');
-        index.current = 0;
-        if (text.length > 0) {
-            setDisplayText(text[0]);
-            index.current = 1;
-            timerRef.current = setTimeout(type, 200);
-        }
         return () => {
-            if (timerRef.current) clearTimeout(timerRef.current);
+            clearInterval(timerId);
         };
-    }, [text, type]);
+    }, [text, onComplete]);
 
     return (
         <>
@@ -268,8 +262,8 @@ export default function FlowerProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = " 안녕! 만나서 반가워, 난 지수와 함께 지내며\n손톱물어뜯기를 곁에서 돌봐줄 따듯하고 포근한 존재야!";
-    const fullText2 = " 대화를 시작하고 싶다면 나를 클릭해줘 !";
+    const fullText1 = "안녕! 만나서 반가워, 난 지수와 함께 지내며\n손톱물어뜯기를 곁에서 돌봐줄 따듯하고 포근한 존재야!";
+    const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
         const timer1 = setTimeout(() => setShowRectangle1(true), 500);
