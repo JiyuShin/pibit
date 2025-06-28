@@ -60,27 +60,26 @@ const CARD_WIDTH = 261;
 const CARD_GAP = 20;
 const habitCards = [
   // 첫째 줄
-  { text: "사람 많은 곳에 가기 전 괜히 긴장돼요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px)", top: 598 },
-  { text: "싫은 말이 있어도 그냥 참고 넘겨요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 598 },
-  { text: "실수할까봐 계획을 계속 다시 세워요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 598 },
-  { text: "조용히 반복되는 행동을 하면 편해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 598 },
-  { text: "손에 뭔가 없으면 허전해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px)`, top: 597 },
+  { text: "사람 많은 곳에 가기 전 괜히 긴장돼요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 653 },
+  { text: "싫은 말이 있어도 그냥 참고 넘겨요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 653 },
+  { text: "실수할까봐 계획을 계속 다시 세워요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 653 },
+  { text: "조용히 반복되는 행동을 하면 편해져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 653 },
   // 둘째 줄
-  { text: "아무 생각 없이 다리를 떨어요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 680 },
-  { text: "혼자 있는게 더 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 680 },
-  { text: "긴장될 때 손이나 입술을 만져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 680 },
-  { text: "책상 물건이 딱 맞춰져 있어야 마음이 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 680 },
+  { text: "아무 생각 없이 다리를 떨어요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 735 },
+  { text: "혼자 있는게 더 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 735 },
+  { text: "긴장될 때 손이나 입술을 만져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 735 },
+  { text: "책상 물건이 딱 맞춰져 있어야 마음이 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 735 },
   // 셋째 줄
-  { text: "멍하니 있거나 시간을 잊고 있을 때가 많아요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px)", top: 765 },
-  { text: "물건이 잘 있는지 반복적으로 확인해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 765 },
-  { text: "내 감정을 말로 설명하기 어렵게 느껴져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 765 },
-  { text: "자리에 오래 앉아있는게 어려워요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 765 },
-  { text: "불편한 상황이면 자리를 피해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px)`, top: 765 },
+  { text: "멍하니 있거나 시간을 잊고 있을 때가 많아요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px)", top: 820 },
+  { text: "물건이 잘 있는지 반복적으로 확인해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 820 },
+  { text: "내 감정을 말로 설명하기 어렵게 느껴져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 820 },
+  { text: "자리에 오래 앉아있는게 어려워요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 820 },
+  { text: "불편한 상황이면 자리를 피해요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 4}px - 12px)`, top: 820 },
   // 넷째 줄(추가)
-  { text: "조용한 상황이 불편해서 뭐라도 틀어놔요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 140px)", top: 850 },
-  { text: "말은 안해도 속으로 오래 곱씹어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 850 },
-  { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 850 },
-  { text: "방이 어질러져 있으면 불안해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 850 },
+  { text: "조용한 상황이 불편해서 뭐라도 틀어놔요", left: "calc(50% - 243px/2 - 547.5px - 10px - 12px + 140px)", top: 905 },
+  { text: "말은 안해도 속으로 오래 곱씹어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px + 140px)`, top: 905 },
+  { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px + 140px)`, top: 905 },
+  { text: "방이 어질러져 있으면 불안해져요", left: `calc(50% - 243px/2 - 547.5px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px + 140px)`, top: 905 },
 ];
 
 const Root = styled.div`
@@ -199,7 +198,7 @@ const Logo = styled.div`
 
 const InstructionText = styled.p`
   position: absolute;
-  top: 490px;
+  top: 525px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -431,7 +430,7 @@ const BottomButton = styled.button`
   width: 230.4px;
   height: 48px;
   left: calc(50% - 115.2px);
-  top: 780px;
+  top: 1010px;
   background: #D4C2F2;
   border: 1px solid #C0AEE8;
   box-shadow: 0px 8px 32px 0px rgba(212, 194, 242, 0.37);
@@ -762,18 +761,21 @@ export default function PibitContext() {
   };
 
   const rowTops = [...new Set(habitCards.map(card => card.top))].sort((a, b) => a - b);
-  const group1Cards = habitCards.filter(card => card.top < 700);
-  const group2Cards = habitCards.filter(card => card.top >= 700);
+  const group1Cards = habitCards.filter(card => card.top < 800);
+  const group2Cards = habitCards.filter(card => card.top >= 800);
 
+  // group2 카드들의 위치를 group1 카드들의 위치에 매핑
   const remappedGroup2Cards = group2Cards.map((card, index) => {
-    const originalCardInGroup1 = group1Cards[index];
-    if (!originalCardInGroup1) return card;
+    // group1Cards의 개수가 더 적으므로, 순환해서 위치를 참조하도록 변경
+    const originalCardInGroup1 = group1Cards[index % group1Cards.length];
+    if (!originalCardInGroup1) return card; // 혹시 모를 에러 방지
     return {
       ...card,
       top: originalCardInGroup1.top,
       left: originalCardInGroup1.left,
     };
   });
+
   const ROW_ANIMATION_DELAY = 0.2;
 
   const handleBack = () => {
