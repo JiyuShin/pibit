@@ -298,7 +298,7 @@ function RecModel() {
 }
 
 function AnimatedModel({ onAnimationStart }) {
-  const { scene, animations } = useGLTF('/dnakit7.glb');
+  const { scene, animations } = useGLTF('/dnakit27.glb');
   const { actions } = useAnimations(animations, scene);
   const [isOpening, setIsOpening] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
@@ -314,17 +314,18 @@ function AnimatedModel({ onAnimationStart }) {
   useEffect(() => {
     scene.traverse(child => {
       if (child.isMesh) {
-        child.material = child.material.clone();
         child.castShadow = true;
         child.receiveShadow = true;
-        child.material.emissive = new THREE.Color('white');
-        child.material.emissiveIntensity = 0.15;
-        if (child.material.color) {
-          const color = child.material.color;
-          const hsl = {};
-          color.getHSL(hsl);
-          color.setHSL(hsl.h, Math.min(hsl.s * 1.3, 1), hsl.l);
-        }
+        
+        // Apply a new, standard material that correctly reacts to light
+        // while preserving the original color and texture map.
+        const oldMaterial = child.material;
+        child.material = new THREE.MeshStandardMaterial({
+          color: oldMaterial.color,
+          map: oldMaterial.map,
+          roughness: 0.5,
+          metalness: 0.1,
+        });
       }
     });
   }, [scene]);
