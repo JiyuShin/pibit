@@ -250,7 +250,7 @@ export default function ConversationView() {
 
       const structuredData = { id: data.id, name, message };
       setNfcData(structuredData);
-
+      
       const initialMessage = { user: 'PIBIT', text: message };
       setMessages([initialMessage]);
       

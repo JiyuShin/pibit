@@ -120,7 +120,7 @@ const Puffy = styled.div`
 const WhiteRect = styled.div`
   position: absolute;
   width: 487px;
-  height: 420px;
+  height: 405px;
   left: 50%;
   top: calc(50% + 186px);
   transform: translate(-50%, -50%);
@@ -139,7 +139,7 @@ const WhiteRectTitle = styled.div`
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 22px;
+  font-size: 20px;
   line-height: 32px;
   text-align: center;
   color: #939393;
@@ -152,7 +152,7 @@ const InputRow = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  margin-top: 30px;
+  margin-top: 42px;
 `;
 
 const Label = styled.div`
@@ -205,7 +205,7 @@ const Wiggle = styled.div`
   position: absolute;
   width: 694.79px;
   height: 489.72px;
-  left: 132.93px;
+  left: 105.93px;
   top: 563px;
   background: url('/module/wiggle.png');
   background-size: contain;
@@ -322,7 +322,7 @@ const PinchBetween = styled.div`
   position: absolute;
   width: 458.75px;
   height: 323.34px;
-  left: 870px;
+  left: 858px;
   top: 412px;
   background: url('/module/pinch.png');
   background-size: contain;
@@ -343,7 +343,7 @@ const StartButton = styled.button`
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-size: 20px;
   font-weight: 700;
-  margin-top: 32px;
+  margin-top: 16px;
   cursor: pointer;
   box-shadow: 0px 8px 25px 0px rgba(80, 80, 80, 0.25);
   transition: background 0.2s, border 0.2s, color 0.2s;
@@ -351,7 +351,7 @@ const StartButton = styled.button`
   z-index: 9999;
   position: fixed;
   left: calc(50% + 10px);
-  bottom: 72px;
+  bottom: 106px;
   transform: translateX(-50%);
 
   &:hover {
@@ -363,7 +363,6 @@ const StartButton = styled.button`
 
 const PibitIntro = () => {
   const [name, setName] = useState('');
-  const [age, setAge] = useState('');
   const router = useRouter();
   const [isFadingOut, setIsFadingOut] = useState(false);
 
@@ -394,17 +393,13 @@ const PibitIntro = () => {
           <PinchBetween />
           <WhiteRect>
             <WhiteRectTitle>
-              본격적으로 시작하기 전 원활한<br />
-              피빗 생성을 위해 이름과 나이를 입력해주세요!
+              본격적으로 시작하기 전 가장 맞춤화된<br />
+              피빗 생성을 위해 사용자의 이름을 알려주세요!
             </WhiteRectTitle>
             <InputRow>
               <div style={{ display: 'flex', alignItems: 'center', gap: 0, width: 'calc(100% - 65px)', marginLeft: 23 }}>
                 <Label style={{ minWidth: 60 }}>이름</Label>
                 <InputRect value={name} onChange={e => setName(e.target.value)} />
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 0, width: 'calc(100% - 65px)', marginLeft: 23 }}>
-                <Label style={{ minWidth: 60 }}>나이</Label>
-                <InputRect value={age} onChange={e => setAge(e.target.value)} />
               </div>
             </InputRow>
           </WhiteRect>

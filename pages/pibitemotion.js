@@ -21,6 +21,14 @@ const rotateRight = keyframes`
   }
 `;
 
+const PageContainer = styled.div`
+  transition: opacity 0.5s ease-in-out;
+  opacity: ${({ isFadingIn }) => (isFadingIn ? 1 : 0)};
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+`;
+
 const Root = styled.div`
   position: relative;
   width: 1512px;
@@ -234,8 +242,9 @@ const CardButtonSmall = styled(CardButton)`
 
 const CardRow = styled.div`
   position: absolute;
-  width: auto;
-  left: ${({ dynamicLeft }) => dynamicLeft || '210px'};
+  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
   top: 719px;
   display: flex;
   justify-content: center;
@@ -247,8 +256,8 @@ const CardRow = styled.div`
 const HabitCardRow = styled.div`
   position: absolute;
   top: 190px;
-  left: -15px;
-  width: 100%;
+  left: -50px;
+  width: 1530px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -426,55 +435,44 @@ const ExploreButton = styled.button`
 
 export default function PibitEmotion() {
   const router = useRouter();
-  const { habit1 = '', habit2 = '', habit3 = '', habit4 = '', habit5 = '', name = '' } = router.query;
-  const habits = [habit1, habit2, habit3, habit4, habit5];
-  // habits 배열에서 두 그룹으로 분리
-  const upperHabitSet = [
-    '싫은 말이 있어도 그냥 참고 넘겨요',
-    '혼자 있는게 더 편해요',
-    '자리에 오래 앉아있는게 어려워요',
-  ];
-  const lowerHabitSet = [
-    '무의식적으로 볼 안쪽을 씹은 적이 있어요',
-    '지저분한걸 보면 바로 치우고 싶어요',
-  ];
-  const upperHabits = habits.filter(h => upperHabitSet.includes(h));
-  const lowerHabits = habits.filter(h => lowerHabitSet.includes(h));
-  const restHabits = habits.filter(h => !upperHabitSet.includes(h) && !lowerHabitSet.includes(h) && !lowerHabitSet.includes(h));
+  const { name, habits: habitsJson } = router.query;
+  
+  const [selectedHabits, setSelectedHabits] = useState([]);
 
-  // 하단 4개 항목 버튼 상태 관리
+  // 하단 버튼 상태 복구
   const [cardItems, setCardItems] = useState([
     '손톱 물어뜯기',
-    '무언가를 반복 확인하기',
-    '입술 물어뜯기',
-    '입안 깨물기',
   ]);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);
   const lastCardRef = useRef(null);
-  const [dynamicLeft, setDynamicLeft] = useState('210px');
+  const [isFadingIn, setIsFadingIn] = useState(false);
+
+  useEffect(() => {
+    setIsFadingIn(true);
+    if (habitsJson) {
+      try {
+        const parsedHabits = JSON.parse(habitsJson);
+        setSelectedHabits(parsedHabits);
+      } catch (e) {
+        console.error("Failed to parse habits JSON:", e);
+        setSelectedHabits([]);
+      }
+    }
+  }, [habitsJson]);
 
   const handleCardSelection = (i) => {
     setSelectedIdx(i);
   };
 
   useEffect(() => {
-    if (cardItems.length === 5) {
-      setDynamicLeft('210px');
-    } else if (cardItems.length > 5 && lastCardRef.current) {
-      const width = lastCardRef.current.offsetWidth;
-      setDynamicLeft(`calc(210px - ${width}px)`);
-    }
-  }, [cardItems.length, cardItems[cardItems.length - 1]]);
-
-  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div style={{ backgroundColor: '#F2F2F2' }}>
+    <PageContainer isFadingIn={isFadingIn}>
       <Head>
-        <title>PIBIT</title>
+        <title>PIBIT-감정 유형</title>
         <meta name="description" content="PIBIT" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -504,13 +502,15 @@ export default function PibitEmotion() {
           <MainTitle>불안민감형에 해당할 확률이 높아요!</MainTitle>
           <SubDesc>불안 민감형은 작은 변화나 예기치 않은 상황에도 마음이 쉽게 긴장되고 조급해질 수 있어요. 그로 인해 손톱을 뜯거나 입술을 만지는 등의 습관이 무의식중에 나타나기도 해요. 자꾸 확인하거나, 대답을 기다리며 걱정이 많아지는 모습도 자주 보일 수 있어요. 이런 행동들은 마음을 진정시키려는 나름의 방식이지만, 나도 모르게 반복되기 쉬워요.</SubDesc>
           <UserDesc>
-            {name ? `${name}님께 익숙할 수 있는 습관들이에요.` : '님께 익숙할 수 있는 습관들이에요.'}<br />
-            해당되는 항목이 있다면 선택해주시고, 없거나 더 떠오르는 게 있다면 자유롭게 입력해 주세요!
+            신지유님의 감정유형과 습관 분석이 완료되었어요!<br />
+            평소에 익숙할 수도, 예상치 못한 습관일 수도 있는 이 습관을 선택하여 새로운 모듈을 만나보세요.
           </UserDesc>
           <Line2 />
           <Ellipse19 />
           <Rectangle45 />
-          <CardRow dynamicLeft={dynamicLeft}>
+          
+          {/* 하단 버튼 복구 */}
+          <CardRow>
             {cardItems.map((text, i) => (
               <CardButton
                 key={i}
@@ -526,15 +526,16 @@ export default function PibitEmotion() {
               </CardButton>
             ))}
           </CardRow>
-          {/* 상단 5개 습관 멘트 카드 - flex로 균일하게 배치, 두 줄로 분리 */}
+
+          {/* 상단 4개 습관 카드 - 두 줄로 나누어 표시 */}
           <HabitCardRow>
-            {habits.slice(0, 3).map((text, i) => (
+            {selectedHabits.slice(0, 2).map((text, i) => (
               <HabitCard key={i}>{text}</HabitCard>
             ))}
           </HabitCardRow>
-          <HabitCardRow style={{ top: '240px', left: '-15px' }}>
-            {habits.slice(3, 5).map((text, i) => (
-              <HabitCard key={i + 3}>{text}</HabitCard>
+          <HabitCardRow style={{ top: '240px' }}>
+            {selectedHabits.slice(2, 4).map((text, i) => (
+              <HabitCard key={i + 2}>{text}</HabitCard>
             ))}
           </HabitCardRow>
           
@@ -552,6 +553,6 @@ export default function PibitEmotion() {
           </ExploreButton>
         </Root>
       </main>
-    </div>
+    </PageContainer>
   );
 } 

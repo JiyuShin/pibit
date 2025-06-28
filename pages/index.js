@@ -219,7 +219,7 @@ const BottomDesc = styled.div`
 const BottomLeftDesc = styled.div`
   position: absolute;
   left: 25px;
-  bottom: 84px; /* 134px - 50px */
+  bottom: 29px; /* 134px - 50px */
   font-family: 'Pretendard', sans-serif;
   font-weight: 500;
   font-size: 11.7px; /* 8.8pt */
@@ -233,7 +233,7 @@ const BottomLeftDesc = styled.div`
 const CompanyLogoText = styled.div`
   position: absolute;
   right: 22px;
-  bottom: 84px; /* 134px - 50px */
+  bottom: 29px; /* 134px - 50px */
   font-family: 'Pretendard', sans-serif;
   font-weight: 600;
   font-size: 16px; /* 12pt */

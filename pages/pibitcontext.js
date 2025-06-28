@@ -89,7 +89,7 @@ const Root = styled.div`
   height: 100vh;
   margin: 0 auto;
   background: linear-gradient(180deg, #D3E4FE 0%, #FFF7E0 100%);
-  overflow-y: auto;
+  overflow: hidden;
   z-index: 2001;
 `;
 
@@ -428,20 +428,22 @@ const HabitCard = styled.div`
 
 const BottomButton = styled.button`
   position: absolute;
-  width: 288px;
-  height: 60px;
-  left: calc(50% - 144px);
+  width: 230.4px;
+  height: 48px;
+  left: calc(50% - 115.2px);
   top: 780px;
-  background: #FFF7E0;
-  border: 1px solid #FFD64D;
-  box-shadow: 6px 6px 28px 5px rgba(255, 214, 77, 0.35);
-  border-radius: 30px;
+  background: #D4C2F2;
+  border: 1px solid #C0AEE8;
+  box-shadow: 0px 8px 32px 0px rgba(212, 194, 242, 0.37);
+  border-radius: 24px;
   font-family: 'Pretendard Variable', sans-serif;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
+  line-height: 24px;
   color: #8B8B8B;
+  transform: scale(0.8);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   cursor: pointer;
-  transition: all 0.2s ease-in-out, opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   z-index: 2001;
   opacity: ${props => props.visible ? 1 : 0};
   transform: ${props => props.visible ? 'translateY(0)' : 'translateY(20px)'};
@@ -452,6 +454,12 @@ const BottomButton = styled.button`
     color: #9E9E9E;
     cursor: not-allowed;
     box-shadow: none;
+  }
+
+  &:hover:not(:disabled) {
+    background: #C0AEE8;
+    box-shadow: 0px 10px 35px 0px rgba(192, 174, 232, 0.5);
+    transform: translateY(-2px);
   }
 `;
 
@@ -651,6 +659,16 @@ const Rectangle10 = styled.div`
   z-index: 999;
 `;
 
+const PageContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: #F3F3F3;
+  overflow: hidden;
+  position: relative;
+  transition: opacity 0.5s ease-in-out;
+  opacity: ${({ isFadingOut }) => (isFadingOut ? 0 : 1)};
+`;
+
 export default function PibitContext() {
   const router = useRouter();
   const { name: rawName } = router.query;
@@ -690,13 +708,11 @@ export default function PibitContext() {
 
   useEffect(() => {
     if (step === 2 && selectedHabits.length === 2) {
-      setIsFadingOut(true);
       setShowText(false);
 
       setTimeout(() => {
         setStep(3);
         setCurrentText(fullText3);
-        setIsFadingOut(false);
       }, 500);
     }
   }, [selectedHabits.length, step, fullText3]);
@@ -767,8 +783,29 @@ export default function PibitContext() {
     });
   };
 
+  const handleNextClick = () => {
+    if (selectedHabits.length === 4) {
+      setIsFadingOut(true);
+    }
+  };
+
+  useEffect(() => {
+    if (isFadingOut && selectedHabits.length === 4) {
+      const selectedTexts = selectedHabits.map(index => habitCards[index].text);
+      setTimeout(() => {
+        router.push({
+          pathname: '/pibitemotion',
+          query: { 
+            name: rawName,
+            habits: JSON.stringify(selectedTexts)
+          }
+        });
+      }, 500); // Corresponds to the transition duration
+    }
+  }, [isFadingOut, rawName, router, selectedHabits]);
+
   return (
-    <div style={{ backgroundColor: '#F2F2F2', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <PageContainer isFadingOut={isFadingOut}>
       <Head>
         <title>PIBIT-습관 선택</title>
         <meta name="description" content="PIBIT" />
@@ -852,28 +889,10 @@ export default function PibitContext() {
           <BottomButton
             visible={selectedHabits.length === 4}
             disabled={selectedHabits.length !== 4}
-            onMouseEnter={(e) => {
-              if (selectedHabits.length === 4) {
-                e.currentTarget.style.boxShadow = '6px 6px 28px 5px rgba(100, 61, 130, 0.35)';
-                e.currentTarget.style.transform = 'translateY(-3px)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '6px 6px 20px 3px rgba(100, 61, 130, 0.25)';
-              e.currentTarget.style.transform = 'translateY(0px)';
-            }}
-            onClick={() => {
-              if (selectedHabits.length === 4) {
-                const selectedTexts = selectedHabits.map(idx => habitCards[idx].text);
-                const params = new URLSearchParams();
-                params.append('name', rawName || '');
-                selectedTexts.forEach((text, i) => params.append(`habit${i+1}`, text));
-                router.push(`/pibitemotion?${params.toString()}`);
-              }
-            }}
+            onClick={handleNextClick}
           >습관 유형 탐색하기</BottomButton>
         </Root>
       </main>
-    </div>
+    </PageContainer>
   );
 } 
