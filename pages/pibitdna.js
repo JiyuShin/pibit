@@ -58,7 +58,7 @@ const CompletionText = styled.div`
   width: 801px;
   height: 90px;
   left: 382px;
-  top: 663px;
+  top: 728px;
 
   font-family: 'Pretendard Variable';
   font-style: normal;
@@ -90,8 +90,8 @@ const Button = styled.button`
   width: 274px;
   height: 70px;
   left: 619px;
-  top: 718px;
-  background: rgba(255, 255, 255, 0.4);
+  top: 783px;
+  background: #FFFFFF;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
   border-radius: 30px;
   border: none;
@@ -99,7 +99,7 @@ const Button = styled.button`
   transition: background 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.6);
+    background: #f0f0f0;
   }
 
   font-family: 'Pretendard Variable';
@@ -182,19 +182,65 @@ function DnaStickModel() {
   const { scene } = useGLTF('/dnastick.glb');
 
   useEffect(() => {
+    // A much more robust identification method using geometry size
+    const stickParts = [];
+    const texturedParts = [];
+    scene.traverse(child => {
+        if (child.isMesh) {
+            if (child.material.map) {
+                texturedParts.push(child);
+            } else {
+                stickParts.push(child);
+            }
+        }
+    });
+
+    let outerStick, innerStick, cottonPart, labelPart;
+
+    // Differentiate sticks by volume
+    if (stickParts.length === 2) {
+        stickParts[0].geometry.computeBoundingBox();
+        stickParts[1].geometry.computeBoundingBox();
+        const size0 = stickParts[0].geometry.boundingBox.getSize(new THREE.Vector3());
+        const size1 = stickParts[1].geometry.boundingBox.getSize(new THREE.Vector3());
+        outerStick = (size0.x * size0.y * size0.z > size1.x * size1.y * size1.z) ? stickParts[0] : stickParts[1];
+        innerStick = (outerStick === stickParts[0]) ? stickParts[1] : stickParts[0];
+    }
+
+    // Differentiate textured parts by volume (cotton is smaller)
+    if (texturedParts.length === 2) {
+        texturedParts[0].geometry.computeBoundingBox();
+        texturedParts[1].geometry.computeBoundingBox();
+        const size0 = texturedParts[0].geometry.boundingBox.getSize(new THREE.Vector3());
+        const size1 = texturedParts[1].geometry.boundingBox.getSize(new THREE.Vector3());
+        cottonPart = (size0.x * size0.y * size0.z < size1.x * size1.y * size1.z) ? texturedParts[0] : texturedParts[1];
+        labelPart = (cottonPart === texturedParts[0]) ? texturedParts[1] : texturedParts[0];
+    }
+
+    // Now, apply materials with certainty
     scene.traverse((child) => {
       if (child.isMesh) {
-        const material = child.material.clone();
+        let material;
+        
+        if (child === outerStick) {
+          material = new THREE.MeshStandardMaterial({ color: 'white', emissive: 'white', emissiveIntensity: 0.4, transparent: true, opacity: 0 });
+          material.isStick = true;
+        } else if (child === innerStick) {
+          material = child.material.clone();
+          material.color.set('#9370DB');
+          material.isStick = true;
+        } else if (child === cottonPart) {
+          material = child.material.clone();
+          material.emissive = new THREE.Color('white');
+          material.emissiveIntensity = 0.8; // Make the cotton glow white
+        } else { // It's the label or something else
+          material = child.material.clone();
+        }
+
         material.transparent = true;
         material.opacity = 0;
         child.castShadow = true;
         child.receiveShadow = true;
-        
-        // A more reliable way: The stick is the part that does NOT have a texture map.
-        if (!material.map) {
-          material.isStick = true;
-          material.color.set('#9370DB');
-        }
         child.material = material;
       }
     });
