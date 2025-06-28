@@ -278,27 +278,26 @@ const LoadingText = styled.div`
 
 export default function PibitLoadingPage() {
     const router = useRouter();
-    const { name = '사용자', habit = '선택된 습관 없음' } = router.query;
+    const { name, selectedHabits, finalHabit } = router.query;
     const [isExiting, setIsExiting] = useState(false);
 
-    const handleNavigation = () => {
-        setIsExiting(true);
-    };
-
     useEffect(() => {
-        const timer = setTimeout(handleNavigation, 5000);
+        const timer = setTimeout(() => {
+            setIsExiting(true);
+            setTimeout(() => {
+                router.push({
+                    pathname: '/flowermodule',
+                    query: { name, selectedHabits, finalHabit }
+                });
+            }, 1500);
+        }, 3000);
+
         return () => clearTimeout(timer);
-    }, []);
-
-    useEffect(() => {
-        if (isExiting) {
-            const navTimer = setTimeout(() => {
-                router.push({ pathname: '/flowermodule', query: { name, habit } });
-            }, 1500); // animation duration
-
-            return () => clearTimeout(navTimer);
-        }
-    }, [isExiting, router, name, habit]);
+    }, [router, name, selectedHabits, finalHabit]);
+    
+    const handleBack = () => {
+        router.back();
+    };
 
     return (
         <>
@@ -316,13 +315,13 @@ export default function PibitLoadingPage() {
                 </BlobContainer>
                 <PibitLogo isExiting={isExiting}>PIBIT</PibitLogo>
                 <HeaderLine isExiting={isExiting} />
-                <BackButton onClick={() => router.back()} isExiting={isExiting} />
-                <CustomizeButton onClick={handleNavigation} isExiting={isExiting}>
+                <BackButton onClick={handleBack} isExiting={isExiting} />
+                <CustomizeButton isExiting={isExiting}>
                     피빗 커스터마이징
                 </CustomizeButton>
                 <CenterImageContainer isExiting={isExiting}/>
                 <CenterText isExiting={isExiting}>
-                    '{habit}' 습관을 긴 시간동안 곁에서 {name}님과<br />
+                    '{finalHabit}' 습관을 긴 시간동안 곁에서 {name}님과<br />
                     함께 관리해줄 맞춤화 피빗 제작을 시작할게요!
                 </CenterText>
                 <FooterText isExiting={isExiting}>Journey to create habit-caretaker companion pibit</FooterText>

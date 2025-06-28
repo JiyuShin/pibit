@@ -789,32 +789,25 @@ export default function PibitContext() {
   const ROW_ANIMATION_DELAY = 0.2;
 
   const handleBack = () => {
-    router.push({
-      pathname: '/pibitdna',
-      query: { name: rawName }
-    });
+    router.back();
   };
 
   const handleNextClick = () => {
-    if (selectedHabits.length === 4) {
-      setIsFadingOut(true);
+    if (selectedHabits.length === 0) {
+      alert("하나 이상의 습관을 선택해주세요.");
+      return;
     }
+    const habitsToPass = selectedHabits.map(index => habitCards[index].text);
+    router.push({
+      pathname: '/pibitemotion',
+      query: { name: router.query.name, selectedHabits: JSON.stringify(habitsToPass) }
+    });
   };
 
   useEffect(() => {
-    if (isFadingOut && selectedHabits.length === 4) {
-      const selectedTexts = selectedHabits.map(index => habitCards[index].text);
-      setTimeout(() => {
-        router.push({
-          pathname: '/pibitemotion',
-          query: { 
-            name: rawName,
-            habits: JSON.stringify(selectedTexts)
-          }
-        });
-      }, 500); // Corresponds to the transition duration
-    }
-  }, [isFadingOut, rawName, router, selectedHabits]);
+    const text = `${router.query.name || '방문자'}님과 가장 가까운 습관을\n4개에서 8개 사이로 선택해주세요.`;
+    // ... existing code ...
+  }, [router.query.name, selectedHabits]);
 
   return (
     <PageContainer isFadingOut={isFadingOut}>

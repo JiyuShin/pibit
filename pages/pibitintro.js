@@ -376,10 +376,14 @@ const CompanyLogoText = styled.div`
 
 const PibitIntro = () => {
   const [name, setName] = useState('');
-  const router = useRouter();
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const router = useRouter();
 
   const handleNavigate = () => {
+    if (!name.trim()) {
+      alert('이름을 입력해주세요.');
+      return;
+    }
     setIsFadingOut(true);
   };
 
@@ -387,7 +391,7 @@ const PibitIntro = () => {
     if (isFadingOut) {
       const timer = setTimeout(() => {
         router.push({
-          pathname: '/pibitdna',
+          pathname: '/pibitcontext',
           query: { name: name },
         });
       }, 500); // Animation duration

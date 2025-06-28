@@ -492,7 +492,7 @@ const CompanionTypeDescription = styled.div`
 
 export default function FlowerModulePage() {
     const router = useRouter();
-    const { name = '지수', habit = '', from } = router.query;
+    const { name, selectedHabits, finalHabit } = router.query;
     const [isExiting, setIsExiting] = useState(false);
     const [startTextAnimation, setStartTextAnimation] = useState(false);
     const [isImageAnimated, setIsImageAnimated] = useState(false);
@@ -501,17 +501,7 @@ export default function FlowerModulePage() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-
-        if (from !== 'stepd') {
-            const timer = setTimeout(() => {
-                router.push({
-                    pathname: '/stepd',
-                    query: { name, habit }
-                });
-            }, 6000);
-            return () => clearTimeout(timer);
-        }
-    }, [from, name, habit, router]);
+    }, []);
 
     useEffect(() => {
         setIsImageAnimated(true);
@@ -534,12 +524,15 @@ export default function FlowerModulePage() {
         if (isExiting) return;
         setIsExiting(true);
         setTimeout(() => {
-            router.push(`/flowerproduce?name=${name}`);
+            router.push({
+                pathname: '/flowerproduce',
+                query: { name, selectedHabits, finalHabit }
+            });
         }, 1500);
     };
 
     const line1 = 'Concentrated finger pressure';
-    const line2 = 'for sensory relief';
+    const line2 = 'or repetitive movements,';
 
     return (
         <>

@@ -451,7 +451,7 @@ const ExploreButton = styled.button`
 
 export default function PibitEmotion() {
   const router = useRouter();
-  const { name, habits: habitsJson } = router.query;
+  const { name, selectedHabits: habitsJson } = router.query;
   
   const [selectedHabits, setSelectedHabits] = useState([]);
 
@@ -479,20 +479,20 @@ export default function PibitEmotion() {
 
   const handleCardSelection = (i) => {
     setSelectedIdx(i);
-    setIsVisible(false);
+    setIsVisible(false); // 페이지 전환 애니메이션 시작
   };
 
   useEffect(() => {
     if (!isVisible && selectedIdx !== null) {
-      const selectedHabit = cardItems[selectedIdx];
+      const finalHabit = cardItems[selectedIdx];
       setTimeout(() => {
         router.push({
           pathname: '/pibitloading',
-          query: { name, habits: habitsJson, selectedHabit }
+          query: { name, selectedHabits: habitsJson, finalHabit }
         });
       }, 500); // fade-out 시간과 일치
     }
-  }, [isVisible, selectedIdx]);
+  }, [isVisible, selectedIdx, name, habitsJson, cardItems, router]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
