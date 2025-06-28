@@ -245,7 +245,7 @@ const CardRow = styled.div`
   width: 100%;
   left: 50%;
   transform: translateX(-50%);
-  top: 719px;
+  top: 774px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -356,9 +356,9 @@ const Ellipse19 = styled.div`
 const Rectangle45 = styled.div`
   position: absolute;
   width: 1607px;
-  height: 242px;
+  height: 172px;
   left: calc(50% - 1607px/2 + 8.5px);
-  top: 684px;
+  top: 729px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 4px 4px 30px rgba(0, 0, 0, 0.1);
   border-radius: 25px;
