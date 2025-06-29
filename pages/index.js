@@ -23,7 +23,7 @@ const createLoopingFadeInOut = (delay, finalOpacity = 1) => keyframes`
     opacity: ${finalOpacity};
   }
 
-  100% {
+  100% { 
     opacity: 0;
   }
 `;
@@ -69,7 +69,7 @@ const Root = styled.div`
 
   &::before {
     content: '';
-    position: absolute;
+  position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     width: 100%;
     height: 100%;
@@ -221,7 +221,7 @@ const BottomLeftDesc = styled.div`
   left: 25px;
   bottom: 29px; /* 134px - 50px */
   font-family: 'Pretendard', sans-serif;
-  font-weight: 500;
+    font-weight: 500;
   font-size: 11.7px; /* 8.8pt */
   color: #B5AECA;
   text-align: left;

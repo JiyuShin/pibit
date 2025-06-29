@@ -458,6 +458,7 @@ export default function PibitEmotion() {
   // 하단 버튼 상태 복구
   const [cardItems, setCardItems] = useState([
     '손톱 물어뜯기',
+    '입술 물어뜯기'
   ]);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);
@@ -484,6 +485,11 @@ export default function PibitEmotion() {
 
   useEffect(() => {
     if (!isVisible && selectedIdx !== null) {
+      if (selectedIdx === 1) { // '입술 물어뜯기' 버튼
+        router.push('/heartylip');
+        return;
+      }
+      
       const finalHabit = cardItems[selectedIdx];
       setTimeout(() => {
         router.push({

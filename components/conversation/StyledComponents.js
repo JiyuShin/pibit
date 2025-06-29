@@ -525,4 +525,4 @@ export const YearDateText = styled.p`
   margin: 0;
   padding: 0;
   margin-top: -8px;
-`;
+`; 
