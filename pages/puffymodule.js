@@ -5,8 +5,12 @@ import { useRouter } from 'next/router';
 
 const GlobalStyle = createGlobalStyle`
   body {
-    background: url('/bk2.png') no-repeat center center fixed;
+    background-image: url('/bk2.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
     background-size: cover;
+    background-color: #DCD2E3;
   }
 `;
 
@@ -59,19 +63,37 @@ const sensoryTextReveal = keyframes`
 
 const pulse1 = keyframes`
   0%, 100% {
-    transform: translateX(-135px) translateY(30px) rotate(-5deg) scale(1.21);
+    transform: translateX(-135px) translateY(30px) rotate(-115deg) scale(1.21);
   }
   50% {
-    transform: translateX(-135px) translateY(30px) rotate(-5deg) scale(1.30);
+    transform: translateX(-135px) translateY(30px) rotate(-115deg) scale(1.30);
   }
 `;
 
 const pulse2 = keyframes`
   0%, 100% {
-    transform: translateX(-115px) translateY(56px) scale(1.9) rotate(5deg);
+    transform: translateX(-235px) translateY(-14px) scale(1.3) rotate(-145deg);
   }
   50% {
-    transform: translateX(-115px) translateY(56px) scale(1.99) rotate(5deg);
+    transform: translateX(-235px) translateY(-14px) scale(1.39) rotate(-145deg);
+  }
+`;
+
+const rotateLeft = keyframes`
+  from {
+    transform: translateX(-135px) translateY(30px) rotate(-115deg) scale(1.21);
+  }
+  to {
+    transform: translateX(-135px) translateY(30px) rotate(-475deg) scale(1.21);
+  }
+`;
+
+const rotateRight = keyframes`
+  from {
+    transform: translateX(-235px) translateY(-14px) scale(1.3) rotate(-145deg);
+  }
+  to {
+    transform: translateX(-235px) translateY(-14px) scale(1.3) rotate(215deg);
   }
 `;
 
@@ -165,13 +187,14 @@ const Vector1 = styled.div`
   right: 42.89%;
   top: 7.94%;
   bottom: 47.25%;
-  background: url(/h1.png);
+  background: url(/p3.png);
   background-size: contain;
   background-repeat: no-repeat;
-  transform: translateX(-135px) translateY(30px) rotate(-5deg) scale(1.21);
+  transform: translateX(-135px) translateY(30px) rotate(-115deg) scale(1.21);
   opacity: 0;
   animation: ${fadeIn} 1s ease-out 0.5s forwards, 
-             ${pulse1} 3s ease-in-out infinite 1.5s;
+             ${rotateLeft} 10s linear infinite 1.5s;
+  z-index: 1;
 `;
 
 const Vector2 = styled.div`
@@ -180,13 +203,13 @@ const Vector2 = styled.div`
   right: -23.28%;
   top: 65.74%;
   bottom: 2.88%;
-  background: url(/h2.png);
+  background: url(/p4.png);
   background-size: contain;
   background-repeat: no-repeat;
-  transform: translateX(-115px) translateY(56px) scale(1.9) rotate(5deg);
+  transform: translateX(-235px) translateY(-14px) scale(1.3) rotate(-145deg);
   opacity: 0;
   animation: ${fadeIn} 1s ease-out 0.5s forwards, 
-             ${pulse2} 3s ease-in-out infinite 1.5s;
+             ${rotateRight} 10s linear infinite 1.5s;
 `;
 
 const PibitLogo = styled.div`
@@ -261,7 +284,7 @@ const FiveFlowerBgText = styled.div`
   position: absolute;
   width: 1727px;
   height: 449px;
-  left: calc(50% - 1727px/2 + 5px);
+  left: calc(50% - 1727px/2 + 28px);
   top: calc(50% - 449px/2 - 14.5px);
   font-family: 'Pragati Narrow', sans-serif;
   font-style: normal;
@@ -272,6 +295,7 @@ const FiveFlowerBgText = styled.div`
   color: #B5AECA;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
   pointer-events: none;
+  z-index: 2;
   
   span {
     opacity: 0;
@@ -296,6 +320,7 @@ const Description = styled.div`
   line-height: 25px;
   color: #B5B5B5;
   opacity: 0;
+  z-index: 1002;
 
   &.animated {
     animation: ${fadeIn} 0.8s ease-out forwards;
@@ -361,6 +386,7 @@ const ModuleVersionText = styled.div`
   font-size: 40px;
   line-height: 30px;
   color: #B5AECA;
+  z-index: 1002;
 `;
 
 const FiveFlowerTitle = styled.div`
@@ -373,6 +399,7 @@ const FiveFlowerTitle = styled.div`
   font-size: 80px;
   line-height: 30px;
   color: #B5AECA;
+  z-index: 1002;
 `;
 
 const SensoryReliefText = styled.div`
@@ -387,7 +414,7 @@ const SensoryReliefText = styled.div`
   font-size: 38px;
   line-height: 42px;
   text-align: right;
-  color: #FFF9D5;
+  color: #FFFFFF;
   z-index: 999;
   
   span {
@@ -405,7 +432,7 @@ const InfoCard = styled.div`
   position: absolute;
   width: 281px;
   height: 150px;
-  background: linear-gradient(180deg, #E8D1D7 0%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #C6C2D4 0%, #FFFFFF 100%);
   opacity: 0.6;
   box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.25);
   border-radius: 30px;
@@ -423,7 +450,7 @@ const UserPreferenceIcon = styled.div`
     right: calc(87.77% - 5px);
     top: calc(75.36% - 2px);
     bottom: 15.48%;
-    background: url('/cus5.png') no-repeat center center;
+    background: url('/cus9.png') no-repeat center center;
     background-size: contain;
     transform: translateX(-12px) scale(1.40);
     filter: blur(0.5px);
@@ -440,7 +467,7 @@ const UserPreferenceTitle = styled.div`
     font-weight: 600;
     font-size: 20px;
     line-height: 23px;
-    color: #B5AECA;
+    color: #FFFFFF;
 `;
 
 const UserPreferenceDescription = styled.div`
@@ -455,12 +482,13 @@ const UserPreferenceDescription = styled.div`
     font-size: 15px;
     line-height: 22px;
     text-align: right;
-    color: #B5AECA;
+    color: #B1ABC4;
 `;
 
 const CompanionTypeCard = styled(InfoCard)`
   left: 331px;
   top: 780px;
+  width: 338px;
 `;
 
 const CompanionTypeIcon = styled.div`
@@ -469,15 +497,16 @@ const CompanionTypeIcon = styled.div`
     height: 160px;
     left: 366px;
     top: 710px;
-    background: url('/lump3.png') no-repeat center center;
+    background: url('/lump5.png') no-repeat center center;
     background-size: contain;
     transform: scale(2.74);
+    color: #FFFFFF;
 `;
 
 const CompanionTypeTitle = styled.div`
     position: absolute;
-    left: 27.77%;
-    right: 57.54%;
+    left: 31.73%;
+    right: 53.58%;
     top: 80.35%;
     bottom: 11.51%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
@@ -485,22 +514,22 @@ const CompanionTypeTitle = styled.div`
     font-weight: 600;
     font-size: 20px;
     line-height: 35px;
-    color: #B5AECA;
+    color: #FFFFFF;
 `;
 
 const CompanionTypeDescription = styled.div`
     position: absolute;
-    left: 24.21%;
-    right: 60.58%;
-    top: 85.85%;
-    bottom: 8.15%;
+    left: 21%;
+    right: 57%;
+    top: 86%;
+    bottom: 5.15%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
     font-size: 15px;
     line-height: 22px;
     text-align: right;
-    color: #B5AECA;
+    color: #B1ABC4;
     white-space: pre-line;
 `;
 
@@ -545,8 +574,8 @@ export default function PuffyModulePage() {
         }, 1500);
     };
 
-    const line1 = 'Shaped by biting,';
-    const line2 = 'tuned to restless lips.';
+    const line1 = 'Downward weight grounding';
+    const line2 = 'for emotional stability.';
 
     return (
         <>
@@ -570,17 +599,29 @@ export default function PuffyModulePage() {
                     <HeaderLine2 />
                     <BackButton onClick={() => router.back()} />
                     <FiveFlowerBgText className={startTextAnimation ? 'animated' : ''}>
-                        {'Hearty Lip'.split('').map((char, index) => (
-                            <span key={index} style={{ animationDelay: `${0.1 * (index + 1)}s` }}>
+                        {'Puffy'.split('').map((char, index) => (
+                            <span key={`first-${index}`} style={{
+                                animationDelay: `${0.1 * (index + 1)}s`,
+                                marginRight: index === 2 ? '20px' : '0'
+                            }}>
+                                {char}
+                            </span>
+                        ))}
+                        <span style={{display: 'inline-block', width: '150px'}}></span>
+                        {'Puffy'.split('').map((char, index) => (
+                            <span key={`second-${index}`} style={{
+                                animationDelay: `${0.1 * (index + 6)}s`,
+                                marginRight: index === 2 ? '20px' : '0'
+                            }}>
                                 {char}
                             </span>
                         ))}
                     </FiveFlowerBgText>
                     <PibitLogo>PIBIT</PibitLogo>
                     <ModuleVersionText>Module 2rd Ver.</ModuleVersionText>
-                    <FiveFlowerTitle>Hearty Lip</FiveFlowerTitle>
+                    <FiveFlowerTitle>Puffy</FiveFlowerTitle>
                     <Description className={startTextAnimation ? 'animated' : ''}>
-                        사용자님께 'Hearty Lip Module'을 추천드려요!
+                        사용자님께 'Puffy Module'을 추천드려요!
                         <br />
                         마음에 드신다면 맞춤화 피빗 생성을 시작할게요!
                     </Description>
@@ -589,11 +630,11 @@ export default function PuffyModulePage() {
                     <UserPreferenceCard />
                     <UserPreferenceIcon />
                     <UserPreferenceTitle>USER PREFERENCE</UserPreferenceTitle>
-                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>88%</span>의 유저가 손톱물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
+                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>92%</span>의 유저가 손톱물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
                     <CompanionTypeCard />
                     <CompanionTypeIcon />
                     <CompanionTypeTitle>COMPANION TYPE</CompanionTypeTitle>
-                    <CompanionTypeDescription>포근한 마음과 입술의 말랑함을 형태, <br/>질감이 감각적으로 반영된 섬세하고, <br/>감정을 가장 잘 이해해줄 수 있어요</CompanionTypeDescription>
+                    <CompanionTypeDescription>아래 방향의 무게와 호박 모양 말랑함, 작은 펌프<br/>구조가 감각적으로 반영된 섬세한 동반자로,<br/>마음을 가장 편안한 상태로 관리해줄 수 있어요.</CompanionTypeDescription>
                     <SensoryReliefText className={startTextAnimation ? 'animated' : ''}>
                         <div style={{ whiteSpace: 'nowrap' }}>
                             {line1.split('').map((char, index) => (
