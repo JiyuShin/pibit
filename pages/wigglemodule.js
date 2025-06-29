@@ -167,18 +167,19 @@ const WiggleVector1 = styled.div`
   bottom: 82.21%;
   background: url('/w2.png') no-repeat center center;
   background-size: contain;
-  transform: rotate(34.97deg);
+  transform: translateX(-175px) translateY(-10px) rotate(34.97deg) scale(2.15);
 `;
 
 const WiggleVector2 = styled.div`
   position: absolute;
-  left: 37.7%;
-  right: 33.68%;
-  top: -22.71%;
-  bottom: 78.64%;
-  background: url('/w2.png') no-repeat center center;
+  left: 50%;
+  top: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%) rotate(85.41deg);
+  background: url('/w3.png') no-repeat center center;
   background-size: contain;
-  transform: rotate(34.97deg);
+  z-index: 1002;
 `;
 
 const PibitLogo = styled.div`
