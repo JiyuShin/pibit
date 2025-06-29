@@ -108,7 +108,7 @@ const Company = styled.div`
   width: 458px;
   height: 43px;
   left: calc(50% - 458px/2 + 658px);
-  top: 887px;
+  top: 917px;
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 500;
@@ -124,7 +124,7 @@ const CompanyEng = styled.div`
   width: 1086px;
   height: 43px;
   left: calc(50% - 1086px/2 - 197px);
-  top: 885px;
+  top: 915px;
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -162,7 +162,7 @@ const SubDesc = styled.div`
   width: 717px;
   height: 81px;
   left: calc(50% - 717px/2 + 0.5px);
-  top: 461px;
+  top: 455px;
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -449,7 +449,7 @@ const ExploreButton = styled.button`
   pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
 `;
 
-export default function PibitEmotion() {
+export default function InternallyPage() {
   const router = useRouter();
   const { name, selectedHabits: habitsJson } = router.query;
   
@@ -457,7 +457,7 @@ export default function PibitEmotion() {
 
   // 하단 버튼 상태 복구
   const [cardItems, setCardItems] = useState([
-    '손톱 물어뜯기',
+    '턱 괴기',
   ]);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);
@@ -501,7 +501,7 @@ export default function PibitEmotion() {
   return (
     <PageContainer isVisible={isVisible}>
       <Head>
-        <title>PIBIT-감정 유형</title>
+        <title>PIBIT-내부감각</title>
         <meta name="description" content="PIBIT" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -523,11 +523,19 @@ export default function PibitEmotion() {
           <Line1 />
           <Rectangle10 />
           <EmotionTypeText>감정유형 알아가기</EmotionTypeText>
+          <Company>PIBITCOMPANY ⓐ</Company>
+          <CompanyEng>Journey to create habit-caretaker companion pibit</CompanyEng>
           {/* 타이틀, 설명, 결과, 카드, 버튼, 데코레이션 등 */}
           <UserTitle>{name ? `${name}님은` : '님은'}</UserTitle>
           <UserEtc>에 따라</UserEtc>
-          <MainTitle>불안민감형에 해당할 확률이 높아요!</MainTitle>
-          <SubDesc>불안 민감형은 작은 변화나 예기치 않은 상황에도 마음이 쉽게 긴장되고 조급해질 수 있어요. 그로 인해 손톱을 뜯거나 입술을 만지는 등의 습관이 무의식중에 나타나기도 해요. 자꾸 확인하거나, 대답을 기다리며 걱정이 많아지는 모습도 자주 보일 수 있어요. 이런 행동들은 마음을 진정시키려는 나름의 방식이지만, 나도 모르게 반복되기 쉬워요.</SubDesc>
+          <MainTitle>내면몰입형에 해당할 확률이 높아요!</MainTitle>
+          <SubDesc>
+            내면 몰입형은 혼자 있을 때 생각이나 감정에 자연스럽게 깊이 몰입하는 경향이 있습니다.
+            <br />
+            마음을 가라앉히고 집중하기 위해 몸을 편안하게 지탱하는 자세를 자주 취하게 되며,
+            <br />
+            그렇기 때문에 멍하니 있거나 생각이 많아질 때 자연스럽게 <span style={{ color: '#707070', fontWeight: '700' }}>턱을 괴는</span> 습관으로 이어질 수 있습니다.
+          </SubDesc>
           <UserDesc>
             신지유님의 감정유형에 따른 습관 분석이 완료되었어요!<br />
             평소에 익숙할 수도, 예상치 못한 습관일 수도 있는 이 습관을 선택하여 따듯한 동반자 피빗을 만나보세요.

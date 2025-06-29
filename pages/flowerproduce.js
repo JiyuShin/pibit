@@ -95,7 +95,7 @@ const Subtitle = styled.p`
 const Rectangle1 = styled.div`
   position: absolute;
   width: 406px;
-  height: 100px;
+  height: 112px;
   left: 86px;
   top: 342px;
   background: rgba(255, 255, 255, 0.2);
@@ -126,7 +126,7 @@ const BubbleText1 = styled.p`
   position: absolute;
   width: 380px;
   left: 102px;
-  top: 368px;
+  top: 363px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -169,7 +169,7 @@ const FooterBrand = styled.div`
   width: 458px;
   height: 43px;
   left: calc(50% - 458px/2 + 658px);
-  top: 911px;
+  top: 926px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -184,7 +184,7 @@ const CopyrightSymbol = styled.div`
     width: 458px;
     height: 43px;
     left: calc(50% - 458px / 2 + 733px);
-    top: 909px;
+    top: 924px;
     font-family: 'Pretendard Variable', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -200,7 +200,7 @@ const CopyrightCircle = styled.div`
   width: 18px;
   height: 18px;
   left: 1480px;
-  top: 912px;
+  top: 927px;
   border: 2px solid #B5AECA;
   border-radius: 50%;
 `;
@@ -210,7 +210,7 @@ const FooterJourney = styled.div`
   width: 1086px;
   height: 43px;
   left: calc(50% - 1086px/2 - 192px);
-  top: 902px;
+  top: 917px;
   font-family: 'Pretendard Variable Custom';
   font-style: normal;
   font-weight: 600;
@@ -256,13 +256,13 @@ Typewriter.displayName = 'Typewriter';
 
 export default function FlowerProducePage() {
     const router = useRouter();
-    const { name = '지수', selectedHabits } = router.query;
+    const { name = '지수', selectedHabits, finalHabit } = router.query;
     const [showRectangle1, setShowRectangle1] = useState(false);
     const [showBubbleText1, setShowBubbleText1] = useState(false);
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = "안녕! 만나서 반가워, 난 지수와 함께 지내며\n손톱물어뜯기를 곁에서 돌봐줄 따듯하고 포근한 존재야!";
+    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n따듯하고 포근한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
