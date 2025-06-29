@@ -478,8 +478,12 @@ export default function InternallyPage() {
   }, [habitsJson]);
 
   const handleCardSelection = (i) => {
-    setSelectedIdx(i);
-    setIsVisible(false); // 페이지 전환 애니메이션 시작
+    if (i === 0) { 
+      router.push('/puffymodule');
+    } else {
+      setSelectedIdx(i);
+      setIsVisible(false);
+    }
   };
 
   useEffect(() => {

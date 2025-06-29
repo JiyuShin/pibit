@@ -81,17 +81,8 @@ const slideInHeart = keyframes`
     opacity: 0;
   }
   to {
-    transform: translateX(0) translateY(-80px) scale(1.35) rotate(25deg);
+    transform: translateX(0) rotate(-10deg);
     opacity: 1;
-  }
-`;
-
-const continuousRotate = keyframes`
-  from {
-    transform: translate(calc(-50% + 555px), calc(-50% + 345px)) rotate(30.41deg);
-  }
-  to {
-    transform: translate(calc(-50% + 555px), calc(-50% + 345px)) rotate(390.41deg);
   }
 `;
 
@@ -123,11 +114,11 @@ const FadeOverlay = styled.div`
 const Root = styled.div`
   position: relative;
   width: 1512px;
-  height: 1000px;
+  height: 982px;
   margin: 0 auto;
   animation: ${fadeIn} 0.8s ease-in-out;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
@@ -137,7 +128,7 @@ const BackgroundGradient1 = styled.div`
   height: 1493px;
   left: 52px;
   top: 1000px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, #D3EADC 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, #A394A7 100%);
   transform: rotate(-90deg);
   transform-origin: top left;
 `;
@@ -148,18 +139,18 @@ const BackgroundGradient2 = styled.div`
   height: 982px;
   left: 870.94px;
   top: -318.99px;
-  background: linear-gradient(270deg, #D3EADC 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(270deg, #DCD2E3 0%, rgba(255, 255, 255, 0) 100%);
   transform: rotate(-52.69deg) scale(1.15);
   z-index: 1;
 `;
 
 const HeartImage = styled.div`
   position: absolute;
-  width: 1342px;
-  height: 946px;
-  left: 233px;
-  top: 81px;
-  background: url(/module/wiggle.png);
+  width: 1173.44px;
+  height: 827.17px;
+  left: 333px;
+  top: 71px;
+  background: url(/module/puffy.png);
   background-size: contain;
   background-repeat: no-repeat;
   z-index: 1000;
@@ -168,30 +159,34 @@ const HeartImage = styled.div`
   animation: ${slideInHeart} 1.5s ease-out forwards;
 `;
 
-const WiggleVector1 = styled.div`
+const Vector1 = styled.div`
   position: absolute;
-  left: 38.56%;
-  right: 39.12%;
-  top: -16.13%;
-  bottom: 82.21%;
-  background: url('/w2.png') no-repeat center center;
+  left: 17.53%;
+  right: 42.89%;
+  top: 7.94%;
+  bottom: 47.25%;
+  background: url(/h1.png);
   background-size: contain;
-  transform: translateX(-175px) translateY(-10px) rotate(34.97deg) scale(2.365);
+  background-repeat: no-repeat;
+  transform: translateX(-135px) translateY(30px) rotate(-5deg) scale(1.21);
+  opacity: 0;
+  animation: ${fadeIn} 1s ease-out 0.5s forwards, 
+             ${pulse1} 3s ease-in-out infinite 1.5s;
 `;
 
-const WiggleVector2 = styled.div`
+const Vector2 = styled.div`
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 660px;
-  height: 660px;
-  transform: translate(calc(-50% + 555px), calc(-50% + 345px)) rotate(30.41deg);
-  background: url('/w3.png') no-repeat center center;
+  left: calc(95.57% - 100px);
+  right: -23.28%;
+  top: 65.74%;
+  bottom: 2.88%;
+  background: url(/h2.png);
   background-size: contain;
-  z-index: 998;
+  background-repeat: no-repeat;
+  transform: translateX(-115px) translateY(56px) scale(1.9) rotate(5deg);
   opacity: 0;
-  animation: ${fadeIn} 1.5s ease-out forwards,
-             ${continuousRotate} 15s linear infinite 1.5s;
+  animation: ${fadeIn} 1s ease-out 0.5s forwards, 
+             ${pulse2} 3s ease-in-out infinite 1.5s;
 `;
 
 const PibitLogo = styled.div`
@@ -277,7 +272,6 @@ const FiveFlowerBgText = styled.div`
   color: #B5AECA;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
   pointer-events: none;
-  z-index: 999;
   
   span {
     opacity: 0;
@@ -383,16 +377,18 @@ const FiveFlowerTitle = styled.div`
 
 const SensoryReliefText = styled.div`
   position: absolute;
-  right: calc(1.06% + 25px);
-  top: calc(89.71% - 7px);
+  left: calc(65.55% - 40px);
+  right: calc(1.06% + 40px);
+  top: calc(89.71% - 22px);
+  bottom: calc(4.79% + 22px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 34px;
+  font-size: 38px;
   line-height: 42px;
   text-align: right;
-  color: #B5AECA;
-  z-index: 1001;
+  color: #FFF9D5;
+  z-index: 999;
   
   span {
     opacity: 0;
@@ -409,7 +405,7 @@ const InfoCard = styled.div`
   position: absolute;
   width: 281px;
   height: 150px;
-  background: linear-gradient(180deg, #DEECE5 0%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #E8D1D7 0%, #FFFFFF 100%);
   opacity: 0.6;
   box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.25);
   border-radius: 30px;
@@ -427,7 +423,7 @@ const UserPreferenceIcon = styled.div`
     right: calc(87.77% - 5px);
     top: calc(75.36% - 2px);
     bottom: 15.48%;
-    background: url('/cus6.png') no-repeat center center;
+    background: url('/cus5.png') no-repeat center center;
     background-size: contain;
     transform: translateX(-12px) scale(1.40);
     filter: blur(0.5px);
@@ -436,7 +432,9 @@ const UserPreferenceIcon = styled.div`
 const UserPreferenceTitle = styled.div`
     position: absolute;
     left: 6.88%;
-    top: calc(80.96% - 5px);
+    right: 78.44%;
+    top: 80.96%;
+    bottom: 14.87%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -450,6 +448,7 @@ const UserPreferenceDescription = styled.div`
     left: 2.58%;
     right: 81.28%;
     top: 86.25%;
+    bottom: 7.74%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -470,7 +469,7 @@ const CompanionTypeIcon = styled.div`
     height: 160px;
     left: 366px;
     top: 710px;
-    background: url('/cus8.png') no-repeat center center;
+    background: url('/lump3.png') no-repeat center center;
     background-size: contain;
     transform: scale(2.74);
 `;
@@ -478,7 +477,9 @@ const CompanionTypeIcon = styled.div`
 const CompanionTypeTitle = styled.div`
     position: absolute;
     left: 27.77%;
-    top: calc(80.35% - 5px);
+    right: 57.54%;
+    top: 80.35%;
+    bottom: 11.51%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -489,9 +490,10 @@ const CompanionTypeTitle = styled.div`
 
 const CompanionTypeDescription = styled.div`
     position: absolute;
-    left: calc(24.21% - 2px);
-    right: calc(60.58% + 2px);
-    top: calc(85.85% - 10px);
+    left: 24.21%;
+    right: 60.58%;
+    top: 85.85%;
+    bottom: 8.15%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -502,7 +504,7 @@ const CompanionTypeDescription = styled.div`
     white-space: pre-line;
 `;
 
-export default function WiggleModulePage() {
+export default function PuffyModulePage() {
     const router = useRouter();
     const { name, selectedHabits, finalHabit } = router.query;
     const [isExiting, setIsExiting] = useState(false);
@@ -543,14 +545,14 @@ export default function WiggleModulePage() {
         }, 1500);
     };
 
-    const line1 = 'Form that breathes with the body,';
-    const line2 = 'tuned to its rhythm';
+    const line1 = 'Shaped by biting,';
+    const line2 = 'tuned to restless lips.';
 
     return (
         <>
             <GlobalStyle />
             <Head>
-                <title>PIBIT - Wiggle Module</title>
+                <title>PIBIT - Puffy Module</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
                 <link href="https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@700&display=swap" rel="stylesheet" />
@@ -562,26 +564,23 @@ export default function WiggleModulePage() {
                     <BackgroundGradient1 />
                     <BackgroundGradient2 />
                     <HeartImage />
-                    <WiggleVector1 />
-                    <WiggleVector2 />
+                    <Vector1 />
+                    <Vector2 />
                     <HeaderLine />
                     <HeaderLine2 />
                     <BackButton onClick={() => router.back()} />
                     <FiveFlowerBgText className={startTextAnimation ? 'animated' : ''}>
-                        {'Wiggler'.split('').map((char, index) => (
-                            <span key={index} style={{ 
-                                animationDelay: `${0.1 * (index + 1)}s`,
-                                marginRight: index === 3 ? '505px' : '0' 
-                            }}>
+                        {'Hearty Lip'.split('').map((char, index) => (
+                            <span key={index} style={{ animationDelay: `${0.1 * (index + 1)}s` }}>
                                 {char}
                             </span>
                         ))}
                     </FiveFlowerBgText>
                     <PibitLogo>PIBIT</PibitLogo>
-                    <ModuleVersionText>Module 3rd Ver.</ModuleVersionText>
-                    <FiveFlowerTitle>Wiggler</FiveFlowerTitle>
+                    <ModuleVersionText>Module 2rd Ver.</ModuleVersionText>
+                    <FiveFlowerTitle>Hearty Lip</FiveFlowerTitle>
                     <Description className={startTextAnimation ? 'animated' : ''}>
-                        사용자님께 'Wiggler Module'을 추천드려요!
+                        사용자님께 'Hearty Lip Module'을 추천드려요!
                         <br />
                         마음에 드신다면 맞춤화 피빗 생성을 시작할게요!
                     </Description>
