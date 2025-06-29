@@ -271,7 +271,7 @@ const CardRow = styled.div`
 
 const HabitCardRow = styled.div`
   position: absolute;
-  top: 235px;
+  top: 249px;
   left: -50px;
   width: 1530px;
   display: flex;
@@ -287,23 +287,23 @@ const HabitCard = styled.div`
   background: #FFFFFF;
   border: 2px solid #FFD64D;
   box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
+  border-radius: 23px;
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 10.4px;
-  line-height: 24px;
+  font-size: 12px;
+  line-height: 28px;
   text-align: center;
   color: #9A9A9A;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 19px;
-  min-width: 120px;
+  padding: 0 22px;
+  min-width: 138px;
   width: auto;
-  max-width: 340px;
-  height: 38px;
+  max-width: 391px;
+  height: 44px;
   z-index: 50;
 `;
 
@@ -560,7 +560,7 @@ export default function PibitEmotion() {
               <HabitCard key={i}>{text}</HabitCard>
             ))}
           </HabitCardRow>
-          <HabitCardRow style={{ top: '285px' }}>
+          <HabitCardRow style={{ top: '299px' }}>
             {selectedHabits.slice(2, 4).map((text, i) => (
               <HabitCard key={i + 2}>{text}</HabitCard>
             ))}
