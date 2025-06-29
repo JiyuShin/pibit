@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, createGlobalStyle } from 'styled-components';
 import { useRouter } from 'next/router';
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    background: url('/bk2.png') no-repeat center center fixed;
+    background-size: cover;
+  }
+`;
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -114,17 +121,6 @@ const Root = styled.div`
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
-const Bk2Bg = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: url('/bk2.png') no-repeat center center;
-  background-size: cover;
-  z-index: -100;
-`;
-
 const BackgroundGradient1 = styled.div`
   position: absolute;
   width: 1041px;
@@ -173,7 +169,7 @@ const PibitLogo = styled.div`
   width: 562px;
   height: 75px;
   left: -65px;
-  top: 0px;
+  top: 20px;
   font-family: 'Pragati Narrow', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -188,7 +184,7 @@ const HeaderLine = styled.div`
   width: 741px;
   height: 0px;
   left: 281px;
-  top: 53px;
+  top: 73px;
   border: 1px solid #FFFFFF;
 `;
 
@@ -197,13 +193,13 @@ const HeaderLine2 = styled.div`
   width: 63px;
   height: 0px;
   left: 1230px;
-  top: 54px;
+  top: 74px;
   border: 1px solid #FFFFFF;
 `;
 
 const BackButton = styled.div`
   position: absolute;
-  top: 15px;
+  top: 35px;
   left: 20px;
   width: 320px;
   height: 80px;
@@ -304,7 +300,7 @@ const GenerateButton = styled.button`
   width: 181.1px;
   height: 38.4px;
   left: calc(50% - 181.1px/2 + 627.19px);
-  top: 33px;
+  top: 53px;
   background: #FFF7E0;
   border: 1px solid #FFD64D;
   box-shadow: 5px 5px 16px 2px rgba(100, 61, 130, 0.25);
@@ -330,7 +326,7 @@ const CustomizeButton = styled.button`
   width: 211.2px;
   height: 38.4px;
   left: 1022px;
-  top: 33px;
+  top: 53px;
   background: rgba(255, 255, 255, 0.2);
   border: 1.6px solid #FFFFFF;
   box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.08);
@@ -536,64 +532,68 @@ export default function FlowerModulePage() {
 
     return (
         <>
+            <GlobalStyle />
             <Head>
                 <title>PIBIT - Five Flower Module</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
                 <link href="https://fonts.googleapis.com/css2?family=Pragati+Narrow:wght@700&display=swap" rel="stylesheet" />
+                <meta name="description" content="피빗 모듈 선택" />
             </Head>
-            <Bk2Bg />
-            <Root>
-                <BackgroundGradient1 />
-                <BackgroundGradient2 />
-                <OrangeFlowerImage />
-                <YellowFlowerImage />
-                <HeaderLine />
-                <HeaderLine2 />
-                <BackButton onClick={() => router.back()} />
-                <FiveFlowerBgText className={startTextAnimation ? 'animated' : ''}>
-                    {'Five Flower'.split('').map((char, index) => (
-                        <span key={index} style={{ animationDelay: `${0.1 * (index + 1)}s` }}>
-                            {char === ' ' ? '\u00A0' : char}
-                        </span>
-                    ))}
-                </FiveFlowerBgText>
-                <PibitLogo>PIBIT</PibitLogo>
-                <FlowerImage className={isImageAnimated ? 'animated' : ''} />
-                <ModuleVersionText>Module 1st Ver.</ModuleVersionText>
-                <FiveFlowerTitle>Five Flower</FiveFlowerTitle>
-                <Description className={startTextAnimation ? 'animated' : ''}>
-                    {name ? `${name}님께 'Five Flower Module'을 추천드려요!` : "잠시만 기다려주세요..."}<br/>
-                    마음에 드신다면 맞춤화 피빗 생성을 시작할게요!
-                </Description>
-                <CustomizeButton onClick={handleGenerateClick}>피빗 커스터마이징</CustomizeButton>
-                <GenerateButton onClick={handleProduceClick}>피빗 생성하기</GenerateButton>
-                <UserPreferenceCard />
-                <UserPreferenceIcon />
-                <UserPreferenceTitle>USER PREFERENCE</UserPreferenceTitle>
-                <UserPreferenceDescription><span style={{ fontSize: '22px' }}>75%</span>의 유저가 손톱물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
-                <CompanionTypeCard />
-                <CompanionTypeIcon />
-                <CompanionTypeTitle>COMPANION TYPE</CompanionTypeTitle>
-                <CompanionTypeDescription>꽃봉우리의 형태로 어떤 감정이든<br/>깊이 품어줄 수 있는 마음씨가 따듯하고<br/>다정한 동반자에요</CompanionTypeDescription>
-                <SensoryReliefText className={startTextAnimation ? 'animated' : ''}>
-                    <div style={{ whiteSpace: 'nowrap' }}>
-                        {line1.split('').map((char, index) => (
-                            <span key={`l1-${index}`} style={{ animationDelay: `${0.05 * (index + 1)}s` }}>
+            <main>
+                <Root>
+                    {showOverlay && <FadeOverlay className="fade-in" />}
+                    <BackgroundGradient1 />
+                    <BackgroundGradient2 />
+                    <OrangeFlowerImage />
+                    <YellowFlowerImage />
+                    <HeaderLine />
+                    <HeaderLine2 />
+                    <BackButton onClick={() => router.back()} />
+                    <FiveFlowerBgText className={startTextAnimation ? 'animated' : ''}>
+                        {'Five Flower'.split('').map((char, index) => (
+                            <span key={index} style={{ animationDelay: `${0.1 * (index + 1)}s` }}>
                                 {char === ' ' ? '\u00A0' : char}
                             </span>
                         ))}
-                    </div>
-                    <div>
-                        {line2.split('').map((char, index) => (
-                            <span key={`l2-${index}`} style={{ animationDelay: `${0.05 * (line1.length + index + 1)}s` }}>
-                                {char === ' ' ? '\u00A0' : char}
-                            </span>
-                        ))}
-                    </div>
-                </SensoryReliefText>
-                <FooterText>Journey to create habit-caretaker companion pibit</FooterText>
-            </Root>
+                    </FiveFlowerBgText>
+                    <PibitLogo>PIBIT</PibitLogo>
+                    <FlowerImage className={isImageAnimated ? 'animated' : ''} />
+                    <ModuleVersionText>Module 1st Ver.</ModuleVersionText>
+                    <FiveFlowerTitle>Five Flower</FiveFlowerTitle>
+                    <Description className={startTextAnimation ? 'animated' : ''}>
+                        {name ? `${name}님께 'Five Flower Module'을 추천드려요!` : "잠시만 기다려주세요..."}<br/>
+                        마음에 드신다면 맞춤화 피빗 생성을 시작할게요!
+                    </Description>
+                    <CustomizeButton onClick={handleGenerateClick}>피빗 커스터마이징</CustomizeButton>
+                    <GenerateButton onClick={handleProduceClick}>피빗 생성하기</GenerateButton>
+                    <UserPreferenceCard />
+                    <UserPreferenceIcon />
+                    <UserPreferenceTitle>USER PREFERENCE</UserPreferenceTitle>
+                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>75%</span>의 유저가 손톱물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
+                    <CompanionTypeCard />
+                    <CompanionTypeIcon />
+                    <CompanionTypeTitle>COMPANION TYPE</CompanionTypeTitle>
+                    <CompanionTypeDescription>꽃봉우리의 형태로 어떤 감정이든<br/>깊이 품어줄 수 있는 마음씨가 따듯하고<br/>다정한 동반자에요</CompanionTypeDescription>
+                    <SensoryReliefText className={startTextAnimation ? 'animated' : ''}>
+                        <div style={{ whiteSpace: 'nowrap' }}>
+                            {line1.split('').map((char, index) => (
+                                <span key={`l1-${index}`} style={{ animationDelay: `${0.05 * (index + 1)}s` }}>
+                                    {char === ' ' ? '\u00A0' : char}
+                                </span>
+                            ))}
+                        </div>
+                        <div>
+                            {line2.split('').map((char, index) => (
+                                <span key={`l2-${index}`} style={{ animationDelay: `${0.05 * (line1.length + index + 1)}s` }}>
+                                    {char === ' ' ? '\u00A0' : char}
+                                </span>
+                            ))}
+                        </div>
+                    </SensoryReliefText>
+                    <FooterText>Journey to create habit-caretaker companion pibit</FooterText>
+                </Root>
+            </main>
         </>
     );
 } 
