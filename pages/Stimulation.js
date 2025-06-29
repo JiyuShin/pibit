@@ -478,6 +478,10 @@ export default function StimulationPage() {
   }, [habitsJson]);
 
   const handleCardSelection = (i) => {
+    if (cardItems[i] === '다리 떨기') {
+      router.push('/wigglemodule');
+      return;
+    }
     setSelectedIdx(i);
     setIsVisible(false); // 페이지 전환 애니메이션 시작
   };
