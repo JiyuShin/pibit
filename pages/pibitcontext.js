@@ -58,27 +58,25 @@ const BlinkingCursor = styled.span`
 // 습관 카드 데이터 (예시 5개, 나머지는 추가만 하면 됨)
 const CARD_WIDTH = 261;
 const CARD_GAP = 20;
-const habitCards = [
-  // 첫째 줄
-  { text: "사람 많은 곳에 가기 전 괜히 긴장돼요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 653 },
-  { text: "싫은 말이 있어도 그냥 참고 넘겨요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 653 },
-  { text: "실수할까봐 계획을 계속 다시 세워요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 653 },
-  { text: "조용히 반복되는 행동을 하면 편해져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 653 },
-  // 둘째 줄
-  { text: "아무 생각 없이 다리를 떨어요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 735 },
-  { text: "혼자 있는게 더 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 735 },
-  { text: "긴장될 때 손이나 입술을 만져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 735 },
-  { text: "책상 물건이 딱 맞춰져 있어야 마음이 편해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 735 },
-  // 셋째 줄 (정렬 수정)
-  { text: "물건이 잘 있는지 반복적으로 확인해요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 820 },
-  { text: "내 감정을 말로 설명하기 어렵게 느껴져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 820 },
-  { text: "자리에 오래 앉아있는게 어려워요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 820 },
-  { text: "불편한 상황이면 자리를 피해요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 820 },
-  // 넷째 줄(정렬 수정)
-  { text: "조용한 상황이 불편해서 뭐라도 틀어놔요", left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 905 },
-  { text: "말은 안해도 속으로 오래 곱씹어요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 905 },
-  { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 905 },
-  { text: "방이 어질러져 있으면 불안해져요", left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 905 },
+const habitCardsData = [
+  // 1세트
+  { text: "사람 많은 곳에 가기 전 괜히 긴장돼요", type: "불안 민감형", set: 1, left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 653 },
+  { text: "싫은 말이 있어도 그냥 참고 넘겨요", type: "내면 몰입형", set: 1, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 653 },
+  { text: "실수할까봐 계획을 계속 다시 세워요", type: "과잉 통제형", set: 1, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 653 },
+  { text: "조용히 반복되는 행동을 하면 편해져요", type: "내면 몰입형", set: 1, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 653 },
+  { text: "아무 생각 없이 다리를 떨어요", type: "자극 추구형", set: 1, left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 735 },
+  { text: "혼자 있는게 더 편해요", type: "내면 몰입형", set: 1, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 735 },
+  { text: "긴장될 때 손이나 입술을 만져요", type: "불안 민감형", set: 1, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 735 },
+  { text: "책상 물건이 딱 맞춰져 있어야 마음이 편해요", type: "과잉 통제형", set: 1, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 735 },
+  // 2세트
+  { text: "물건이 잘 있는지 반복적으로 확인해요", type: "과잉 통제형", set: 2, left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 820 },
+  { text: "내 감정을 말로 설명하기 어렵게 느껴져요", type: "내면 몰입형", set: 2, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 820 },
+  { text: "자리에 오래 앉아있는게 어려워요", type: "자극 추구형", set: 2, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 820 },
+  { text: "불편한 상황이면 자리를 피해요", type: "불안 민감형", set: 2, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 820 },
+  { text: "조용한 상황이 불편해서 뭐라도 틀어놔요", type: "자극 추구형", set: 2, left: "calc(50% - 243px/2 - 547.5px + 140px - 10px - 12px)", top: 905 },
+  { text: "말은 안해도 속으로 오래 곱씹어요", type: "불안 민감형", set: 2, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 1}px - 12px)`, top: 905 },
+  { text: "무의식적으로 볼 안쪽을 씹은 적이 있어요", type: "과잉 통제형", set: 2, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 2}px - 12px)`, top: 905 },
+  { text: "방이 어질러져 있으면 불안해져요", type: "자극 추구형", set: 2, left: `calc(50% - 243px/2 - 547.5px + 140px - 10px + ${(CARD_WIDTH + CARD_GAP) * 3}px - 12px)`, top: 905 },
 ];
 
 const Root = styled.div`
@@ -691,6 +689,14 @@ export default function PibitContext() {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
+    // 페이지 로드 시 localStorage에서 선택된 습관 불러오기
+    const savedHabits = localStorage.getItem('selectedHabits');
+    if (savedHabits) {
+      setSelectedHabits(JSON.parse(savedHabits));
+    }
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
@@ -760,19 +766,32 @@ export default function PibitContext() {
     if (step !== 2 && step !== 4) return;
 
     setSelectedHabits(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(idx => idx !== index);
-      } else if (prev.length < 4) {
-        return [...prev, index];
+      const isSelected = prev.includes(index);
+      const selectionSet = habitCardsData[index].set;
+
+      if (isSelected) {
+        const newSelection = prev.filter(idx => idx !== index);
+        localStorage.setItem('selectedHabits', JSON.stringify(newSelection));
+        return newSelection;
       } else {
-        return prev;
+        if (prev.length >= 4) return prev;
+
+        const selectionsInSet = prev.filter(i => habitCardsData[i].set === selectionSet).length;
+        if (selectionsInSet >= 2) {
+          alert(`이 세트에서는 2개까지만 선택할 수 있습니다.`);
+          return prev;
+        }
+
+        const newSelection = [...prev, index];
+        localStorage.setItem('selectedHabits', JSON.stringify(newSelection));
+        return newSelection;
       }
     });
   };
 
   const cardsInFirstStep = 8;
-  const group1Cards = habitCards.slice(0, cardsInFirstStep);
-  const group2Cards = habitCards.slice(cardsInFirstStep);
+  const group1Cards = habitCardsData.slice(0, cardsInFirstStep);
+  const group2Cards = habitCardsData.slice(cardsInFirstStep);
 
   // group2 카드들의 위치를 group1 카드들의 위치에 매핑
   const remappedGroup2Cards = group2Cards.map((card, index) => {
@@ -792,22 +811,46 @@ export default function PibitContext() {
     router.back();
   };
 
-  const handleNextClick = () => {
-    if (selectedHabits.length === 0) {
-      alert("하나 이상의 습관을 선택해주세요.");
+  const handleNavigation = () => {
+    if (selectedHabits.length !== 4) {
+      alert("4개의 습관을 선택해주세요.");
       return;
     }
-    const habitsToPass = selectedHabits.map(index => habitCards[index].text);
+    
+    // 1. 유형 집계
+    const selectedData = selectedHabits.map(index => habitCardsData[index]);
+    const habitTexts = selectedData.map(habit => habit.text);
+    const typeCounts = selectedData.reduce((acc, habit) => {
+      acc[habit.type] = (acc[habit.type] || 0) + 1;
+      return acc;
+    }, {});
+
+    // 2. 최다 유형 결정 및 동점 처리
+    const priority = ["불안 민감형", "과잉 통제형", "내면 몰입형", "자극 추구형"];
+    
+    let maxCount = 0;
+    for (const type in typeCounts) {
+      if (typeCounts[type] > maxCount) {
+        maxCount = typeCounts[type];
+      }
+    }
+    const topTypes = Object.keys(typeCounts).filter(type => typeCounts[type] === maxCount);
+    const finalType = priority.find(p => topTypes.includes(p));
+
+    // 3. 페이지 이동
+    const pageMapping = {
+      "불안 민감형": "/pibitemotion",
+      "자극 추구형": "/Stimulation",
+      "과잉 통제형": "/Overcontrol",
+      "내면 몰입형": "/Internally"
+    };
+    const targetPage = pageMapping[finalType];
+
     router.push({
-      pathname: '/pibitemotion',
-      query: { name: router.query.name, selectedHabits: JSON.stringify(habitsToPass) }
+      pathname: targetPage,
+      query: { name: router.query.name, selectedHabits: JSON.stringify(habitTexts) }
     });
   };
-
-  useEffect(() => {
-    const text = `${router.query.name || '방문자'}님과 가장 가까운 습관을\n4개에서 8개 사이로 선택해주세요.`;
-    // ... existing code ...
-  }, [router.query.name, selectedHabits]);
 
   return (
     <PageContainer isFadingOut={isFadingOut}>
@@ -860,7 +903,7 @@ export default function PibitContext() {
           </CenterCircle>
           <Group>
             {group1Cards.map((card, i) => {
-              const originalIndex = habitCards.findIndex(c => c.text === card.text);
+              const originalIndex = habitCardsData.findIndex(c => c.text === card.text);
               return (
                 <HabitCard
                   key={`g1-${i}`}
@@ -876,7 +919,7 @@ export default function PibitContext() {
               );
             })}
             {remappedGroup2Cards.map((card, i) => {
-              const originalIndex = habitCards.findIndex(c => c.text === card.text);
+              const originalIndex = habitCardsData.findIndex(c => c.text === card.text);
               return (
                 <HabitCard
                   key={`g2-${i}`}
@@ -895,7 +938,7 @@ export default function PibitContext() {
           <BottomButton
             visible={selectedHabits.length === 4}
             disabled={selectedHabits.length !== 4}
-            onClick={handleNextClick}
+            onClick={handleNavigation}
           >습관 유형 탐색하기</BottomButton>
         </Root>
       </main>
