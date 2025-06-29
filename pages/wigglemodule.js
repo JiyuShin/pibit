@@ -86,6 +86,15 @@ const slideInHeart = keyframes`
   }
 `;
 
+const continuousRotate = keyframes`
+  from {
+    transform: translate(calc(-50% + 555px), calc(-50% + 345px)) rotate(30.41deg);
+  }
+  to {
+    transform: translate(calc(-50% + 555px), calc(-50% + 345px)) rotate(390.41deg);
+  }
+`;
+
 const FadeOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -114,11 +123,11 @@ const FadeOverlay = styled.div`
 const Root = styled.div`
   position: relative;
   width: 1512px;
-  height: 982px;
+  height: 1000px;
   margin: 0 auto;
   animation: ${fadeIn} 0.8s ease-in-out;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
@@ -167,19 +176,22 @@ const WiggleVector1 = styled.div`
   bottom: 82.21%;
   background: url('/w2.png') no-repeat center center;
   background-size: contain;
-  transform: translateX(-175px) translateY(-10px) rotate(34.97deg) scale(2.15);
+  transform: translateX(-175px) translateY(-10px) rotate(34.97deg) scale(2.365);
 `;
 
 const WiggleVector2 = styled.div`
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 300px;
-  height: 300px;
-  transform: translate(-50%, -50%) rotate(85.41deg);
+  width: 660px;
+  height: 660px;
+  transform: translate(calc(-50% + 555px), calc(-50% + 345px)) rotate(30.41deg);
   background: url('/w3.png') no-repeat center center;
   background-size: contain;
-  z-index: 1002;
+  z-index: 998;
+  opacity: 0;
+  animation: ${fadeIn} 1.5s ease-out forwards,
+             ${continuousRotate} 15s linear infinite 1.5s;
 `;
 
 const PibitLogo = styled.div`
@@ -265,6 +277,7 @@ const FiveFlowerBgText = styled.div`
   color: #B5AECA;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
   pointer-events: none;
+  z-index: 999;
   
   span {
     opacity: 0;
@@ -370,16 +383,16 @@ const FiveFlowerTitle = styled.div`
 
 const SensoryReliefText = styled.div`
   position: absolute;
-  left: calc(65.55% - 40px);
-  right: calc(1.06% + 40px);
-  top: calc(89.71% - 22px);
+  right: calc(1.06% + 25px);
+  top: calc(89.71% - 7px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 38px;
+  font-size: 34px;
   line-height: 42px;
   text-align: right;
-  color: #FFF9D5;
+  color: #B5AECA;
+  z-index: 1001;
   
   span {
     opacity: 0;
@@ -396,7 +409,7 @@ const InfoCard = styled.div`
   position: absolute;
   width: 281px;
   height: 150px;
-  background: linear-gradient(180deg, #E8D1D7 0%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #DEECE5 0%, #FFFFFF 100%);
   opacity: 0.6;
   box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.25);
   border-radius: 30px;
@@ -414,7 +427,7 @@ const UserPreferenceIcon = styled.div`
     right: calc(87.77% - 5px);
     top: calc(75.36% - 2px);
     bottom: 15.48%;
-    background: url('/cus5.png') no-repeat center center;
+    background: url('/cus6.png') no-repeat center center;
     background-size: contain;
     transform: translateX(-12px) scale(1.40);
     filter: blur(0.5px);
@@ -457,9 +470,10 @@ const CompanionTypeIcon = styled.div`
     height: 160px;
     left: 366px;
     top: 710px;
-    background: url('/lump3.png') no-repeat center center;
+    background: url('/cus7.png') no-repeat center center;
     background-size: contain;
     transform: scale(2.74);
+    filter: blur(0.00003px);
 `;
 
 const CompanionTypeTitle = styled.div`
@@ -476,9 +490,9 @@ const CompanionTypeTitle = styled.div`
 
 const CompanionTypeDescription = styled.div`
     position: absolute;
-    left: 24.21%;
-    right: 60.58%;
-    top: 85.85%;
+    left: calc(24.21% - 2px);
+    right: calc(60.58% + 2px);
+    top: calc(85.85% - 10px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -530,8 +544,8 @@ export default function WiggleModulePage() {
         }, 1500);
     };
 
-    const line1 = 'Shaped by biting,';
-    const line2 = 'tuned to restless lips.';
+    const line1 = 'Form that breathes with the body,';
+    const line2 = 'tuned to its rhythm';
 
     return (
         <>
