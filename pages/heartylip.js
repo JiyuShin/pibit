@@ -118,7 +118,7 @@ const Root = styled.div`
   margin: 0 auto;
   animation: ${fadeIn} 0.8s ease-in-out;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
@@ -149,7 +149,7 @@ const HeartImage = styled.div`
   width: 1342px;
   height: 946px;
   left: 233px;
-  top: 81px;
+  top: 65px;
   background: url(/module/heart.png);
   background-size: contain;
   background-repeat: no-repeat;
@@ -377,16 +377,16 @@ const FiveFlowerTitle = styled.div`
 
 const SensoryReliefText = styled.div`
   position: absolute;
-  left: calc(65.55% - 40px);
+  left: calc(65.55% - 40px + 12px);
   right: calc(1.06% + 40px);
-  top: calc(89.71% - 22px);
+  top: calc(89.71% - 22px - 17px - 16px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 38px;
+  font-size: 41.8px;
   line-height: 42px;
   text-align: right;
-  color: #FFF9D5;
+  color: #FFFFFF;
   
   span {
     opacity: 0;
@@ -411,7 +411,7 @@ const InfoCard = styled.div`
 
 const UserPreferenceCard = styled(InfoCard)`
   left: 16px;
-  top: 780px;
+  top: 763px;
 `;
 
 const UserPreferenceIcon = styled.div`
@@ -419,7 +419,7 @@ const UserPreferenceIcon = styled.div`
     position: absolute;
     left: calc(1.72% + 5px);
     right: calc(87.77% - 5px);
-    top: calc(75.36% - 2px);
+    top: calc(75.36% - 2px - 17px);
     bottom: 15.48%;
     background: url('/cus5.png') no-repeat center center;
     background-size: contain;
@@ -430,7 +430,7 @@ const UserPreferenceIcon = styled.div`
 const UserPreferenceTitle = styled.div`
     position: absolute;
     left: 6.88%;
-    top: 80.96%;
+    top: calc(80.96% - 17px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -443,7 +443,7 @@ const UserPreferenceDescription = styled.div`
     position: absolute;
     left: 2.58%;
     right: 81.28%;
-    top: 86.25%;
+    top: calc(86.25% - 17px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -455,7 +455,7 @@ const UserPreferenceDescription = styled.div`
 
 const CompanionTypeCard = styled(InfoCard)`
   left: 331px;
-  top: 780px;
+  top: 763px;
 `;
 
 const CompanionTypeIcon = styled.div`
@@ -463,7 +463,7 @@ const CompanionTypeIcon = styled.div`
     width: 87px;
     height: 160px;
     left: 366px;
-    top: 710px;
+    top: 693px;
     background: url('/lump3.png') no-repeat center center;
     background-size: contain;
     transform: scale(2.74);
@@ -472,7 +472,7 @@ const CompanionTypeIcon = styled.div`
 const CompanionTypeTitle = styled.div`
     position: absolute;
     left: 27.77%;
-    top: 80.35%;
+    top: calc(80.35% - 17px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -485,7 +485,7 @@ const CompanionTypeDescription = styled.div`
     position: absolute;
     left: 24.21%;
     right: 60.58%;
-    top: 85.85%;
+    top: calc(85.85% - 17px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -581,7 +581,7 @@ export default function HeartyLipPage() {
                     <UserPreferenceCard />
                     <UserPreferenceIcon />
                     <UserPreferenceTitle>USER PREFERENCE</UserPreferenceTitle>
-                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>88%</span>의 유저가 손톱물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
+                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>88%</span>의 유저가 입술 물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
                     <CompanionTypeCard />
                     <CompanionTypeIcon />
                     <CompanionTypeTitle>COMPANION TYPE</CompanionTypeTitle>

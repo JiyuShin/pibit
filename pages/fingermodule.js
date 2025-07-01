@@ -453,7 +453,7 @@ const InfoCard = styled.div`
 `;
 
 const UserPreferenceCard = styled(InfoCard)`
-  left: 16px;
+  left: 36px;
   top: 760px;
 `;
 
@@ -461,18 +461,18 @@ const UserPreferenceIcon = styled.div`
     position: absolute;
     width: 87px;
     height: 160px;
-    left: 51px;
+    left: 71px;
     top: 690px;
     background: url('/cus3.png') no-repeat center center;
     background-size: contain;
-    transform: scale(2.82);
+    transform: scale(3.02022);
     filter: blur(0.5px);
 `;
 
 const UserPreferenceTitle = styled.div`
     position: absolute;
-    left: calc(6.88% - 5px);
-    right: calc(78.44% + 5px);
+    left: calc(6.88% + 15px);
+    right: calc(78.44% - 15px);
     top: calc(80.96% - 16px);
     bottom: calc(14.87% + 20px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
@@ -485,8 +485,8 @@ const UserPreferenceTitle = styled.div`
 
 const UserPreferenceDescription = styled.div`
     position: absolute;
-    left: calc(2.58% - 5px);
-    right: calc(81.28% + 5px);
+    left: calc(2.58% + 15px);
+    right: calc(81.28% - 15px);
     top: calc(86.25% - 20px);
     bottom: calc(7.74% + 20px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
@@ -499,7 +499,7 @@ const UserPreferenceDescription = styled.div`
 `;
 
 const CompanionTypeCard = styled(InfoCard)`
-  left: 331px;
+  left: 351px;
   top: 760px;
   width: 326px;
 `;
@@ -508,7 +508,7 @@ const CompanionTypeIcon = styled.div`
     position: absolute;
     width: 87px;
     height: 160px;
-    left: 366px;
+    left: 386px;
     top: 690px;
     background: url('/lump.png') no-repeat center center;
     background-size: contain;
@@ -518,8 +518,8 @@ const CompanionTypeIcon = styled.div`
 
 const CompanionTypeTitle = styled.div`
     position: absolute;
-    left: calc(31.73% - 15px);
-    right: calc(53.58% + 15px);
+    left: calc(31.73% + 5px);
+    right: calc(53.58% - 5px);
     top: calc(80.35% - 16px);
     bottom: calc(11.51% + 20px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
@@ -532,8 +532,8 @@ const CompanionTypeTitle = styled.div`
 
 const CompanionTypeDescription = styled.div`
     position: absolute;
-    left: calc(21% - 15px);
-    right: calc(57% + 15px);
+    left: calc(21% + 5px);
+    right: calc(57% - 5px);
     top: calc(86% - 20px);
     bottom: calc(5.15% + 20px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
@@ -581,7 +581,7 @@ export default function FingerModulePage() {
         setIsExiting(true);
         setTimeout(() => {
             router.push({
-                pathname: '/flowerproduce',
+                pathname: '/fingerproduce',
                 query: { name, selectedHabits, finalHabit }
             });
         }, 1500);

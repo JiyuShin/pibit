@@ -391,7 +391,7 @@ const PibitIntro = () => {
     if (isFadingOut) {
       const timer = setTimeout(() => {
         router.push({
-          pathname: '/pibitcontext',
+          pathname: '/pibitdna',
           query: { name: name },
         });
       }, 500); // Animation duration

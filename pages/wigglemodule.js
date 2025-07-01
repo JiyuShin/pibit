@@ -81,7 +81,7 @@ const slideInHeart = keyframes`
     opacity: 0;
   }
   to {
-    transform: translateX(0) translateY(-80px) scale(1.35) rotate(25deg);
+    transform: translateX(0) translateY(-80px) scale(1.22) rotate(-15deg);
     opacity: 1;
   }
 `;
@@ -158,13 +158,14 @@ const HeartImage = styled.div`
   width: 1342px;
   height: 946px;
   left: 233px;
-  top: 81px;
+  top: 64px;
   background: url(/module/wiggle.png);
   background-size: contain;
   background-repeat: no-repeat;
   z-index: 1000;
-  filter: brightness(1.2);
   opacity: 0;
+  transform: scale(0.75) rotate(-15deg);
+  pointer-events: none;
   animation: ${slideInHeart} 1.5s ease-out forwards;
 `;
 
@@ -267,7 +268,7 @@ const FiveFlowerBgText = styled.div`
   width: 1727px;
   height: 449px;
   left: calc(50% - 1727px/2 + 5px);
-  top: calc(50% - 449px/2 - 14.5px);
+  top: calc(50% - 449px/2 - 32.5px);
   font-family: 'Pragati Narrow', sans-serif;
   font-style: normal;
   font-weight: 700;
@@ -384,11 +385,11 @@ const FiveFlowerTitle = styled.div`
 const SensoryReliefText = styled.div`
   position: absolute;
   right: calc(1.06% + 25px);
-  top: calc(89.71% - 7px);
+  top: calc(89.71% - 67px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 34px;
+  font-size: 37.4px;
   line-height: 42px;
   text-align: right;
   color: #B5AECA;
@@ -416,16 +417,16 @@ const InfoCard = styled.div`
 `;
 
 const UserPreferenceCard = styled(InfoCard)`
-  left: 16px;
-  top: 780px;
+  left: 36px;
+  top: 760px;
 `;
 
 const UserPreferenceIcon = styled.div`
     box-sizing: border-box;
     position: absolute;
-    left: calc(1.72% + 5px);
-    right: calc(87.77% - 5px);
-    top: calc(75.36% - 2px);
+    left: calc(1.72% + 25px);
+    right: calc(87.77% - 25px);
+    top: calc(75.36% - 22px);
     bottom: 15.48%;
     background: url('/cus6.png') no-repeat center center;
     background-size: contain;
@@ -435,8 +436,8 @@ const UserPreferenceIcon = styled.div`
 
 const UserPreferenceTitle = styled.div`
     position: absolute;
-    left: 6.88%;
-    top: calc(80.96% - 5px);
+    left: calc(6.88% + 20px);
+    top: calc(80.96% - 25px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -447,9 +448,9 @@ const UserPreferenceTitle = styled.div`
 
 const UserPreferenceDescription = styled.div`
     position: absolute;
-    left: 2.58%;
-    right: 81.28%;
-    top: 86.25%;
+    left: calc(2.58% + 20px);
+    right: calc(81.28% - 20px);
+    top: calc(86.25% - 20px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -460,16 +461,16 @@ const UserPreferenceDescription = styled.div`
 `;
 
 const CompanionTypeCard = styled(InfoCard)`
-  left: 331px;
-  top: 780px;
+  left: 351px;
+  top: 760px;
 `;
 
 const CompanionTypeIcon = styled.div`
     position: absolute;
     width: 87px;
     height: 160px;
-    left: 366px;
-    top: 710px;
+    left: 386px;
+    top: 690px;
     background: url('/cus8.png') no-repeat center center;
     background-size: contain;
     transform: scale(2.74);
@@ -477,8 +478,8 @@ const CompanionTypeIcon = styled.div`
 
 const CompanionTypeTitle = styled.div`
     position: absolute;
-    left: 27.77%;
-    top: calc(80.35% - 5px);
+    left: calc(27.77% + 20px);
+    top: calc(80.35% - 25px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -489,9 +490,9 @@ const CompanionTypeTitle = styled.div`
 
 const CompanionTypeDescription = styled.div`
     position: absolute;
-    left: calc(24.21% - 2px);
-    right: calc(60.58% + 2px);
-    top: calc(85.85% - 10px);
+    left: calc(24.21% + 18px);
+    right: calc(60.58% - 18px);
+    top: calc(85.85% - 30px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -590,7 +591,7 @@ export default function WiggleModulePage() {
                     <UserPreferenceCard />
                     <UserPreferenceIcon />
                     <UserPreferenceTitle>USER PREFERENCE</UserPreferenceTitle>
-                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>88%</span>의 유저가 손톱물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
+                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>88%</span>의 유저가 다리 떨기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
                     <CompanionTypeCard />
                     <CompanionTypeIcon />
                     <CompanionTypeTitle>COMPANION TYPE</CompanionTypeTitle>

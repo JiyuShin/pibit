@@ -152,7 +152,7 @@ const Root = styled.div`
   margin: 0 auto;
   animation: ${fadeIn} 0.8s ease-in-out;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
@@ -183,10 +183,11 @@ const HeartImage = styled.div`
   width: 1173.44px;
   height: 827.17px;
   left: 333px;
-  top: 71px;
+  top: 46px;
   background: url(/module/pinch.png);
   background-size: contain;
   background-repeat: no-repeat;
+  transform: scale(0.9);
   z-index: 1000;
   opacity: 0;
   animation: ${slideInHeart} 1.5s ease-out forwards;
@@ -419,7 +420,7 @@ const SensoryReliefText = styled.div`
   position: absolute;
   left: calc(65.55% - 40px);
   right: calc(1.06% + 40px);
-  top: calc(89.71% - 22px);
+  top: calc(89.71% - 52px);
   bottom: calc(4.79% + 22px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
@@ -429,6 +430,17 @@ const SensoryReliefText = styled.div`
   text-align: right;
   color: #FFFFFF;
   z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  
+  div {
+    text-align: right;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
   
   span {
     opacity: 0;
@@ -452,16 +464,16 @@ const InfoCard = styled.div`
 `;
 
 const UserPreferenceCard = styled(InfoCard)`
-  left: 16px;
-  top: 780px;
+  left: 36px;
+  top: 760px;
 `;
 
 const UserPreferenceIcon = styled.div`
     box-sizing: border-box;
     position: absolute;
-    left: calc(1.72% + 5px);
-    right: calc(87.77% - 5px);
-    top: calc(75.36% - 2px);
+    left: calc(1.72% + 25px);
+    right: calc(87.77% - 25px);
+    top: calc(75.36% - 32px);
     bottom: 15.48%;
     background: url('/cus10.png') no-repeat center center;
     background-size: contain;
@@ -471,9 +483,9 @@ const UserPreferenceIcon = styled.div`
 
 const UserPreferenceTitle = styled.div`
     position: absolute;
-    left: 6.88%;
-    right: 78.44%;
-    top: calc(80.96% + 4px);
+    left: calc(6.88% + 20px);
+    right: calc(78.44% - 20px);
+    top: calc(80.96% - 16px);
     bottom: 14.87%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
@@ -485,9 +497,9 @@ const UserPreferenceTitle = styled.div`
 
 const UserPreferenceDescription = styled.div`
     position: absolute;
-    left: 2.58%;
-    right: 81.28%;
-    top: 86.25%;
+    left: calc(2.58% + 20px);
+    right: calc(81.28% - 20px);
+    top: calc(86.25% - 20px);
     bottom: 7.74%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
@@ -499,8 +511,8 @@ const UserPreferenceDescription = styled.div`
 `;
 
 const CompanionTypeCard = styled(InfoCard)`
-  left: 331px;
-  top: 780px;
+  left: 351px;
+  top: 760px;
   width: 338px;
 `;
 
@@ -508,8 +520,8 @@ const CompanionTypeIcon = styled.div`
     position: absolute;
     width: 87px;
     height: 160px;
-    left: 366px;
-    top: 710px;
+    left: 386px;
+    top: 690px;
     background: url('/lump6.png') no-repeat center center;
     background-size: contain;
     transform: scale(2.74);
@@ -518,9 +530,9 @@ const CompanionTypeIcon = styled.div`
 
 const CompanionTypeTitle = styled.div`
     position: absolute;
-    left: 31.73%;
-    right: 53.58%;
-    top: calc(80.35% + 4px);
+    left: calc(31.73% + 20px);
+    right: calc(53.58% - 20px);
+    top: calc(80.35% - 16px);
     bottom: 11.51%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
@@ -532,9 +544,9 @@ const CompanionTypeTitle = styled.div`
 
 const CompanionTypeDescription = styled.div`
     position: absolute;
-    left: 21%;
-    right: 57%;
-    top: 86%;
+    left: calc(21% + 20px);
+    right: calc(57% - 20px);
+    top: calc(86% - 20px);
     bottom: 5.15%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;

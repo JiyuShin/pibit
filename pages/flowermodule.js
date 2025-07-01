@@ -117,7 +117,7 @@ const Root = styled.div`
   margin: 0 auto;
   animation: ${fadeIn} 0.8s ease-in-out;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   text-shadow: 4px 4px 38px rgba(0, 0, 0, 0.07);
 `;
 
@@ -261,7 +261,7 @@ const FlowerImage = styled.div`
   width: 1320.37px;
   height: 930.65px;
   left: calc(50% - 1320.37px/2 + 89.44px);
-  top: calc(50% - 930.65px/2 + 35.02px);
+  top: calc(50% - 930.65px/2 + 35.02px - 20px - 12px);
   background: url('/module/flower.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -369,7 +369,7 @@ const SensoryReliefText = styled.div`
   position: absolute;
   left: calc(65.55% - 40px);
   right: calc(1.06% + 40px);
-  top: calc(89.71% - 22px);
+  top: calc(89.71% - 22px - 17px - 12px - 16px + 10px);
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-style: normal;
   font-weight: 500;
@@ -401,7 +401,7 @@ const InfoCard = styled.div`
 
 const UserPreferenceCard = styled(InfoCard)`
   left: 16px;
-  top: 780px;
+  top: 763px;
 `;
 
 const UserPreferenceIcon = styled.div`
@@ -409,17 +409,17 @@ const UserPreferenceIcon = styled.div`
     position: absolute;
     left: calc(1.72% + 5px);
     right: calc(87.77% - 5px);
-    top: calc(75.36% - 2px);
+    top: calc(75.36% - 2px - 17px - 2px - 3px - 4px);
     bottom: 15.48%;
     background: url('/cus4.png') no-repeat center center;
     background-size: contain;
-    transform: scale(2.50);
+    transform: scale(1.85);
 `;
 
 const UserPreferenceTitle = styled.div`
     position: absolute;
     left: 6.88%;
-    top: 80.96%;
+    top: calc(80.96% - 17px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -432,7 +432,7 @@ const UserPreferenceDescription = styled.div`
     position: absolute;
     left: 2.58%;
     right: 81.28%;
-    top: 86.25%;
+    top: calc(86.25% - 17px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -444,7 +444,7 @@ const UserPreferenceDescription = styled.div`
 
 const CompanionTypeCard = styled(InfoCard)`
   left: 331px;
-  top: 780px;
+  top: 763px;
 `;
 
 const CompanionTypeIcon = styled.div`
@@ -452,7 +452,7 @@ const CompanionTypeIcon = styled.div`
     width: 87px;
     height: 160px;
     left: 366px;
-    top: 710px;
+    top: 693px;
     background: url('/lump2.png') no-repeat center center;
     background-size: contain;
     transform: scale(2.57);
@@ -461,7 +461,7 @@ const CompanionTypeIcon = styled.div`
 const CompanionTypeTitle = styled.div`
     position: absolute;
     left: 27.77%;
-    top: 80.35%;
+    top: calc(80.35% - 17px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -474,7 +474,7 @@ const CompanionTypeDescription = styled.div`
     position: absolute;
     left: 24.21%;
     right: 60.58%;
-    top: 85.85%;
+    top: calc(85.85% - 17px);
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
     font-weight: 600;
