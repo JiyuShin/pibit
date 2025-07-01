@@ -22,8 +22,7 @@ const GlobalStyle = createGlobalStyle`
   }
   
   body {
-    background: url('/bk2.png') no-repeat center center fixed;
-    background-size: cover;
+    background-color: #ffffff;
   }
 `;
 
@@ -39,6 +38,19 @@ const Root = styled.div`
   margin: 0 auto;
   overflow: hidden;
   animation: ${fadeIn} 1.5s ease-in-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/bk2.png') no-repeat center center;
+    background-size: cover;
+    filter: saturate(1.8);
+    z-index: -1;
+  }
 `;
 
 const LogoImage = styled.div`
@@ -111,7 +123,7 @@ const Rectangle2 = styled.div`
   position: absolute;
   width: 325px;
   height: 63px;
-  left: 1115px;
+  left: 1068px;
   top: 434px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
@@ -144,7 +156,7 @@ const BubbleText1 = styled.p`
 const BubbleButton = styled.button`
   position: absolute;
   width: 280px;
-  left: 1141px;
+  left: 1094px;
   top: 450px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
@@ -306,7 +318,7 @@ export default function FlowerProducePage() {
             <Root>
                 <LogoImage onClick={handleGoBack} />
                 <FlowerModelView onModelClick={handleStartConversation}/>
-                <Title>{name}님의 첫 맞춤형 피빗이 태어났어요!</Title>
+                <Title>{name}님의 첫 맞춤형 Five-Flower 피빗이 태어났어요!</Title>
                 <Subtitle>
                     데스크탑 앞에 놓여있는 five flower 모듈과의 대화를 통해<br/>
                     새로운 습관 개선 여정을 시작하세요
