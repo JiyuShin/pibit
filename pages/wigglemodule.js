@@ -538,7 +538,7 @@ export default function WiggleModulePage() {
         setIsExiting(true);
         setTimeout(() => {
             router.push({
-                pathname: '/flowerproduce',
+                pathname: '/wiggleproduce',
                 query: { name, selectedHabits, finalHabit }
             });
         }, 1500);

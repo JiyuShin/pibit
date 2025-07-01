@@ -577,7 +577,7 @@ export default function PuffyModulePage() {
         setIsExiting(true);
         setTimeout(() => {
             router.push({
-                pathname: '/flowerproduce',
+                pathname: '/puffyproduce',
                 query: { name, selectedHabits, finalHabit }
             });
         }, 1500);
