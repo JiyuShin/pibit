@@ -85,6 +85,8 @@ const Title = styled.h1`
   text-align: center;
   color: #9E9E9E;
   margin: 0;
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 1s ease-in-out;
 `;
 
 const Subtitle = styled.p`
@@ -102,6 +104,8 @@ const Subtitle = styled.p`
   text-align: center;
   color: #9E9E9E;
   margin: 0;
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 1s ease-in-out 0.3s;
 `;
 
 const Rectangle1 = styled.div`
@@ -231,6 +235,50 @@ const FooterJourney = styled.div`
   color: #B5AECA;
 `;
 
+const move = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+`;
+
+const ContainerLoader = styled.aside`
+  --size: 314px;
+  width: var(--size);
+  height: var(--size);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-50% - 180px), calc(-50% + 101px)) scale(${({ show }) => (show ? 1 : 0.2)});
+  z-index: -2;
+  opacity: ${({ show }) => (show ? 0.3 : 0)};
+  transition: opacity 2s ease-out, transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+`;
+
+const ModelContainer = styled.div`
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 1s ease-in-out;
+`;
+
+const Ball = styled.article`
+  position: absolute;
+  width: calc(var(--size) + var(--i));
+  height: calc(var(--size) + var(--i));
+  background-color: var(--color);
+  border-radius: 50%;
+  animation: ${move} 5s linear infinite both;
+  transform-origin: var(--size);
+  mix-blend-mode: difference;
+  animation-duration: var(--d);
+  filter: blur(28px) saturate(2.8);
+
+  &:nth-child(even) {
+    animation-direction: reverse;
+  }
+`;
+
 const Typewriter = memo(function Typewriter({ text, onComplete }) {
     const [displayText, setDisplayText] = useState('');
 
@@ -269,6 +317,9 @@ Typewriter.displayName = 'Typewriter';
 export default function FlowerProducePage() {
     const router = useRouter();
     const { name = '지수', selectedHabits, finalHabit } = router.query;
+    const [showTitle, setShowTitle] = useState(false);
+    const [showLoader, setShowLoader] = useState(false);
+    const [showModel, setShowModel] = useState(false);
     const [showRectangle1, setShowRectangle1] = useState(false);
     const [showBubbleText1, setShowBubbleText1] = useState(false);
     const [showRectangle2, setShowRectangle2] = useState(false);
@@ -278,9 +329,15 @@ export default function FlowerProducePage() {
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
-        const timer1 = setTimeout(() => setShowRectangle1(true), 500);
-        const timer2 = setTimeout(() => setShowBubbleText1(true), 1000);
+        const titleTimer = setTimeout(() => setShowTitle(true), 500);
+        const loaderTimer = setTimeout(() => setShowLoader(true), 1000);
+        const modelTimer = setTimeout(() => setShowModel(true), 2500);
+        const timer1 = setTimeout(() => setShowRectangle1(true), 3500);
+        const timer2 = setTimeout(() => setShowBubbleText1(true), 4000);
         return () => {
+            clearTimeout(titleTimer);
+            clearTimeout(loaderTimer);
+            clearTimeout(modelTimer);
             clearTimeout(timer1);
             clearTimeout(timer2);
         };
@@ -317,9 +374,35 @@ export default function FlowerProducePage() {
             <GlobalStyle />
             <Root>
                 <LogoImage onClick={handleGoBack} />
-                <FlowerModelView onModelClick={handleStartConversation}/>
-                <Title>{name}님의 첫 맞춤형 Five-Flower 피빗이 태어났어요!</Title>
-                <Subtitle>
+                <ModelContainer show={showModel}>
+                    <FlowerModelView onModelClick={handleStartConversation}/>
+                </ModelContainer>
+                
+                <ContainerLoader show={showLoader}>
+                    <Ball style={{"--color": "#ff6347", "--i": "13px", "--d": "6.8s"}} />
+                    <Ball style={{"--color": "#00ced1", "--i": "19px", "--d": "3.5s"}} />
+                    <Ball style={{"--color": "#adff2f", "--i": "11px", "--d": "4.9s"}} />
+                    <Ball style={{"--color": "#9370db", "--i": "17px", "--d": "9.3s"}} />
+                    <Ball style={{"--color": "#ff1493", "--i": "14px", "--d": "2.7s"}} />
+                    <Ball style={{"--color": "#00bfff", "--i": "10px", "--d": "5.1s"}} />
+                    <Ball style={{"--color": "#7fff00", "--i": "16px", "--d": "6.6s"}} />
+                    <Ball style={{"--color": "#dc143c", "--i": "18px", "--d": "7.2s"}} />
+                    <Ball style={{"--color": "#8a2be2", "--i": "12px", "--d": "8.4s"}} />
+                    <Ball style={{"--color": "#48d1cc", "--i": "20px", "--d": "3.9s"}} />
+                    <Ball style={{"--color": "#ff4500", "--i": "15px", "--d": "4.6s"}} />
+                    <Ball style={{"--color": "#00ff7f", "--i": "19px", "--d": "5.7s"}} />
+                    <Ball style={{"--color": "#ba55d3", "--i": "11px", "--d": "7.1s"}} />
+                    <Ball style={{"--color": "#1e90ff", "--i": "13px", "--d": "9.7s"}} />
+                    <Ball style={{"--color": "#ffa500", "--i": "10px", "--d": "6.2s"}} />
+                    <Ball style={{"--color": "#ff69b4", "--i": "14px", "--d": "3.4s"}} />
+                    <Ball style={{"--color": "#00fa9a", "--i": "17px", "--d": "8.9s"}} />
+                    <Ball style={{"--color": "#9400d3", "--i": "12px", "--d": "7.6s"}} />
+                    <Ball style={{"--color": "#ffb6c1", "--i": "16px", "--d": "4.3s"}} />
+                    <Ball style={{"--color": "#20b2aa", "--i": "18px", "--d": "2.8s"}} />
+                </ContainerLoader>
+                
+                <Title show={showTitle}>{name}님의 첫 맞춤형 Five-Flower 피빗이 태어났어요!</Title>
+                <Subtitle show={showTitle}>
                     데스크탑 앞에 놓여있는 five flower 모듈과의 대화를 통해<br/>
                     새로운 습관 개선 여정을 시작하세요
                 </Subtitle>
