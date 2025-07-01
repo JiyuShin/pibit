@@ -34,10 +34,11 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
   const { scene } = useGLTF(modelPath);
   const [hovered, setHovered] = useState(false);
   
-  // Auto rotation animation - rotate the group instead of individual model
+  // Auto rotation animation - rotate only around Y-axis at center
   useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.5; // Rotate around Y-axis
+      // Rotate around Y-axis at center (0, 0, 0)
+      groupRef.current.rotation.y += delta * 0.5;
     }
   });
   
@@ -45,6 +46,47 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
     console.log('Model loaded successfully:', modelPath, scene);
     if (scene) {
       console.log('Scene children:', scene.children);
+      
+      // Center the model for proper rotation, especially for wiggle22.glb
+      if (modelPath.includes('wiggle22.glb')) {
+        // Reset any transforms that might cause drift
+        scene.position.set(0, 0, 0);
+        scene.rotation.set(0, 0, 0);
+        scene.scale.set(1, 1, 1);
+        
+        // Traverse and center all children
+        scene.traverse((child) => {
+          if (child.isMesh) {
+            // Ensure mesh positions are relative to center
+            if (child.geometry.boundingBox) {
+              child.geometry.computeBoundingBox();
+            }
+          }
+        });
+      }
+      
+      // Adjust blue part scale for clic22.glb
+      if (modelPath.includes('clic22.glb')) {
+        scene.traverse((child) => {
+          if (child.isMesh && child.material) {
+            // Check if the material has a blue color
+            if (child.material.color) {
+              const color = child.material.color;
+              // Check if it's blue-ish (higher blue component than red/green)
+              if (color.b > color.r && color.b > color.g && color.b > 0.3) {
+                // Scale the blue mesh by 0.81972 (0.891 * 0.92)
+                child.scale.multiplyScalar(0.81972);
+                console.log('Scaled blue mesh:', child.name, color);
+              }
+            }
+            // Also check by position (if blue part is on top)
+            else if (child.position.y > 0.5) {
+              child.scale.multiplyScalar(0.81972);
+              console.log('Scaled top mesh:', child.name, child.position);
+            }
+          }
+        });
+      }
     }
   }, [scene, modelPath]);
 
@@ -59,17 +101,27 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
     }
   };
 
+  // Center the model properly for wiggle22.glb
+  const getModelCenterOffset = () => {
+    if (modelPath.includes('wiggle22.glb')) {
+      return [0, 0, 0]; // Keep centered at origin for proper rotation
+    }
+    return [0, 0, 0];
+  };
+
   return (
-    <group ref={groupRef} position={position}>
-      <primitive
-        object={scene}
-        scale={hovered ? scale * 1.05 : scale}
-        position={[0, 0, 0]}
-        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
-        onPointerOut={(e) => { e.stopPropagation(); setHovered(false); }}
-        onClick={handleClick}
-        {...props}
-      />
+    <group ref={groupRef} position={[0, 0, 0]}>
+      <group position={position}>
+        <primitive
+          object={scene}
+          scale={hovered ? scale * 1.05 : scale}
+          position={[0, 0, 0]}
+          onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
+          onPointerOut={(e) => { e.stopPropagation(); setHovered(false); }}
+          onClick={handleClick}
+          {...props}
+        />
+      </group>
     </group>
   );
 }
@@ -86,6 +138,9 @@ export default function FlowerModelView({ onModelClick, modelPath = '/flower29.g
     if (modelPath.includes('wiggle22.glb')) {
       return 0.0788415804; // 7% more increase for wiggle22 (0.07368372 * 1.07)
     }
+    if (modelPath.includes('clic22.glb')) {
+      return 0.07485544; // 10% more increase for clic22 (0.0680504 * 1.1)
+    }
     return 0.07733; // Default scale for other models
   };
   
@@ -93,6 +148,9 @@ export default function FlowerModelView({ onModelClick, modelPath = '/flower29.g
   const getModelPosition = () => {
     if (modelPath.includes('wiggle22.glb')) {
       return [0.3, -2.4, 0]; // Move wiggle22 down 33px more and right 12px
+    }
+    if (modelPath.includes('clic22.glb')) {
+      return [0, -2.2, 0]; // Move clic22 down by 25px more (total 91px)
     }
     return [0, 0, 0]; // Default position for other models
   };
