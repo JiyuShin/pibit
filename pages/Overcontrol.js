@@ -449,6 +449,12 @@ const ExploreButton = styled.button`
   pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
 `;
 
+
+
+const CardButtonContainer = styled.div`
+  display: flex;
+`;
+
 export default function OvercontrolPage() {
   const router = useRouter();
   const { name, selectedHabits: habitsJson } = router.query;
@@ -478,8 +484,28 @@ export default function OvercontrolPage() {
   }, [habitsJson]);
 
   const handleCardSelection = (i) => {
-    setSelectedIdx(i);
+    const habit = cardItems[i];
+    if (habit === '손가락 마디 꺾기') {
+      router.push('/Clickworkmodule');
+    } else {
+      setSelectedIdx(i);
+      setIsVisible(false);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (selectedHabits.length === 0) {
+      alert('하나 이상의 습관을 선택해주세요.');
+      return;
+    }
+    
     setIsVisible(false); // 페이지 전환 애니메이션 시작
+    setTimeout(() => {
+      router.push({
+        pathname: '/pibitself',
+        query: { name, selectedHabits: JSON.stringify(selectedHabits) },
+      });
+    }, 500); // 500ms는 CSS transition 시간과 일치해야 합니다.
   };
 
   useEffect(() => {
@@ -574,6 +600,7 @@ export default function OvercontrolPage() {
             ))}
           </HabitCardRow>
           
+
         </Root>
       </main>
     </PageContainer>

@@ -458,6 +458,7 @@ export default function InternallyPage() {
   // 하단 버튼 상태 복구
   const [cardItems, setCardItems] = useState([
     '턱 괴기',
+    '머리카락 당기기',
   ]);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);
@@ -480,6 +481,8 @@ export default function InternallyPage() {
   const handleCardSelection = (i) => {
     if (i === 0) { 
       router.push('/puffymodule');
+    } else if (i === 1) {
+      router.push('/fingermodule');
     } else {
       setSelectedIdx(i);
       setIsVisible(false);

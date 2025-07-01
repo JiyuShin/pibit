@@ -108,6 +108,18 @@ const slideInHeart = keyframes`
   }
 `;
 
+const pulseFade = keyframes`
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
 const FadeOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -186,13 +198,14 @@ const Vector1 = styled.div`
   right: 42.89%;
   top: 7.94%;
   bottom: 47.25%;
-  background: url(/p3.png);
+  background: url(/p5.png);
   background-size: contain;
   background-repeat: no-repeat;
-  transform: translateX(-135px) translateY(30px) rotate(-115deg) scale(1.21);
+  transform: translateX(-145px) translateY(30px) rotate(-115deg) scale(1.31);
   opacity: 0;
   animation: ${fadeIn} 1s ease-out 0.5s forwards, 
-             ${rotateLeft} 10s linear infinite 1.5s;
+             ${rotateLeft} 10s linear infinite 1.5s,
+             ${pulseFade} 2s ease-in-out infinite 1.5s;
   z-index: 1;
 `;
 
@@ -202,13 +215,14 @@ const Vector2 = styled.div`
   right: -23.28%;
   top: 65.74%;
   bottom: 2.88%;
-  background: url(/p4.png);
+  background: url(/p6.png);
   background-size: contain;
   background-repeat: no-repeat;
   transform: translateX(-235px) translateY(-14px) scale(1.3) rotate(-145deg);
   opacity: 0;
   animation: ${fadeIn} 1s ease-out 0.5s forwards, 
-             ${rotateRight} 10s linear infinite 1.5s;
+             ${rotateRight} 10s linear infinite 1.5s,
+             ${pulseFade} 2s ease-in-out infinite 1.5s;
 `;
 
 const PibitLogo = styled.div`
@@ -449,7 +463,7 @@ const UserPreferenceIcon = styled.div`
     right: calc(87.77% - 5px);
     top: calc(75.36% - 2px);
     bottom: 15.48%;
-    background: url('/cus9.png') no-repeat center center;
+    background: url('/cus10.png') no-repeat center center;
     background-size: contain;
     transform: translateX(-12px) scale(1.40);
     filter: blur(0.5px);
@@ -459,7 +473,7 @@ const UserPreferenceTitle = styled.div`
     position: absolute;
     left: 6.88%;
     right: 78.44%;
-    top: 80.96%;
+    top: calc(80.96% + 4px);
     bottom: 14.87%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
@@ -496,7 +510,7 @@ const CompanionTypeIcon = styled.div`
     height: 160px;
     left: 366px;
     top: 710px;
-    background: url('/lump5.png') no-repeat center center;
+    background: url('/lump6.png') no-repeat center center;
     background-size: contain;
     transform: scale(2.74);
     color: #FFFFFF;
@@ -506,7 +520,7 @@ const CompanionTypeTitle = styled.div`
     position: absolute;
     left: 31.73%;
     right: 53.58%;
-    top: 80.35%;
+    top: calc(80.35% + 4px);
     bottom: 11.51%;
     font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-style: normal;
@@ -620,11 +634,11 @@ export default function PuffyModulePage() {
                     <UserPreferenceCard />
                     <UserPreferenceIcon />
                     <UserPreferenceTitle>USER PREFERENCE</UserPreferenceTitle>
-                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>92%</span>의 유저가 손톱물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
+                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>89%</span>의 유저가 손가락 마디 꺾기<br/>습관 개선에 이 모듈을 추천해요!</UserPreferenceDescription>
                     <CompanionTypeCard />
                     <CompanionTypeIcon />
                     <CompanionTypeTitle>COMPANION TYPE</CompanionTypeTitle>
-                    <CompanionTypeDescription>아래 방향의 무게와 호박 모양 말랑함, 작은 펌프<br/>구조가 감각적으로 반영된 섬세한 동반자로,<br/>마음을 가장 편안한 상태로 관리해줄 수 있어요.</CompanionTypeDescription>
+                    <CompanionTypeDescription>무언가를 꺾고 펴는 반복을 대신할 수 있는 똑딱이<br/>버튼과 손끝의 조급함을 눌러 풀어 마음을 편안하게<br/>정리해줄 수 있어요.</CompanionTypeDescription>
                     <SensoryReliefText className={startTextAnimation ? 'animated' : ''}>
                         <div style={{ whiteSpace: 'nowrap' }}>
                             {line1.split('').map((char, index) => (
