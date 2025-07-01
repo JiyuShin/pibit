@@ -22,8 +22,7 @@ const GlobalStyle = createGlobalStyle`
   }
   
   body {
-    background: url('/bk2.png') no-repeat center center fixed;
-    background-size: cover;
+    background-color: #ffffff;
   }
 `;
 
@@ -39,6 +38,19 @@ const Root = styled.div`
   margin: 0 auto;
   overflow: hidden;
   animation: ${fadeIn} 1.5s ease-in-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/bk2.png') no-repeat center center;
+    background-size: cover;
+    filter: saturate(1.8);
+    z-index: -1;
+  }
 `;
 
 const LogoImage = styled.div`
@@ -73,6 +85,8 @@ const Title = styled.h1`
   text-align: center;
   color: #9E9E9E;
   margin: 0;
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 1s ease-in-out;
 `;
 
 const Subtitle = styled.p`
@@ -90,6 +104,8 @@ const Subtitle = styled.p`
   text-align: center;
   color: #9E9E9E;
   margin: 0;
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 1s ease-in-out 0.3s;
 `;
 
 const Rectangle1 = styled.div`
@@ -111,7 +127,7 @@ const Rectangle2 = styled.div`
   position: absolute;
   width: 325px;
   height: 63px;
-  left: 1115px;
+  left: 1068px;
   top: 434px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
@@ -144,7 +160,7 @@ const BubbleText1 = styled.p`
 const BubbleButton = styled.button`
   position: absolute;
   width: 280px;
-  left: 1141px;
+  left: 1094px;
   top: 450px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
@@ -194,124 +210,223 @@ const CopyrightSymbol = styled.div`
     color: #B5AECA;
 `;
 
-const CopyrightCircle = styled.div`
-  box-sizing: border-box;
+const move = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+`;
+
+const ContainerLoader = styled.aside`
+  --size: 314px;
+  width: var(--size);
+  height: var(--size);
   position: absolute;
-  width: 18px;
-  height: 18px;
-  left: calc(50% - 458px / 2 + 714px);
-  top: 924px;
-  border: 1px solid #B5AECA;
-  border-radius: 50%;
-  margin-right: 5px;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-50% - 180px), calc(-50% + 101px)) scale(${({ show }) => (show ? 1 : 0.2)});
+  z-index: -2;
+  opacity: ${({ show }) => (show ? 0.3 : 0)};
+  transition: opacity 2s ease-out, transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 `;
 
 const ModelContainer = styled.div`
-  transform: translateY(-20px);
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transition: opacity 1s ease-in-out;
+`;
+
+const Ball = styled.article`
+  position: absolute;
+  width: calc(var(--size) + var(--i));
+  height: calc(var(--size) + var(--i));
+  background-color: var(--color);
+  border-radius: 50%;
+  animation: ${move} 5s linear infinite both;
+  transform-origin: var(--size);
+  mix-blend-mode: difference;
+  animation-duration: var(--d);
+  filter: blur(28px) saturate(2.8);
+
+  &:nth-child(even) {
+    animation-direction: reverse;
+  }
+`;
+
+const CopyrightCircle = styled.div`
+  box-sizing: border-box;
+   position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 1480px;
+  top: 927px;
+  border: 2px solid #B5AECA;
+  border-radius: 50%;
+`;
+
+const FooterJourney = styled.div`
+  position: absolute;
+  width: 1086px;
+  height: 43px;
+  left: calc(50% - 1086px/2 - 192px);
+  top: 917px;
+  font-family: 'Pretendard Variable Custom';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13.12px;
+  line-height: 36px;
+  color: #B5AECA;
 `;
 
 const Typewriter = memo(function Typewriter({ text, onComplete }) {
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
+    const [displayText, setDisplayText] = useState('');
 
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timer = setTimeout(() => {
-        setDisplayText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, 50);
-      return () => clearTimeout(timer);
-    } else if (onComplete) {
-      onComplete();
-    }
-  }, [currentIndex, text, onComplete]);
+    useEffect(() => {
+        let i = 0;
+        const timerId = setInterval(() => {
+            if (i < text.length) {
+                setDisplayText(text.slice(0, i + 1));
+                i++;
+            } else {
+                clearInterval(timerId);
+                if (onComplete) {
+                    onComplete();
+                }
+            }
+        }, 100);
 
-  useEffect(() => {
-    setDisplayText('');
-    setCurrentIndex(0);
-  }, [text]);
+        return () => {
+            clearInterval(timerId);
+        };
+    }, [text, onComplete]);
 
-  return <span>{displayText}</span>;
+    return (
+        <>
+            {displayText.split('\n').map((line, i) => (
+                <React.Fragment key={i}>
+                    {line}
+                    {i < displayText.split('\n').length - 1 && <br />}
+                </React.Fragment>
+            ))}
+        </>
+    );
 });
+Typewriter.displayName = 'Typewriter';
 
 export default function FingerProducePage() {
-  const router = useRouter();
-  const { name, selectedHabits, finalHabit } = router.query;
-  const [step, setStep] = useState(0);
-  const [showBubbles, setShowBubbles] = useState(false);
+    const router = useRouter();
+    const { name = '지수', selectedHabits, finalHabit } = router.query;
+    const [showTitle, setShowTitle] = useState(false);
+    const [showLoader, setShowLoader] = useState(false);
+    const [showModel, setShowModel] = useState(false);
+    const [showRectangle1, setShowRectangle1] = useState(false);
+    const [showBubbleText1, setShowBubbleText1] = useState(false);
+    const [showRectangle2, setShowRectangle2] = useState(false);
+    const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-  useEffect(() => {
-    const timer1 = setTimeout(() => setStep(1), 1000);
-    const timer2 = setTimeout(() => setStep(2), 3000);
-    const timer3 = setTimeout(() => setShowBubbles(true), 5000);
-    
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
+    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n따듯하고 포근한 존재야!`;
+    const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
+
+    useEffect(() => {
+        const titleTimer = setTimeout(() => setShowTitle(true), 500);
+        const loaderTimer = setTimeout(() => setShowLoader(true), 1000);
+        const modelTimer = setTimeout(() => setShowModel(true), 2500);
+        const timer1 = setTimeout(() => setShowRectangle1(true), 3500);
+        const timer2 = setTimeout(() => setShowBubbleText1(true), 4000);
+        return () => {
+            clearTimeout(titleTimer);
+            clearTimeout(loaderTimer);
+            clearTimeout(modelTimer);
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+        };
+    }, []);
+
+    const handleText1Complete = useCallback(() => {
+        const timer3 = setTimeout(() => setShowRectangle2(true), 1000);
+        const timer4 = setTimeout(() => setShowBubbleButton(true), 1500);
+        return () => {
+            clearTimeout(timer3);
+            clearTimeout(timer4);
+        };
+    }, []);
+
+    const handleStartConversation = useCallback(() => {
+        router.push({
+            pathname: '/converf',
+            query: { name, selectedHabits: JSON.stringify(selectedHabits) },
+        });
+    }, [router, name, selectedHabits]);
+
+    const handleGoBack = () => {
+        router.back();
     };
-  }, []);
 
-  const handleNextStep = useCallback(() => {
-    router.push('/pibitdna');
-  }, [router]);
+    return (
+        <>
+            <Head>
+                <title>PIBIT - Finger Produce</title>
+                <link rel="icon" href="/favicon.ico" />
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+            </Head>
+            <GlobalStyle />
+            <Root>
+                <LogoImage onClick={handleGoBack} />
+                <ModelContainer show={showModel}>
+                    <FlowerModelView onModelClick={handleStartConversation} modelPath="/finger23.glb"/>
+                </ModelContainer>
+                
+                <ContainerLoader show={showLoader}>
+                    <Ball style={{"--color": "#ff6347", "--i": "13px", "--d": "6.8s"}} />
+                    <Ball style={{"--color": "#00ced1", "--i": "19px", "--d": "3.5s"}} />
+                    <Ball style={{"--color": "#adff2f", "--i": "11px", "--d": "4.9s"}} />
+                    <Ball style={{"--color": "#9370db", "--i": "17px", "--d": "9.3s"}} />
+                    <Ball style={{"--color": "#ff1493", "--i": "14px", "--d": "2.7s"}} />
+                    <Ball style={{"--color": "#00bfff", "--i": "10px", "--d": "5.1s"}} />
+                    <Ball style={{"--color": "#7fff00", "--i": "16px", "--d": "6.6s"}} />
+                    <Ball style={{"--color": "#dc143c", "--i": "18px", "--d": "7.2s"}} />
+                    <Ball style={{"--color": "#8a2be2", "--i": "12px", "--d": "8.4s"}} />
+                    <Ball style={{"--color": "#48d1cc", "--i": "20px", "--d": "3.9s"}} />
+                    <Ball style={{"--color": "#ff4500", "--i": "15px", "--d": "4.6s"}} />
+                    <Ball style={{"--color": "#00ff7f", "--i": "19px", "--d": "5.7s"}} />
+                    <Ball style={{"--color": "#ba55d3", "--i": "11px", "--d": "7.1s"}} />
+                    <Ball style={{"--color": "#1e90ff", "--i": "13px", "--d": "9.7s"}} />
+                    <Ball style={{"--color": "#ffa500", "--i": "10px", "--d": "6.2s"}} />
+                    <Ball style={{"--color": "#ff69b4", "--i": "14px", "--d": "3.4s"}} />
+                    <Ball style={{"--color": "#00fa9a", "--i": "17px", "--d": "8.9s"}} />
+                    <Ball style={{"--color": "#9400d3", "--i": "12px", "--d": "7.6s"}} />
+                    <Ball style={{"--color": "#ffb6c1", "--i": "16px", "--d": "4.3s"}} />
+                    <Ball style={{"--color": "#20b2aa", "--i": "18px", "--d": "2.8s"}} />
+                </ContainerLoader>
+                
+                <Title show={showTitle}>{name}님의 첫 맞춤형 Fingercouch 피빗이 태어났어요!</Title>
+                <Subtitle show={showTitle}>
+                    데스크탑 앞에 놓여있는 fingercouch 모듈과의 대화를 통해<br/>
+                    새로운 습관 개선 여정을 시작하세요
+                </Subtitle>
+                
+                <Rectangle1 show={showRectangle1} />
+                <BubbleText1 show={showBubbleText1}>
+                    {showBubbleText1 && (
+                        <Typewriter text={fullText1} onComplete={handleText1Complete} />
+                    )}
+                </BubbleText1>
 
-  const handleGoBack = () => {
-    router.back();
-  };
-
-  const typewriterText = name 
-    ? `${name}님의 손끝의 불안을 달래주는 Fingercouch 피빗이 탄생했어요!`
-    : '손끝의 불안을 달래주는 Fingercouch 피빗이 탄생했어요!';
-
-  return (
-    <>
-      <GlobalStyle />
-      <Head>
-        <title>PIBIT - Fingercouch 생성</title>
-        <meta name="description" content="Fingercouch 피빗 생성" />
-      </Head>
-      <main>
-        <Root>
-          <LogoImage onClick={handleGoBack} />
-          
-          <Title>
-            {step >= 1 && (
-              <Typewriter 
-                text={typewriterText}
-                onComplete={() => setStep(2)}
-              />
-            )}
-          </Title>
-          
-          <Subtitle>
-            {step >= 2 && (
-              <Typewriter 
-                text="섬세한 촉감으로 머리카락을 만지는 충동을 건강하게 풀어내는 동반자입니다."
-              />
-            )}
-          </Subtitle>
-
-          <ModelContainer>
-            <FlowerModelView />
-          </ModelContainer>
-
-          <Rectangle1 show={showBubbles} />
-          <BubbleText1 show={showBubbles}>
-            손끝의 불안과 긴장을 부드럽게 풀어주는 Fingercouch 피빗은
-            당신의 마음을 이해하고 섬세한 촉감으로 안정감을 선사합니다.
-          </BubbleText1>
-
-          <Rectangle2 show={showBubbles} />
-          <BubbleButton show={showBubbles} onClick={handleNextStep}>
-            내 피빗 DNA 보기
-          </BubbleButton>
-
-          <FooterBrand>Journey to create habit-caretaker companion pibit</FooterBrand>
-          <CopyrightSymbol>© 2024 PIBIT</CopyrightSymbol>
-          <CopyrightCircle />
-        </Root>
-      </main>
-    </>
-  );
+                <Rectangle2 show={showRectangle2} />
+                <BubbleButton 
+                    show={showBubbleButton} 
+                    onClick={handleStartConversation}
+                >
+                    {showBubbleButton && <Typewriter text={fullText2} />}
+                </BubbleButton>
+                
+                <FooterJourney>Journey to create habit-caretaker companion pibit</FooterJourney>
+                <CopyrightCircle />
+                <CopyrightSymbol>a</CopyrightSymbol>
+                <FooterBrand>PIBITCOMPANY</FooterBrand>
+            </Root>
+        </>
+    );
 } 

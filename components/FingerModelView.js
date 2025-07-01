@@ -17,27 +17,9 @@ const ModelContainer = styled.div`
   z-index: 1;
 `;
 
-function Model({ onModelClick, scale, modelPath, ...props }) {
-  console.log('Loading model:', modelPath);
-  
-  // Clear specific model from cache
-  useEffect(() => {
-    // Clear all GLTF cache and preload the new model
-    useGLTF.clear();
-    // Force browser to not use cache
-    const cleanPath = modelPath.split('?')[0];
-    useGLTF.preload(cleanPath);
-  }, [modelPath]);
-  
-  const { scene } = useGLTF(modelPath);
+function FingerModel({ onModelClick, scale, ...props }) {
+  const { scene } = useGLTF('/finger23.glb');
   const [hovered, setHovered] = useState(false);
-  
-  useEffect(() => {
-    console.log('Model loaded successfully:', modelPath, scene);
-    if (scene) {
-      console.log('Scene children:', scene.children);
-    }
-  }, [scene, modelPath]);
 
   useEffect(() => {
     document.body.style.cursor = hovered ? 'pointer' : 'auto';
@@ -62,13 +44,9 @@ function Model({ onModelClick, scale, modelPath, ...props }) {
   );
 }
 
-export default function FlowerModelView({ onModelClick, modelPath = '/flower29.glb' }) {
-  // Clear cache and preload the specific model
-  useEffect(() => {
-    useGLTF.clear();
-    useGLTF.preload(modelPath);
-  }, [modelPath]);
-  
+useGLTF.preload('/finger23.glb');
+
+export default function FingerModelView({ onModelClick }) {
   return (
     <ModelContainer>
       <Canvas camera={{ position: [0, 12, 7], fov: 45 }}>
@@ -76,7 +54,7 @@ export default function FlowerModelView({ onModelClick, modelPath = '/flower29.g
         <directionalLight position={[10, 10, 5]} intensity={2} />
         <directionalLight position={[-10, -10, -5]} intensity={1} />
         <Center>
-          <Model onModelClick={onModelClick} scale={0.07733} modelPath={modelPath} />
+          <FingerModel onModelClick={onModelClick} scale={0.07733} />
         </Center>
         <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={4.8} />
       </Canvas>
