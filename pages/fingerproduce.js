@@ -4,7 +4,7 @@ import styled, { keyframes, createGlobalStyle } from 'styled-components';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 
-const FlowerModelView = dynamic(() => import('../components/FlowerModelView'), { 
+const FingerModelView = dynamic(() => import('../components/FingerModelView'), { 
   ssr: false,
 });
 
@@ -375,7 +375,7 @@ export default function FingerProducePage() {
             <Root>
                 <LogoImage onClick={handleGoBack} />
                 <ModelContainer show={showModel}>
-                    <FlowerModelView onModelClick={handleStartConversation} modelPath="/finger23.glb"/>
+                    <FingerModelView onModelClick={handleStartConversation} modelPath="/finger23.glb"/>
                 </ModelContainer>
                 
                 <ContainerLoader show={showLoader}>

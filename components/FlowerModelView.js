@@ -84,14 +84,14 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
               const color = child.material.color;
               // Check if it's blue-ish (higher blue component than red/green)
               if (color.b > color.r && color.b > color.g && color.b > 0.3) {
-                // Scale the blue mesh by 0.81972 (0.891 * 0.92)
-                child.scale.multiplyScalar(0.81972);
+                // Scale the blue mesh by 0.755368598 (0.79512484 * 0.95)
+                child.scale.multiplyScalar(0.755368598);
                 console.log('Scaled blue mesh:', child.name, color);
               }
             }
             // Also check by position (if blue part is on top)
             else if (child.position.y > 0.5) {
-              child.scale.multiplyScalar(0.81972);
+              child.scale.multiplyScalar(0.755368598);
               console.log('Scaled top mesh:', child.name, child.position);
             }
           }
