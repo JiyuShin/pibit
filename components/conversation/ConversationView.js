@@ -93,8 +93,9 @@ const FirstTitleRow = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-  left: 374px !important;
+  left: 750px !important;
   top: 136px !important;
+  z-index: 20;
 `;
 
 const FirstMessageText = styled.p`
@@ -103,9 +104,11 @@ const FirstMessageText = styled.p`
   line-height: 25px;
   color: #828282;
   position: relative;
-  left: 205px !important;
+  left: 580px !important;
   top: 105px !important;
   text-align: left;
+  z-index: 20;
+  width: 400px;
 `;
 
 const TitleText = styled.p`
@@ -114,7 +117,8 @@ const TitleText = styled.p`
   line-height: 30px;
   color: #828282;
   margin: 0;
-  transform: translate(-169px, -48px);
+  transform: translate(-109px, -48px);
+  z-index: 20;
 `;
 
 const SubText = styled.p`
@@ -123,16 +127,19 @@ const SubText = styled.p`
   line-height: 25px;
   color: #828282;
   position: relative;
-  left: 25px !important;
+  left: 400px !important;
   top: -108px !important;
+  z-index: 20;
+  width: 400px;
 `;
 
 const SecondTitleRow = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-  left: 374px !important;
+  left: 750px !important;
   top: 226px !important;
+  z-index: 20;
 `;
 
 const SecondMessageText = styled.p`
@@ -141,17 +148,20 @@ const SecondMessageText = styled.p`
   line-height: 25px;
   color: #828282;
   position: relative;
-  left: 205px !important;
+  left: 580px !important;
   top: 195px !important;
   text-align: left;
+  z-index: 20;
+  width: 400px;
 `;
 
 const ThirdTitleRow = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-  left: 374px !important;
+  left: 750px !important;
   top: 316px !important;
+  z-index: 20;
 `;
 
 const ThirdMessageText = styled.p`
@@ -160,10 +170,11 @@ const ThirdMessageText = styled.p`
   line-height: 25px;
   color: #828282;
   position: relative;
-  left: 205px !important;
+  left: 580px !important;
   top: 281px !important;
-  width: calc(100% - 95px);
+  width: 400px;
   text-align: left;
+  z-index: 20;
 `;
 
 const NewGradientBox = styled.div`
@@ -196,9 +207,12 @@ export default function ConversationView() {
   const [showSecondMessage, setShowSecondMessage] = useState(false);
   const [showThirdMessage, setShowThirdMessage] = useState(false);
   const [showInitialMessage, setShowInitialMessage] = useState(false);
+  const [showCircle, setShowCircle] = useState(false);
+  const [allMessages, setAllMessages] = useState([]);
   
   const socketRef = useRef(null);
   const nfcSocketRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   const nicknameRef = useRef(nickname);
   useEffect(() => {
@@ -243,6 +257,8 @@ export default function ConversationView() {
       setShowInitialMessage(false);
       setShowSecondMessage(false);
       setShowThirdMessage(false);
+      setShowCircle(false);
+      setAllMessages([]);
       
       const isFiveFlowerTag = data.id === '0488bb12361e90';
       const name = isFiveFlowerTag ? 'Five Flower' : (data.name || '방문객');
@@ -254,11 +270,29 @@ export default function ConversationView() {
       const initialMessage = { user: 'PIBIT', text: message };
       setMessages([initialMessage]);
       
+      // 모든 메시지를 allMessages에 순차적으로 추가
+      setAllMessages([
+        { user: 'Five Flower', text: `${nickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
+      ]);
+      
       setShowInitialMessage(true);
       setTimeout(() => {
+        setAllMessages(prev => [...prev, { 
+          user: 'Five Flower', 
+          text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${nickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, 
+          isFixed: true 
+        }]);
         setShowSecondMessage(true);
         setTimeout(() => {
+          setAllMessages(prev => [...prev, { 
+            user: 'Five Flower', 
+            text: `난 앞으로 ${nickname} 옆에서 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, 
+            isFixed: true 
+          }]);
           setShowThirdMessage(true);
+          setTimeout(() => {
+            setShowCircle(true);
+          }, 1000);
         }, 1000);
       }, 1000);
 
@@ -272,6 +306,8 @@ export default function ConversationView() {
       setNfcData(null);
       setShowSecondMessage(false);
       setShowThirdMessage(false);
+      setShowCircle(false);
+      setAllMessages([]);
     });
 
     return () => {
@@ -295,16 +331,17 @@ export default function ConversationView() {
   }, [isChatStarted]);
 
   useEffect(() => {
-    // if (messagesEndRef.current) {
-    //   messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    // }
-  }, [messages]);
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [allMessages]);
 
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
     const userMessage = { user: nickname, text: input };
     setMessages((prev) => [...prev, userMessage]);
+    setAllMessages((prev) => [...prev, userMessage]);
     // const currentInput = input;
     setInput('');
     if (socketRef.current) socketRef.current.emit('message', userMessage);
@@ -424,38 +461,43 @@ export default function ConversationView() {
               <DateText>{currentDate}</DateText>
             </DateBox>
           </div>
-          {showInitialMessage && (
-            <>
-              <ChatTitle style={{top: '172px', left: '266px'}}>Five Flower</ChatTitle>
-              <WelcomeMessage style={{top: '215px', left: '266px', width: '222px', height: '25px'}}>
-                지수 안녕! 만나게 되서 너무 반가워!
-              </WelcomeMessage>
-            </>
-          )}
-          {showSecondMessage && (
-            <>
-              <ChatTitle style={{top: '305px', left: '266px'}}>Five Flower</ChatTitle>
-              <WelcomeMessage style={{top: '348px', left: '266px', width: '368px', height: '25px'}}>
-                나와 대화를 통해 어떤것을 할 수 있는지 간략하게 설명할게!
-              </WelcomeMessage>
-            </>
-          )}
-          {showThirdMessage && (
-            <>
-              <ChatTitle style={{top: '437px', left: '266px'}}>Five Flower</ChatTitle>
-              <WelcomeMessage style={{
-                top: '480px',
-                left: '266px',
-                textAlign: 'left',
-                whiteSpace: 'normal',
+
+          <Messages ref={messagesContainerRef}>
+            {allMessages.map((msg, index) => (
+              <Message key={index} me={msg.user === nickname} isFixed={msg.isFixed}>
+                {msg.isFixed ? (
+                  <>
+                    <strong style={{color: '#828282', fontSize: '19px'}}>{msg.user}</strong>
+                    <div style={{color: '#828282', fontSize: '16px', lineHeight: '1.65', whiteSpace: 'pre-line'}}>
+                      {msg.text}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <strong>{msg.user}:</strong> {msg.text}
+                  </>
+                )}
+              </Message>
+            ))}
+          </Messages>
+          {showCircle && (
+            <img 
+              src="/circle.png" 
+              alt="circle" 
+              style={{
+                position: 'absolute', 
+                left: '50%', 
+                top: 'calc(50% + 250px)', 
+                transform: 'translate(-50%, -50%) scale(0.15)', 
+                width: 'auto', 
                 height: 'auto',
-                lineHeight: '1.5'
-              }}>
-                난 앞으로 지수의 일상 속 감정과 그 감정이 만들어낼 수 있는 미래의 습관 발현, 또는 현재 진행중인 습관들을 빠짐없이 캐치하고<br />맞춤화 케어를 통해 고쳐나가며,감정적으로 성장할 수 있도록 도와주는 작지만 강한 평생 동반자야! 이해했다면 "좋아" 를 전송해줘!
-              </WelcomeMessage>
-            </>
+                zIndex: 1,
+                opacity: showCircle ? 1 : 0,
+                transition: 'opacity 1s ease-in-out'
+              }} 
+            />
           )}
-          <InputRow onSubmit={handleSend} style={{position: 'absolute', left: '50%', bottom: '70px', transform: 'translateX(-50%)'}}>
+          <InputRow onSubmit={handleSend} style={{position: 'absolute', left: 'calc(50% - 200px)', bottom: '70px', transform: 'translateX(-50%)'}}>
             <Input
               type="text"
               placeholder="메시지 보내기"

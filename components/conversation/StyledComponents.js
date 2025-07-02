@@ -145,23 +145,50 @@ export const Ellipse28 = styled.div`
 export const Messages = styled.div`
   position: absolute;
   top: 172px;
-  left: calc(50% - 811px/2);
-  width: 811px;
-  height: 540px; /* 734 - 172 - 22 (margin) */
+  left: calc(50% - 1200px/2);
+  width: 1200px;
+  height: 520px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px;
   display: flex;
   flex-direction: column;
+  scroll-behavior: smooth;
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+  
+  /* Hide scrollbar */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 
 export const Message = styled.div`
-  max-width: 60%;
-  padding: 10px 15px;
-  border-radius: 20px;
-  margin-bottom: 10px;
-  background: ${props => (props.me ? '#ffe082' : '#f3f0ff')};
+  max-width: ${props => (props.isFixed ? '100%' : '80%')};
+  padding: ${props => (props.isFixed ? '15px 20px' : '10px 15px')};
+  border-radius: ${props => (props.isFixed ? '0' : '20px')};
+  margin-bottom: ${props => (props.isFixed ? '30px' : '10px')};
+  background: ${props => (props.isFixed ? 'transparent' : (props.me ? '#ffffff' : '#f3f0ff'))};
   color: #333;
-  border: 1.5px solid ${props => (props.me ? '#ffe082' : '#7b61ff')};
+  border: ${props => (props.isFixed ? 'none' : `1.5px solid ${props.me ? '#cccccc' : '#7b61ff'}`)};
+  align-self: ${props => (props.me ? 'flex-end' : 'flex-start')};
+  margin-left: ${props => (props.me ? 'auto' : '0')};
+  margin-right: ${props => (props.me ? '0' : 'auto')};
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: pre-wrap;
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+  transform: translateY(0);
+  
+  &.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
 `;
 
 export const InputRow = styled.form`
