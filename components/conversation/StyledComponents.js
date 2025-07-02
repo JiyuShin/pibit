@@ -493,9 +493,9 @@ export const ChatTitle = styled.p`
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 23px;
+  font-size: 19px;
   line-height: 30px;
-  text-align: center;
+  text-align: left;
   color: #828282;
   white-space: nowrap;
 `;
@@ -504,15 +504,15 @@ export const WelcomeMessage = styled.p`
   position: absolute;
   width: auto;
   height: 25px;
-  left: 418px;
+  left: 266px;
   top: 200px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 16px;
   color: #828282;
   line-height: 25px;
-  text-align: center;
+  text-align: left;
   white-space: nowrap;
 `;
 

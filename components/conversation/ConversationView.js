@@ -418,7 +418,7 @@ export default function ConversationView() {
           )}
           <DividerLine />
           <div style={{ position: 'absolute', top: 59, left: '50%', transform: 'translateX(-50%)', width: 400, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src="/module/flower.png" alt="flower" style={{ position: 'absolute', left: -360, top: 'calc(50% + 110px)', transform: 'translateY(-50%)', width: 160, height: 160, zIndex: 2, objectFit: 'contain' }} />
+            <img src="/module/flower.png" alt="flower" style={{ position: 'absolute', left: -445, top: 'calc(50% + 125px)', transform: 'translateY(-50%)', width: 160, height: 160, zIndex: 2, objectFit: 'contain' }} />
             <DateBox>
               <YearDateText>{currentDate.replace(/\s*\([^)]*\)/, '')}</YearDateText>
               <DateText>{currentDate}</DateText>
@@ -427,7 +427,7 @@ export default function ConversationView() {
           {showInitialMessage && (
             <>
               <ChatTitle style={{top: '172px', left: '266px'}}>Five Flower</ChatTitle>
-              <WelcomeMessage style={{top: '215px', left: '356px', width: '222px', height: '25px'}}>
+              <WelcomeMessage style={{top: '215px', left: '266px', width: '222px', height: '25px'}}>
                 지수 안녕! 만나게 되서 너무 반가워!
               </WelcomeMessage>
             </>
@@ -435,7 +435,7 @@ export default function ConversationView() {
           {showSecondMessage && (
             <>
               <ChatTitle style={{top: '305px', left: '266px'}}>Five Flower</ChatTitle>
-              <WelcomeMessage style={{top: '348px', left: '356px', width: '368px', height: '25px'}}>
+              <WelcomeMessage style={{top: '348px', left: '266px', width: '368px', height: '25px'}}>
                 나와 대화를 통해 어떤것을 할 수 있는지 간략하게 설명할게!
               </WelcomeMessage>
             </>
@@ -445,7 +445,7 @@ export default function ConversationView() {
               <ChatTitle style={{top: '437px', left: '266px'}}>Five Flower</ChatTitle>
               <WelcomeMessage style={{
                 top: '480px',
-                left: '353px',
+                left: '266px',
                 textAlign: 'left',
                 whiteSpace: 'normal',
                 height: 'auto',
