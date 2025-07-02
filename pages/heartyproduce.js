@@ -325,7 +325,7 @@ export default function HeartyProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n포근한 마음으로 입술을 달래주는 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 지수가 입술 대신 내 말랑한 결을\n천천히 쓸어내릴 때마다 작은 불안들을 말없이 녹여주는\n부드럽고 살포근한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {

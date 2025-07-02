@@ -226,16 +226,13 @@ const ContainerLoader = styled.aside`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(calc(-50% - 180px), calc(-50% + 101px)) scale(${({ show }) => (show ? 1 : 0.2)});
+  transform: translate(calc(-50% - 165px), calc(-50% + 121px)) scale(${({ show }) => (show ? 1 : 0.2)});
   z-index: -2;
   opacity: ${({ show }) => (show ? 0.3 : 0)};
   transition: opacity 2s ease-out, transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 `;
 
-const ModelContainer = styled.div`
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  transition: opacity 1s ease-in-out;
-`;
+
 
 const Ball = styled.article`
   position: absolute;
@@ -319,25 +316,23 @@ export default function WiggleProducePage() {
     const { name = '지수', selectedHabits, finalHabit } = router.query;
     const [showTitle, setShowTitle] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
-    const [showModel, setShowModel] = useState(false);
+
     const [showRectangle1, setShowRectangle1] = useState(false);
     const [showBubbleText1, setShowBubbleText1] = useState(false);
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n몸의 리듬에 맞춰 흔들리는 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 지수의 곁에서 다리 떨기 대신\n손가락이 내 말랑한 판을 돌리며 새로운 리듬으로\n불안을 살며시 풀어내도록 하는리드미컬한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
         const titleTimer = setTimeout(() => setShowTitle(true), 500);
         const loaderTimer = setTimeout(() => setShowLoader(true), 1000);
-        const modelTimer = setTimeout(() => setShowModel(true), 2500);
         const timer1 = setTimeout(() => setShowRectangle1(true), 3500);
         const timer2 = setTimeout(() => setShowBubbleText1(true), 4000);
         return () => {
             clearTimeout(titleTimer);
             clearTimeout(loaderTimer);
-            clearTimeout(modelTimer);
             clearTimeout(timer1);
             clearTimeout(timer2);
         };
@@ -374,9 +369,7 @@ export default function WiggleProducePage() {
             <GlobalStyle />
             <Root>
                 <LogoImage onClick={handleGoBack} />
-                <ModelContainer show={showModel}>
-                    <WiggleModelView onModelClick={handleStartConversation} modelPath="/wiggle22.glb"/>
-                </ModelContainer>
+                <WiggleModelView onModelClick={handleStartConversation} modelPath="/wiggle22.glb"/>
                 
                 <ContainerLoader show={showLoader}>
                     <Ball style={{"--color": "#90EE90", "--i": "13px", "--d": "6.8s"}} />

@@ -64,7 +64,10 @@ export const Bg = styled.div`
   width: 1512px;
   height: 982px;
   margin: 0 auto;
-  background: linear-gradient(112.9deg, #D7D9EF 20.66%, #FCF3F8 67.15%, #FFFFFF 91.29%);
+  background-image: url(/newbk2.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   overflow: hidden;
   border-radius: 20px;
   img {
@@ -162,18 +165,16 @@ export const Message = styled.div`
 `;
 
 export const InputRow = styled.form`
-  position: absolute;
-  width: 811px;
+  width: 691px;
   height: 55px;
-  left: calc(50% - 811px/2 + 0.5px);
-  top: 734px;
   background: #FFFFFF;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 4px 25px rgba(0, 0, 0, 0.25);
+  border: 1px solid #E0E0E0;
   border-radius: 20px;
   display: flex;
   align-items: center;
   padding: 0 10px;
-  z-index: 2;
+  z-index: 10;
   font-size: 1rem;
   justify-content: center;
 `;
@@ -185,6 +186,7 @@ export const Input = styled.input`
   outline: none;
   font-size: 1rem;
   padding-left: 15px;
+  color: #333333;
 
   &::placeholder {
     color: #b0b0b0;
@@ -198,7 +200,7 @@ export const SendButtonContainer = styled.button`
   height: 45px;
   background: #FFFFFF;
   border: 1px solid #B5AECA;
-  box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.17);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
   margin-left: 10px;
@@ -444,20 +446,20 @@ export const FlowerImage = styled.div`
 
 export const DividerLine = styled.div`
   position: absolute;
-  width: 805px;
+  width: 966px;
   height: 0px;
-  left: calc(50% - 805px/2 - 2.5px);
+  left: calc(50% - 966px/2 - 2.5px);
   top: 80px;
-  border: 2px solid #C2BFBF;
+  border: 1.35px solid #FFFFFF;
 `;
 
 export const DateBox = styled.div`
   position: absolute;
-  width: 305px;
+  width: 230px;
   height: 43px;
-  left: calc(50% - 305px/2 + 0.5px);
+  left: calc(50% - 230px/2 + 0.5px);
   top: 4px;
-  background: #DFDFDF;
+  background: #FFFFFF;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 30px;
   z-index: 9999;
@@ -475,10 +477,11 @@ export const DateText = styled.p`
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 25.3px;
+  font-size: 15pt;
   line-height: 30px;
   text-align: center;
-  color: #FFFFFF;
+  color: #BFBCBC;
+  display: none;
 `;
 
 export const ChatTitle = styled.p`
@@ -518,10 +521,10 @@ export const YearDateText = styled.p`
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 19.8px;
+  font-size: 15pt;
   line-height: 1.2;
   text-align: center;
-  color: #FFFFFF;
+  color: #BFBCBC;
   margin: 0;
   padding: 0;
   margin-top: -8px;

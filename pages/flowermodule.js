@@ -550,19 +550,19 @@ export default function FlowerModulePage() {
                     <HeaderLine />
                     <HeaderLine2 />
                     <BackButton onClick={() => router.back()} />
-                    <FiveFlowerBgText className={startTextAnimation ? 'animated' : ''}>
+                    {/* <FiveFlowerBgText className={startTextAnimation ? 'animated' : ''}>
                         {'Five Flower'.split('').map((char, index) => (
                             <span key={index} style={{ animationDelay: `${0.1 * (index + 1)}s` }}>
                                 {char === ' ' ? '\u00A0' : char}
                             </span>
                         ))}
-                    </FiveFlowerBgText>
+                    </FiveFlowerBgText> */}
                     <PibitLogo>PIBIT</PibitLogo>
                     <FlowerImage className={isImageAnimated ? 'animated' : ''} />
                     <ModuleVersionText>Module 1st Ver.</ModuleVersionText>
                     <FiveFlowerTitle>Five Flower</FiveFlowerTitle>
                     <Description className={startTextAnimation ? 'animated' : ''}>
-                        {name ? `${name}님께 'Five Flower Module'을 추천드려요!` : "잠시만 기다려주세요..."}<br/>
+                        사용자님께 Hearty Lip Module을 추천드려요!<br/>
                         마음에 드신다면 맞춤화 피빗 생성을 시작할게요!
                     </Description>
                     <CustomizeButton onClick={handleGenerateClick}>피빗 커스터마이징</CustomizeButton>

@@ -16,15 +16,12 @@ const ModelContainer = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  transition: opacity 1s ease-in-out;
 `;
 
 function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props }) {
-  console.log('Loading wiggle model:', modelPath);
+  console.log('Loading model:', modelPath);
   
   const groupRef = useRef();
-  const [modelReady, setModelReady] = useState(false);
   
   // Clear specific model from cache
   useEffect(() => {
@@ -49,64 +46,34 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
     }
   });
   
-    useEffect(() => {
-    console.log('Wiggle model loaded successfully:', modelPath, scene);
+  useEffect(() => {
+    console.log('Model loaded successfully:', modelPath, scene);
     if (scene) {
       console.log('Scene children:', scene.children);
       
-      // Reset transforms first
-      scene.rotation.set(0, 0, 0);
-      scene.scale.set(1, 1, 1);
-      scene.position.set(0, 0, 0);
+      // Calculate bounding box to center the model
+      const box = new THREE.Box3().setFromObject(scene);
+      const center = box.getCenter(new THREE.Vector3());
       
-      // Calculate volume-weighted center for more accurate centering
-      let totalVolume = 0;
-      const weightedCenter = new THREE.Vector3(0, 0, 0);
+      // Move the scene so its center is at origin (0,0,0)
+      scene.position.set(-center.x, -center.y, -center.z);
       
-      scene.traverse((child) => {
-        if (child.isMesh && child.geometry) {
-          // Force compute bounding box
-          child.geometry.computeBoundingBox();
-          
-          const box = new THREE.Box3().setFromObject(child);
-          const meshCenter = box.getCenter(new THREE.Vector3());
-          const size = box.getSize(new THREE.Vector3());
-          
-          // Calculate approximate volume (width * height * depth)
-          const volume = size.x * size.y * size.z;
-          
-          // Weight center by volume
-          weightedCenter.add(meshCenter.multiplyScalar(volume));
-          totalVolume += volume;
-          
-          console.log(`Mesh center: ${meshCenter.x}, ${meshCenter.y}, ${meshCenter.z}, volume: ${volume}`);
-        }
-      });
-      
-      if (totalVolume > 0) {
-        // Calculate volume-weighted center
-        const volumeCenter = weightedCenter.divideScalar(totalVolume);
+      // Center the model properly for wiggle22.glb
+      if (modelPath.includes('wiggle22.glb')) {
+        // Reset any transforms that might cause drift
+        scene.rotation.set(0, 0, 0);
+        scene.scale.set(1, 1, 1);
         
-        // For wiggle model, manually adjust Y center to be more visual center
-        // (assuming the visual center is higher than the geometric center)
-        const adjustedCenter = new THREE.Vector3(
-          volumeCenter.x,
-          volumeCenter.y + 0.3, // Move center point up by 0.3 units to get visual center
-          volumeCenter.z
-        );
-        
-        // Move scene to center the visual core
-        scene.position.set(-adjustedCenter.x, -adjustedCenter.y, -adjustedCenter.z);
-        
-        console.log('Volume-weighted center:', volumeCenter);
-        console.log('Adjusted center:', adjustedCenter);
-        console.log('Scene positioned at:', scene.position);
+        // Traverse and center all children
+        scene.traverse((child) => {
+          if (child.isMesh) {
+            // Ensure mesh positions are relative to center
+            if (child.geometry.boundingBox) {
+              child.geometry.computeBoundingBox();
+            }
+          }
+        });
       }
-      
-      // Mark model as ready after centering is complete
-      setTimeout(() => {
-        setModelReady(true);
-      }, 100);
     }
   }, [scene, modelPath]);
 
@@ -121,10 +88,13 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
     }
   };
 
-  // Don't render until model is ready and properly centered
-  if (!modelReady) {
-    return null;
-  }
+  // Center the model properly for wiggle22.glb
+  const getModelCenterOffset = () => {
+    if (modelPath.includes('wiggle22.glb')) {
+      return [0, 0, 0]; // Keep centered at origin for proper rotation
+    }
+    return [0, 0, 0];
+  };
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
@@ -145,33 +115,36 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
 }
 
 export default function WiggleModelView({ onModelClick, modelPath = '/wiggle22.glb' }) {
-  const [showModel, setShowModel] = useState(false);
-  
   // Clear cache and preload the specific model
   useEffect(() => {
     useGLTF.clear();
     useGLTF.preload(modelPath);
-    
-    // Show model after a short delay for smooth loading
-    const timer = setTimeout(() => {
-      setShowModel(true);
-    }, 200);
-    
-    return () => clearTimeout(timer);
   }, [modelPath]);
   
-  // Wiggle-specific scale
+  // Set different scales based on model type
   const getModelScale = () => {
-    return 0.063861680124; // Reduced by 0.1 more (0.07095742236 * 0.9)
+    if (modelPath.includes('wiggle22.glb')) {
+      return 0.0788415804; // 7% more increase for wiggle22 (0.07368372 * 1.07)
+    }
+    if (modelPath.includes('clic22.glb')) {
+      return 0.07841856045; // Reduced by 0.03 (0.08084387552 * 0.97)
+    }
+    return 0.069597; // Default scale for other models (0.07733 * 0.9)
   };
   
-  // Wiggle-specific position
+  // Set different positions based on model type
   const getModelPosition = () => {
-    return [0.3, -0.73, 0]; // Move wiggle22 down 60px from previous position
+    if (modelPath.includes('wiggle22.glb')) {
+      return [0.3, -0.4, 0]; // Move wiggle22 up 60px from previous position
+    }
+    if (modelPath.includes('clic22.glb')) {
+      return [0, 1.1, 0]; // Move clic22 up by 30px more from previous position
+    }
+    return [0, 0, 0]; // Default position for other models
   };
   
   return (
-    <ModelContainer show={showModel}>
+    <ModelContainer>
       <Canvas camera={{ position: [0, 12, 7], fov: 45 }}>
         <ambientLight intensity={1.5} />
         <directionalLight position={[10, 10, 5]} intensity={2} />

@@ -325,7 +325,7 @@ export default function ClicProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n클릭과 터치로 긴장을 풀어주는 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 지수가 나를 똑딱 눌러줄\n때마다 속 시원한 재미를 톡톡 터뜨리는\n장난스럽고 쾌활한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {

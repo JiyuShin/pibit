@@ -226,7 +226,7 @@ const ContainerLoader = styled.aside`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(calc(-50% - 180px), calc(-50% + 101px)) scale(${({ show }) => (show ? 1 : 0.2)});
+  transform: translate(calc(-50% - 170px), calc(-50% + 131px)) scale(${({ show }) => (show ? 1 : 0.2)});
   z-index: -2;
   opacity: ${({ show }) => (show ? 0.3 : 0)};
   transition: opacity 2s ease-out, transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -325,7 +325,7 @@ export default function PuffyProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n따듯하고 포근한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 지수가 턱을 괴는 대신\n나를 꾹 눌러줄 때 마음이 묵직하게 놓이는 걸\n가장 좋아하는 든든한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {

@@ -455,7 +455,7 @@ export default function ConversationView() {
               </WelcomeMessage>
             </>
           )}
-          <InputRow onSubmit={handleSend} style={{position: 'absolute', left: '50%', bottom: '40px', transform: 'translateX(-50%)', width: '80%'}}>
+          <InputRow onSubmit={handleSend} style={{position: 'absolute', left: '50%', bottom: '70px', transform: 'translateX(-50%)'}}>
             <Input
               type="text"
               placeholder="메시지 보내기"
