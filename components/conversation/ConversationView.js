@@ -276,6 +276,8 @@ export default function ConversationView() {
       ]);
       
       setShowInitialMessage(true);
+      setShowCircle(true);  // NFC 태그 읽힌 직후 바로 circle 표시
+      
       setTimeout(() => {
         setAllMessages(prev => [...prev, { 
           user: 'Five Flower', 
@@ -290,9 +292,6 @@ export default function ConversationView() {
             isFixed: true 
           }]);
           setShowThirdMessage(true);
-          setTimeout(() => {
-            setShowCircle(true);
-          }, 1000);
         }, 1000);
       }, 1000);
 
@@ -497,7 +496,7 @@ export default function ConversationView() {
               }} 
             />
           )}
-          <InputRow onSubmit={handleSend} style={{position: 'absolute', left: 'calc(50% - 200px)', bottom: '70px', transform: 'translateX(-50%)'}}>
+          <InputRow onSubmit={handleSend} style={{position: 'absolute', left: '50%', bottom: '70px', transform: 'translateX(-50%)'}}>
             <Input
               type="text"
               placeholder="메시지 보내기"

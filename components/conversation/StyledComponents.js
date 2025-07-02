@@ -175,7 +175,10 @@ export const Message = styled.div`
   color: #333;
   border: ${props => (props.isFixed ? 'none' : `1.5px solid ${props.me ? '#cccccc' : '#7b61ff'}`)};
   align-self: ${props => (props.me ? 'flex-end' : 'flex-start')};
-  margin-left: ${props => (props.me ? 'auto' : '0')};
+  margin-left: ${props => {
+    if (props.isFixed) return '70px';
+    return props.me ? 'auto' : '0';
+  }};
   margin-right: ${props => (props.me ? '0' : 'auto')};
   word-wrap: break-word;
   overflow-wrap: break-word;
