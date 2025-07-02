@@ -72,3 +72,15 @@ div[style*="position:fixed"][style*="bottom:0px"][style*="z-index:9999999999"] {
   font-weight: 100 900;
   font-display: swap;
 }
+
+/* 타이핑 인디케이터 애니메이션 */
+@keyframes typing {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

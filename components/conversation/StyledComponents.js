@@ -59,6 +59,17 @@ const nfcExampleAnimation = keyframes`
   }
 `;
 
+const typing = keyframes`
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
+
 export const Bg = styled.div`
   position: relative;
   width: 1512px;
@@ -167,7 +178,13 @@ export const Messages = styled.div`
 `;
 
 export const Message = styled.div`
-  max-width: ${props => (props.isFixed ? '100%' : '80%')};
+  ${props => props.isFixed ? `
+    max-width: 100%;
+  ` : `
+    width: fit-content;
+    max-width: 60%;
+    min-width: 80px;
+  `}
   padding: ${props => (props.isFixed ? '15px 20px' : '10px 15px')};
   border-radius: ${props => (props.isFixed ? '0' : '20px')};
   margin-bottom: ${props => (props.isFixed ? '30px' : '10px')};
@@ -489,13 +506,17 @@ export const DateBox = styled.div`
   height: 43px;
   left: calc(50% - 230px/2 + 0.5px);
   top: 4px;
-  background: #FFFFFF;
+  background: ${props => 
+    props.isCustomizingPhase ? '#FFF9C4' : 
+    (props.isRoutinePhase ? '#E8E1FF' : '#FFFFFF')
+  };
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 30px;
   z-index: 9999;
   display: flex;
   align-items: center;
   padding-top: 10px;
+  transition: background-color 0.5s ease-in-out;
 `;
 
 export const DateText = styled.p`
@@ -554,8 +575,12 @@ export const YearDateText = styled.p`
   font-size: 15pt;
   line-height: 1.2;
   text-align: center;
-  color: #BFBCBC;
+  color: ${props => 
+    props.isCustomizingPhase ? '#828282' : 
+    (props.isRoutinePhase ? '#7B61FF' : '#BFBCBC')
+  };
   margin: 0;
   padding: 0;
   margin-top: -8px;
+  transition: color 0.5s ease-in-out;
 `; 

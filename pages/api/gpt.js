@@ -9,8 +9,8 @@ export default async function handler(req, res) {
   console.log('[API /api/gpt] Request received', { method: req.method, body: req.body });
 
   if (req.method === 'POST') {
-    const { message, userName, toneId } = req.body;
-    console.log('[API /api/gpt] Processing POST request', { message, userName, toneId });
+    const { message, userName, toneId, systemPrompt } = req.body;
+    console.log('[API /api/gpt] Processing POST request', { message, userName, toneId, hasSystemPrompt: !!systemPrompt });
 
     if (!message) {
       console.error('[API /api/gpt] Error: Message is required');
@@ -18,36 +18,42 @@ export default async function handler(req, res) {
     }
 
     let systemContent;
-    const effectiveToneId = String(toneId || '').trim().toLowerCase();
-    console.log('[API /api/gpt] effectiveToneId:', effectiveToneId);
-    console.log('[API /api/gpt] toneAndManner:', toneAndManner.map(t => String(t.id).trim().toLowerCase()));
-    const selectedToneConfig = toneAndManner.find(
-      t => String(t.id).trim().toLowerCase() === effectiveToneId
-    );
-    console.log('[API /api/gpt] selectedToneConfig:', selectedToneConfig);
-
-    if (selectedToneConfig && typeof selectedToneConfig.getSystemPrompt === 'function') {
-      systemContent = selectedToneConfig.getSystemPrompt(userName);
+    
+    // systemPrompt가 있으면 우선 사용
+    if (systemPrompt) {
+      systemContent = systemPrompt;
     } else {
-      console.warn(`[API /api/gpt] Could not find valid config for toneId '${effectiveToneId}'. Fallback to toneAndManner[0].`);
-      const fallbackToneConfig = toneAndManner[0];
-      if (fallbackToneConfig && typeof fallbackToneConfig.getSystemPrompt === 'function') {
-        systemContent = fallbackToneConfig.getSystemPrompt(userName);
+      const effectiveToneId = String(toneId || '').trim().toLowerCase();
+      console.log('[API /api/gpt] effectiveToneId:', effectiveToneId);
+      console.log('[API /api/gpt] toneAndManner:', toneAndManner.map(t => String(t.id).trim().toLowerCase()));
+      const selectedToneConfig = toneAndManner.find(
+        t => String(t.id).trim().toLowerCase() === effectiveToneId
+      );
+      console.log('[API /api/gpt] selectedToneConfig:', selectedToneConfig);
+
+      if (selectedToneConfig && typeof selectedToneConfig.getSystemPrompt === 'function') {
+        systemContent = selectedToneConfig.getSystemPrompt(userName);
       } else {
-        console.error('[API /api/gpt] CRITICAL: toneAndManner[0] is not configured correctly in constants.js. Using hardcoded default prompt.');
-        systemContent = `You are PIBIT, a friendly and somewhat quirky teenage friend. The user's name is ${userName || 'User'}. Talk like a teenager. Keep your responses concise and engaging, like a real chat with a friend. 한국어로 대답해줘.`;
+        console.warn(`[API /api/gpt] Could not find valid config for toneId '${effectiveToneId}'. Fallback to toneAndManner[0].`);
+        const fallbackToneConfig = toneAndManner[0];
+        if (fallbackToneConfig && typeof fallbackToneConfig.getSystemPrompt === 'function') {
+          systemContent = fallbackToneConfig.getSystemPrompt(userName);
+        } else {
+          console.error('[API /api/gpt] CRITICAL: toneAndManner[0] is not configured correctly in constants.js. Using hardcoded default prompt.');
+          systemContent = `You are PIBIT, a friendly and somewhat quirky teenage friend. The user's name is ${userName || 'User'}. Talk like a teenager. Keep your responses concise and engaging, like a real chat with a friend. 한국어로 대답해줘.`;
+        }
       }
     }
 
-    console.log(`[API /api/gpt] Using system content for toneId '${effectiveToneId}':`, systemContent);
+    console.log(`[API /api/gpt] Using system content:`, systemContent.substring(0, 200) + '...');
 
     try {
       console.log('[API /api/gpt] Calling OpenAI API...');
-      const response = await openai.responses.create({
-        model: 'gpt-4.1',
-        input: [
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
           {
-            role: 'developer',
+            role: 'system',
             content: systemContent,
           },
           {
@@ -55,10 +61,12 @@ export default async function handler(req, res) {
             content: message,
           },
         ],
+        max_tokens: 500,
+        temperature: 0.7,
       });
-      console.log('[API /api/gpt] OpenAI API response received:', response);
+      console.log('[API /api/gpt] OpenAI API response received');
 
-      const reply = response.output_text;
+      const reply = response.choices[0].message.content;
       console.log('[API /api/gpt] Extracted reply:', reply);
       res.status(200).json({ reply });
     } catch (error) {
