@@ -39,6 +39,19 @@ import {
   WelcomeMessage,
   GradientOverlay,
   YearDateText,
+  // 질감 선택 UI 컴포넌트들
+  TextureSelectionEllipse,
+  TextureSelectionBox,
+  TextureImage,
+  FlowerLogo,
+  TextureSelectButton,
+  TextureSelectText,
+  TextureArrowCircle,
+  TextureArrowIcon,
+  TextureOption1,
+  TextureOption2,
+  TextureOption3,
+  TextureOption4,
 } from './StyledComponents';
 import { toneAndManner } from './constants';
 // teenReplies는 현재 이 컴포넌트에서 직접 사용되지 않으므로 import하지 않습니다.
@@ -191,14 +204,15 @@ const NewGradientBox = styled.div`
 const RoutineBox = styled.div`
   background: white;
   border-radius: 15px;
-  padding: 12px 16px;
-  margin: 6px 0;
+  padding: 18px 20px;
+  margin: 8px 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #f0f0f0;
   width: fit-content;
   max-width: 100%;
   display: inline-block;
   text-align: left;
+  min-width: 300px;
 `;
 
 // 루틴 메시지를 파싱하고 렌더링하는 함수
@@ -225,7 +239,7 @@ const renderRoutineMessage = (text) => {
                     fontSize: '16px',
                     fontWeight: '700',
                     lineHeight: '1.4',
-                    marginBottom: '8px',
+                    marginBottom: '12px',
                     textAlign: 'left'
                   }}>
                     {title}
@@ -236,9 +250,10 @@ const renderRoutineMessage = (text) => {
                       color: '#333', 
                       fontSize: '15px', 
                       fontWeight: '400',
-                      lineHeight: '1.6',
+                      lineHeight: '1.7',
                       whiteSpace: 'pre-line',
-                      textAlign: 'left'
+                      textAlign: 'left',
+                      letterSpacing: '0.2px'
                     }}>
                       {content}
                     </div>
@@ -294,6 +309,9 @@ export default function ConversationView() {
   const [secondQuestionSent, setSecondQuestionSent] = useState(false);
   const [routineAccepted, setRoutineAccepted] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [isTextureSelectionPhase, setIsTextureSelectionPhase] = useState(false);
+  const [userAge, setUserAge] = useState(null);
+  const [currentTextureImage, setCurrentTextureImage] = useState('ff2'); // 'ff2' 또는 'df'
   
   const socketRef = useRef(null);
   const nfcSocketRef = useRef(null);
@@ -350,6 +368,9 @@ export default function ConversationView() {
       setRoutineAccepted(false);
       setIsRoutinePhase(false);
       setIsCustomizingPhase(false);
+      setIsTextureSelectionPhase(false);
+      setUserAge(null);
+      setCurrentTextureImage('ff2');
       
       const isFiveFlowerTag = data.id === '0488bb12361e90';
       const name = isFiveFlowerTag ? 'Five Flower' : (data.name || '방문객');
@@ -410,6 +431,9 @@ export default function ConversationView() {
       setRoutineAccepted(false);
       setIsRoutinePhase(false);
       setIsCustomizingPhase(false);
+      setIsTextureSelectionPhase(false);
+      setUserAge(null);
+      setCurrentTextureImage('ff2');
     });
 
     return () => {
@@ -434,7 +458,11 @@ export default function ConversationView() {
 
   useEffect(() => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      // 부드러운 스크롤 애니메이션 적용
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [allMessages]);
 
@@ -442,53 +470,36 @@ export default function ConversationView() {
     console.log('🔥 handleRoutineAccept 클릭됨!');
     setRoutineAccepted(true);
     
-    // 1. 루틴 수락 확인 메시지
-    const acceptMessage = { user: 'Five Flower', text: '좋아 수락 완료! 앞으로 나랑 같이 이 루틴대로 실천해보면서 습관으로 이어지지 않도록 해보자!', isFixed: true };
-    
-    console.log('📨 수락 확인 메시지 추가:', acceptMessage);
-    setMessages(prev => [...prev, acceptMessage]);
-    setAllMessages(prev => [...prev, acceptMessage]);
-    
-    // 2. 1초 후 커스터마이징 시작 메시지
-    setTimeout(() => {
-      const customizingMessage = { user: 'Five Flower', text: '이제부턴 지수와 나의 루틴이 효과적으로 이루어질 수 있도록 모듈을 적합한 모습으로 커스터마이징을 시작할게!', isFixed: true };
+    // 메시지들을 순차적으로 부드럽게 추가하는 함수
+    const addMessagesSequentially = () => {
+      // 1. 루틴 수락 확인 메시지
+      const acceptMessage = { user: 'Five Flower', text: '좋아 수락 완료! 앞으로 나랑 같이 이 루틴대로 실천해보면서 습관으로 이어지지 않도록 해보자!', isFixed: true };
       
-      console.log('📨 커스터마이징 메시지 추가:', customizingMessage);
-      setMessages(prev => [...prev, customizingMessage]);
-      setAllMessages(prev => [...prev, customizingMessage]);
+      setMessages(prev => [...prev, acceptMessage]);
+      setAllMessages(prev => [...prev, acceptMessage]);
       
-      // 커스터마이징 단계로 변경
-      setIsCustomizingPhase(true);
-      
-      // 3. 1.5초 후 나이 질문 메시지
+      // 2. 1초 후 커스터마이징 시작 메시지
       setTimeout(() => {
-        const ageQuestionMessage = { user: 'Five Flower', text: '지수에게 가장 친근하고 적합한 동반자가 되기 위한 커스터마이징을 진행하기 위해서 지수의 나이를 알려줘!', isFixed: true };
+        const customizingMessage = { user: 'Five Flower', text: '이제부턴 지수와 나의 루틴이 효과적으로 이루어질 수 있도록 모듈을 적합한 모습으로 커스터마이징을 시작할게!', isFixed: true };
         
-        setMessages(prev => [...prev, ageQuestionMessage]);
-        setAllMessages(prev => [...prev, ageQuestionMessage]);
+        setMessages(prev => [...prev, customizingMessage]);
+        setAllMessages(prev => [...prev, customizingMessage]);
         
-        // 스크롤 처리
+        // 커스터마이징 단계로 변경
+        setIsCustomizingPhase(true);
+        
+        // 3. 1.5초 후 나이 질문 메시지
         setTimeout(() => {
-          if (messagesContainerRef.current) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-          }
-        }, 100);
-      }, 1500);
-      
-      // 스크롤 처리
-      setTimeout(() => {
-        if (messagesContainerRef.current) {
-          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-        }
-      }, 100);
-    }, 1000);
+          const ageQuestionMessage = { user: 'Five Flower', text: '지수에게 가장 친근하고 적합한 동반자가 되기 위한 커스터마이징을 진행하기 위해서 지수의 나이를 알려줘!', isFixed: true };
+          
+          setMessages(prev => [...prev, ageQuestionMessage]);
+          setAllMessages(prev => [...prev, ageQuestionMessage]);
+        }, 1500);
+      }, 1000);
+    };
     
-    // 스크롤 처리
-    setTimeout(() => {
-      if (messagesContainerRef.current) {
-        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-      }
-    }, 100);
+    // 메시지 추가 시작
+    addMessagesSequentially();
   };
 
   const handleSend = async (e) => {
@@ -506,7 +517,7 @@ export default function ConversationView() {
         setTimeout(() => {
           setAllMessages(current => [...current, {
             user: 'Five Flower',
-            text: `그런 순간이 생길 때 너만의 감정을 해소하는 방법, 특별히 방문하는 장소 등을 자유롭게 알려주면\n그 루틴에 맞춰서 지수만을 위한 five-flower 피빗 사용 루틴을 추천해줄게!`,
+            text: `그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들을 하는지 자유롭게 알려주면 지수의 행동, 생각 루틴에 맞춘 five-flower 피빗 사용 루틴을 추천해줄게!`,
             isFixed: true
           }]);
           // 루틴 추천 단계로 변경
@@ -517,6 +528,45 @@ export default function ConversationView() {
     });
     setInput('');
     if (socketRef.current) socketRef.current.emit('message', userMessage);
+
+    // 커스터마이징 단계에서 나이를 입력받은 경우 질감 선택 단계로 진행
+    if (isCustomizingPhase && !isTextureSelectionPhase && currentInput.match(/\d+/)) {
+      const age = parseInt(currentInput.match(/\d+/)[0]);
+      console.log('🎂 나이 입력 감지:', {
+        age,
+        isCustomizingPhase,
+        isTextureSelectionPhase,
+        currentInput
+      });
+      setUserAge(age);
+      
+      setTimeout(() => {
+        let ageMessage = '';
+        if (age >= 20 && age <= 39) {
+          ageMessage = '20대 사용자들은 대부분 질감적으로 재밌고 특이한 것들을 선호해\n그래서 난 지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+        } else if (age >= 10 && age < 20) {
+          ageMessage = '10대 사용자들은 대부분 부드럽고 친근한 질감을 좋아해\n그래서 난 지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+        } else if (age >= 40) {
+          ageMessage = '40대 혹은 그 이상인 사용자들은 대부분 안정적이고 편안한 느낌을 주는 질감을 선호해\n그래서 난 지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+        } else {
+          ageMessage = '지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+        }
+        
+        const textureMessage = { user: 'Five Flower', text: ageMessage, isFixed: true };
+        console.log('🎨 질감 메시지 생성:', {
+          ageMessage,
+          contains4가지: ageMessage.includes('4가지 질감을 추천할게')
+        });
+        setMessages(prev => [...prev, textureMessage]);
+        setAllMessages(prev => [...prev, textureMessage]);
+        
+        // 메시지 추가 후 즉시 UI 표시 (디버깅용)
+        console.log('🎨 질감 선택 단계 즉시 활성화!');
+        setIsTextureSelectionPhase(true);
+      }, 1000);
+      
+      return; // API 호출 방지
+    }
 
     // 사용자가 두 번째 질문에 답변한 이후부터 계속 API 호출
     const shouldCallAPI = () => {
@@ -569,7 +619,8 @@ export default function ConversationView() {
 
 사용자가 효과에 대해 말했어. 이제 평상시 가장 기분 좋거나 편안한 순간이나 장소에 대해 친절하게 궁금해해줘.
 
-응답 형식: 간단한 반응 + 편안한 순간/장소에 대한 친절한 질문 (예: "평소에 가장 기분 좋을 때는 언제야?", "어떤 곳에 있을 때 편안해?")
+반드시 이런 식으로 물어봐야 해:
+"그럼 평소에 가장 기분 좋을 때는 언제야?" 또는 "어떤 곳에 있을 때 편안해?" 같은 질문
 
 중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지
 금지사항: "~함", "~있음?", "~냐", "ㅋㅋ", "~해봐", "~해", "~말해봐", "~하게 돼", 존댓말, 명령조 말투 등 사용 금지
@@ -582,52 +633,59 @@ export default function ConversationView() {
 
 사용자가 편안한 순간/장소에 대해 말했어. 이제 반대로 가장 예민해지거나 불안해지는 순간에 대해 친절하게 궁금해해줘.
 
-응답 형식: "그럼 반대로 가장 예민해지는 순간이나 감정적으로 불안해지는 장소가 있다면 알려줄 수 있어?" 같은 친절한 질문
+반드시 이런 식으로 물어봐야 해:
+"그럼 반대로 어떤 순간이나 공간이 널 예민하게 만들거나 불안한 감정을 느끼게 해?"
 
-중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지
+중요: 
+- 반드시 반말로 대답하고, 존댓말 절대 사용 금지
+- 위 질문을 정확히 사용하거나 비슷한 의미로 물어보기
 금지사항: "~함", "~있음?", "~냐", "ㅋㅋ", "~해봐", "~해", "~말해봐", "~하게 돼", 존댓말, 명령조 말투 등 사용 금지
 `;
          } else if (userAnswerCount === 6) {
            // Step 5: 예민한/불안한 순간 답변 받음 → 최종 루틴 3가지 제공
+           const allUserResponses = allMessages.filter(msg => msg.user === nickname).map(msg => msg.text).join(' / ');
            stepPrompt = `
-당신은 Five Flower라는 손톱 물어뜯기 습관 개선을 도와주는 친구야.
+당신은 Five Flower 모듈 사용 루틴을 추천해주는 전문가야.
 
-Five Flower 모듈은 엄지손가락 모양을 본떠 만든 꽃모양 형태에 움푹 파인 홈이 있어서, 손가락을 꾹 누르면서 압력을 가해 불안하거나 예민한 감정을 스스로 조절하는 모듈이야.
+★★★ Five Flower에 대한 핵심 정보 ★★★
+- Five Flower는 손톱물어뜯기 습관 개선을 위한 물리적 촉각 모듈이다
+- 손가락 모양을 본따 만든 형태로 되어 있다
+- 중앙에 움푹 패여있는 공간이 있어서 엄지손가락으로 꾹 누르거나 눌렀다 뗐다를 반복할 수 있다
+- 이를 통해 불안한 감정들을 떨쳐내고 생각 정리를 할 수 있다
+- 궁극적 목표는 손가락을 사용한 습관행동(손톱물어뜯기)을 제어하는 것이다
+- 절대로 향이나 냄새, 소리 등의 기능은 없다 - 오직 촉각적 상호작용만 가능하다
 
-사용자가 예민하거나 불안한 순간에 대해 말했어. 이제 지금까지 수집한 모든 정보를 바탕으로:
-1. 사용자가 말한 예민하거나 불안한 상황에서
-2. 사용자가 말한 편안한 순간/장소/방법을 활용해서
-3. Five Flower 모듈의 압력 사용법을 결합한
-루틴 3가지를 친절하게 제안해야 해.
+사용자의 응답 내용: ${allUserResponses}
 
-반드시 다음 형식으로 응답해야 해:
+사용자가 불안하거나 예민한 순간에 대해 말했어. 이제 사용자의 구체적인 상황을 반영한 Five Flower 모듈 사용 루틴 3가지를 추천해줘.
 
-"지수에게 딱 맞는 Five Flower 사용 루틴 3가지를 추천해줄게!
+반드시 이 정확한 형식으로 응답해야 해:
 
-📅 1. [예민한 상황] 루틴
-[예민한 상황에서 편안한 방법과 Five Flower 압력 사용을 조합한 구체적인 루틴]
-[설명이 길면 두 줄로 나눠서 작성]
+"${nickname}에게 딱 맞는 Five Flower 사용 루틴 3가지를 추천해줄게!
 
-📅 2. [예민한 상황] 루틴  
-[예민한 상황에서 편안한 방법과 Five Flower 압력 사용을 조합한 구체적인 루틴]
-[설명이 길면 두 줄로 나눠서 작성]
+📅 1. 불안감 완화 루틴
+[사용자가 말한 불안한 상황에서 Five Flower의 중앙 움푹한 공간을 엄지손가락으로 어떻게 꾹 누르거나 눌렀다 뗐다 반복하여 불안한 감정을 떨쳐낼지 구체적으로 3-4줄 설명. 반드시 "~봐", "~해", "~자" 등으로 끝내기]
 
-📅 3. [예민한 상황] 루틴
-[예민한 상황에서 편안한 방법과 Five Flower 압력 사용을 조합한 구체적인 루틴]
-[설명이 길면 두 줄로 나눠서 작성]"
+📅 2. 집중력 향상 루틴  
+[사용자 상황에 맞춰 Five Flower의 손가락 모양 부분과 중앙 공간을 엄지손가락으로 어떻게 누르고 조작하여 생각정리와 집중력을 높일지 3-4줄 설명. 반드시 "~봐", "~해", "~자" 등으로 끝내기]
 
-중요: 반드시 3번째 루틴까지 완전히 모두 작성해서 보내야 함. 중간에 끊어지거나 미완성으로 보내지 말 것.
+📅 3. 스트레스 해소 루틴
+[사용자의 스트레스 상황에서 손톱물어뜯기 대신 Five Flower의 중앙을 눌렀다 뗐다 반복하여 습관행동을 제어하는 구체적인 사용법 3-4줄 설명. 반드시 "~봐", "~해", "~자" 등으로 끝내기]"
 
-중요 규칙:
-- 각 루틴마다 서로 다른 Five Flower 압력 사용법을 반드시 포함:
-  1번 루틴: "리듬감 있게 꾹꾹 눌러가며" 또는 "톡톡 짧게 눌러가며"
-  2번 루틴: "지그시 누르면서 힘을 줬다 뺐다 반복하면서" 또는 "천천히 깊게 눌렀다가 서서히 놓으면서"
-  3번 루틴: "손가락을 돌리듯 원을 그리며 압력을 가하면서" 또는 "3번 연속 누르고 한 번 길게 누르면서"
-- 사용자의 편안한 순간/환경을 예민한 상황의 해결책으로 연결
-- 각 루틴 설명이 한 줄로 길면 두 줄로 줄바꿈
-- 3가지 루틴이 서로 구별되고 특성있게 만들기
-- 반드시 반말로 대답하고, 위 형식을 정확히 따르고, 추가 질문은 하지 않기
-금지사항: "~함", "~있음?", "~냐", "ㅋㅋ", "~해봐", "~해", "~말해봐", "~하게 돼", 존댓말, 명령조 말투 등 사용 금지
+★★★ 절대 규칙 ★★★
+1. 위 형식을 정확히 지키기
+2. 📅 1, 📅 2, 📅 3 모두 포함하기
+3. 각 루틴은 3-4줄로 완성된 문장 작성
+4. 3번째 루틴까지 반드시 완전히 작성하기
+5. 반말 사용하기
+6. 오직 촉각적 상호작용만 언급 (엄지손가락으로 중앙 누르기, 눌렀다 뗐다 반복하기 등)
+7. 사용자가 말한 구체적인 상황과 연결하기
+8. 손톱물어뜯기 습관행동 제어라는 궁극적 목표 반영하기
+
+★★★ 절대 금지사항 ★★★
+- 향, 냄새, 소리, 시각적 효과 등 촉각 외의 감각 언급 금지
+- "향을 맡아", "소리를 들어", "색깔을 봐" 등의 표현 절대 금지
+- 존댓말, 미완성 문장, 추가 질문 금지
 `;
          } else if (userAnswerCount >= 7) {
            // Step 6: 사용자가 루틴 선택 → 함께 실천하자는 메시지
@@ -641,7 +699,7 @@ ${previousMessages}
 사용자가 루틴 중 하나를 선택했어. 이제 함께 그 루틴을 실천하자는 긍정적인 메시지를 친절하게 보내야 해.
 
 반드시 다음과 같이 응답해야 해:
-"좋아 그럼 앞으론 나랑 같이 이 루틴대로 실천해보면서 습관으로 이어지지 않도록 해보자!"
+"좋아 그럼 다음 단계로 넘어가기 위해 루틴을 수락해줘!"
 
 중요: 
 - 반드시 반말로 대답
@@ -675,17 +733,27 @@ ${previousMessages}
         setIsPibitLoading(false);
         setIsTyping(false); // 타이핑 인디케이터 종료
         if (data.reply) {
+          console.log('🔥 API 응답:', data.reply); // 응답 로깅 추가
+          console.log('📊 userAnswerCount:', userAnswerCount); // 사용자 답변 횟수 로깅
+          
           const fiveFlowerMessage = { user: 'Five Flower', text: data.reply, isFixed: true };
           setMessages((prev) => [...prev, fiveFlowerMessage]);
           setAllMessages((prev) => [...prev, fiveFlowerMessage]);
           
-          // 루틴 생성 완료 후 별도 질문 메시지 추가
-          if (userAnswerCount === 6) {
+          // 루틴이 포함된 메시지인지 확인 (📅 포함 여부로 판단)
+          const hasRoutines = data.reply.includes('📅');
+          console.log('📅 루틴 포함 여부:', hasRoutines);
+          
+          // 루틴 생성 완료 후 별도 질문 메시지 추가 (루틴이 실제로 포함되어 있을 때만)
+          if (userAnswerCount === 6 && hasRoutines) {
             setTimeout(() => {
               const questionMessage = { user: 'Five Flower', text: '어떤 루틴이 가장 마음에 들어?', isFixed: true };
               setMessages((prev) => [...prev, questionMessage]);
               setAllMessages((prev) => [...prev, questionMessage]);
             }, 1000);
+          } else if (userAnswerCount === 6 && !hasRoutines) {
+            // 루틴이 포함되지 않은 경우 에러 로깅
+            console.error('❌ 6단계에서 루틴이 생성되지 않았습니다:', data.reply);
           }
         } else if (data.error) {
           const errorMessage = { user: 'Five Flower', text: data.error, isFixed: true };
@@ -711,7 +779,33 @@ ${previousMessages}
   }
 
   return (
-    <Bg>
+    <>
+      <style jsx global>{`
+        @keyframes typing {
+          0%, 80%, 100% {
+            transform: scale(0);
+            opacity: 0.5;
+          }
+          40% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+        @keyframes textureUIFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .texture-selection-ui {
+          animation: textureUIFadeIn 0.8s ease-out forwards;
+        }
+      `}</style>
+      <Bg>
       <BackButton onClick={() => router.back()}>
         <img src="/whiteb.png" alt="뒤로 가기" />
       </BackButton>
@@ -793,9 +887,9 @@ ${previousMessages}
               // 버튼 표시 조건: 📅가 포함된 루틴 추천 메시지나 함께 실천하자는 메시지에 버튼 표시
               const userAnswerCount = allMessages.filter(m => m.user === nickname).length;
               const isLastFiveFlowerMessage = msg.user === 'Five Flower' && index === allMessages.length - 1;
-              // 📅가 포함된 루틴 메시지이거나 "좋아 그럼 앞으론" 메시지에 버튼 표시
+              // 📅가 포함된 루틴 메시지이거나 "루틴을 수락해줘" 메시지에 버튼 표시
               const isRoutineRecommendation = isLastFiveFlowerMessage && 
-                                              (msg.text.includes('📅') || msg.text.includes('좋아 그럼 앞으론')) && 
+                                              (msg.text.includes('📅') || msg.text.includes('루틴을 수락해줘')) && 
                                               !routineAccepted;
               
               // 디버깅 로그
@@ -832,6 +926,70 @@ ${previousMessages}
                       </>
                     )}
                   </Message>
+                  
+                  {/* 질감 추천 메시지 바로 밑에 질감 선택 UI 표시 */}
+                  {(msg.text.includes('4가지 질감을 추천할게') || msg.text.includes('20대 사용자들은')) && (
+                    <div 
+                      className="texture-selection-ui"
+                      style={{ 
+                        position: 'relative', 
+                        width: '100%', 
+                        height: '580px',
+                        marginTop: '20px',
+                        marginLeft: '70px', // Five Flower 메시지와 같은 왼쪽 마진
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start'
+                      }}>
+                      <TextureSelectionEllipse />
+                      <TextureSelectionBox>
+                        <TextureImage 
+                          imageName="ff2" 
+                          isVisible={currentTextureImage === 'ff2'} 
+                          direction="left"
+                        />
+                        <TextureImage 
+                          imageName="df" 
+                          isVisible={currentTextureImage === 'df'} 
+                          direction="right"
+                        />
+                      </TextureSelectionBox>
+                      <FlowerLogo />
+                      <TextureSelectButton onClick={() => {
+                        console.log('질감 선택 버튼 클릭');
+                        // 여기에 질감 선택 로직 추가 예정
+                      }}>
+                        <span style={{
+                          fontFamily: 'Pretendard Variable',
+                          fontWeight: 500,
+                          fontSize: '18px',
+                          color: '#828282'
+                        }}>
+                          질감 선택하기
+                        </span>
+                      </TextureSelectButton>
+                      <TextureArrowCircle onClick={() => {
+                        console.log('화살표 버튼 클릭');
+                        setCurrentTextureImage(prev => prev === 'ff2' ? 'df' : 'ff2');
+                      }}>
+                        <TextureArrowIcon src="/arrow23.png" alt="arrow" />
+                      </TextureArrowCircle>
+                      
+                      {/* 4개의 질감 선택 원형 요소들 */}
+                      <TextureOption1 onClick={() => {
+                        console.log('질감 옵션 1 선택');
+                      }} />
+                      <TextureOption2 onClick={() => {
+                        console.log('질감 옵션 2 선택');
+                      }} />
+                      <TextureOption3 onClick={() => {
+                        console.log('질감 옵션 3 선택');
+                      }} />
+                      <TextureOption4 onClick={() => {
+                        console.log('질감 옵션 4 선택');
+                      }} />
+                    </div>
+                  )}
                   
                   {isRoutineRecommendation && (
                     <div style={{
@@ -941,6 +1099,7 @@ ${previousMessages}
               </Message>
             )}
           </Messages>
+          
           {showCircle && (
             <img 
               src="/circle.png" 
@@ -974,5 +1133,6 @@ ${previousMessages}
         </>
       )}
     </Bg>
+    </>
   );
 }

@@ -583,4 +583,207 @@ export const YearDateText = styled.p`
   padding: 0;
   margin-top: -8px;
   transition: color 0.5s ease-in-out;
-`; 
+`;
+
+// ========================================================================
+// 질감 선택 UI 컴포넌트들
+// ========================================================================
+
+// Ellipse 50 - 큰 원형 배경 (메시지 바로 밑에 위치)
+export const TextureSelectionEllipse = styled.div`
+  position: absolute;
+  width: 363px;
+  height: 363px;
+  left: 35px;
+  top: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+`;
+
+// Rectangle 70 - 큰 흰색 박스 (질감 선택 영역)
+export const TextureSelectionBox = styled.div`
+  position: absolute;
+  width: 440px;
+  height: 220px;
+  left: 25px;
+  top: 65px;
+  background: #FFFFFF;
+  border-radius: 23px;
+  overflow: hidden;
+  z-index: 1;
+  cursor: pointer;
+`;
+
+// 텍스처 이미지 컴포넌트
+export const TextureImage = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/${props => props.imageName}.png') calc(50% + 25px) calc(50% + 25px)/50% no-repeat;
+  transform: scale(1) translateX(${props => props.isVisible ? '0' : (props.direction === 'left' ? '-100%' : '100%')});
+  opacity: ${props => props.isVisible ? 1 : 0};
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+  
+  ${props => props.isVisible && `
+    &:hover {
+      transform: scale(1.3) translateX(0);
+    }
+  `}
+`;
+
+// Flower logo - 왼쪽 상단에 배치
+export const FlowerLogo = styled.div`
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  left: 45px;
+  top: 85px;
+  background: url('/flowerlogo.png') center/contain no-repeat;
+  z-index: 2;
+`;
+
+
+
+// Rectangle 71 - 작은 흰색 박스 (버튼)
+export const TextureSelectButton = styled.div`
+  position: absolute;
+  width: 149px;
+  height: 57px;
+  left: 25px;
+  top: 305px;
+  background: #FFFFFF;
+  border-radius: 23px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  }
+`;
+
+// 질감 선택하기 텍스트 (삭제 - 버튼 안에 직접 텍스트 넣음)
+export const TextureSelectText = styled.div`
+  font-family: 'Pretendard Variable';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  color: #828282;
+  pointer-events: none;
+`;
+
+// Ellipse 49 - 작은 원형 (화살표 버튼 배경)
+export const TextureArrowCircle = styled.div`
+  position: absolute;
+  width: 57px;
+  height: 57px;
+  left: 437px;
+  top: 142px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  z-index: 3;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+// Arrow right - 화살표 아이콘
+export const TextureArrowIcon = styled.img`
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  object-fit: contain;
+`;
+
+// 질감 선택 원형 요소들 (Ellipse 51-55)
+export const TextureOption1 = styled.div`
+  position: absolute;
+  width: 57px;
+  height: 56px;
+  left: 198px;
+  top: 305px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+export const TextureOption2 = styled.div`
+  position: absolute;
+  width: 57px;
+  height: 56px;
+  left: 271px;
+  top: 305px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+export const TextureOption3 = styled.div`
+  position: absolute;
+  width: 57px;
+  height: 56px;
+  left: 344px;
+  top: 305px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+export const TextureOption4 = styled.div`
+  position: absolute;
+  width: 57px;
+  height: 56px;
+  left: 417px;
+  top: 305px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+
+
+ 
