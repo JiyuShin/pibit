@@ -16,15 +16,12 @@ const ModelContainer = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  transition: opacity 1s ease-in-out;
 `;
 
 function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props }) {
-  console.log('Loading finger model:', modelPath);
+  console.log('Loading model:', modelPath);
   
   const groupRef = useRef();
-  const [modelReady, setModelReady] = useState(false);
   
   // Clear specific model from cache
   useEffect(() => {
@@ -50,70 +47,16 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
   });
   
   useEffect(() => {
-    console.log('Finger model loaded successfully:', modelPath, scene);
+    console.log('Model loaded successfully:', modelPath, scene);
     if (scene) {
       console.log('Scene children:', scene.children);
       
-      // Calculate the actual geometric center based on vertices
-      let totalVertices = 0;
-      const vertexSum = new THREE.Vector3(0, 0, 0);
+      // Calculate bounding box to center the model
+      const box = new THREE.Box3().setFromObject(scene);
+      const center = box.getCenter(new THREE.Vector3());
       
-      scene.traverse((child) => {
-        if (child.isMesh && child.geometry) {
-          const geometry = child.geometry;
-          
-          // Get position attribute
-          const positionAttribute = geometry.attributes.position;
-          
-          if (positionAttribute) {
-            const vertices = positionAttribute.array;
-            const vertexCount = positionAttribute.count;
-            
-            // Apply the child's world matrix to get world positions
-            child.updateMatrixWorld(true);
-            const worldMatrix = child.matrixWorld;
-            
-            // Sum all vertex positions in world space
-            for (let i = 0; i < vertexCount; i++) {
-              const vertex = new THREE.Vector3(
-                vertices[i * 3],
-                vertices[i * 3 + 1], 
-                vertices[i * 3 + 2]
-              );
-              
-              // Transform to world space
-              vertex.applyMatrix4(worldMatrix);
-              vertexSum.add(vertex);
-              totalVertices++;
-            }
-            
-            console.log(`Mesh "${child.name}" has ${vertexCount} vertices`);
-          }
-        }
-      });
-      
-      if (totalVertices > 0) {
-        // Calculate the true geometric center
-        const geometricCenter = vertexSum.divideScalar(totalVertices);
-        
-        // Move the entire scene so the geometric center is at origin
-        scene.position.set(-geometricCenter.x, -geometricCenter.y, -geometricCenter.z);
-        
-        console.log('True geometric center:', geometricCenter);
-        console.log('Scene positioned at:', scene.position);
-        console.log('Total vertices analyzed:', totalVertices);
-      } else {
-        // Fallback to bounding box if no vertices found
-        const box = new THREE.Box3().setFromObject(scene);
-        const center = box.getCenter(new THREE.Vector3());
-        scene.position.set(-center.x, -center.y, -center.z);
-        console.log('Fallback to bounding box center:', center);
-      }
-      
-      // Mark model as ready after centering is complete
-      setTimeout(() => {
-        setModelReady(true);
-      }, 100);
+      // Move the scene so its center is at origin (0,0,0)
+      scene.position.set(-center.x, -center.y, -center.z);
     }
   }, [scene, modelPath]);
 
@@ -127,11 +70,6 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
       onModelClick();
     }
   };
-
-  // Don't render until model is ready and properly centered
-  if (!modelReady) {
-    return null;
-  }
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
@@ -152,33 +90,24 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
 }
 
 export default function FingerModelView({ onModelClick, modelPath = '/finger23.glb' }) {
-  const [showModel, setShowModel] = useState(false);
-  
   // Clear cache and preload the specific model
   useEffect(() => {
     useGLTF.clear();
     useGLTF.preload(modelPath);
-    
-    // Show model after a short delay for smooth loading
-    const timer = setTimeout(() => {
-      setShowModel(true);
-    }, 200);
-    
-    return () => clearTimeout(timer);
   }, [modelPath]);
   
-  // Finger-specific scale
+  // Default scale for finger model (same as FlowerModelView default)
   const getModelScale = () => {
-    return 0.0626373; // Reduced by 0.1 (0.069597 * 0.9)
+    return 0.069597; // Default scale for other models (0.07733 * 0.9)
   };
   
-  // Finger-specific position - moved down 45px from previous position
+  // Default position (same as FlowerModelView default)
   const getModelPosition = () => {
-    return [0, -0.33, 0]; // Move finger23 down by 45px (approximately -1.5 units from 1.17)
+    return [0, 0, 0]; // Default position for other models
   };
   
   return (
-    <ModelContainer show={showModel}>
+    <ModelContainer>
       <Canvas camera={{ position: [0, 12, 7], fov: 45 }}>
         <ambientLight intensity={1.5} />
         <directionalLight position={[10, 10, 5]} intensity={2} />

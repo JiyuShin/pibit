@@ -85,7 +85,7 @@ const Title = styled.h1`
   text-align: center;
   color: #9E9E9E;
   margin: 0;
-  opacity: ${({ show }) => (show ? 1 : 0)};
+  opacity: ${({ $show }) => ($show ? 1 : 0)};
   transition: opacity 1s ease-in-out;
 `;
 
@@ -104,7 +104,7 @@ const Subtitle = styled.p`
   text-align: center;
   color: #9E9E9E;
   margin: 0;
-  opacity: ${({ show }) => (show ? 1 : 0)};
+  opacity: ${({ $show }) => ($show ? 1 : 0)};
   transition: opacity 1s ease-in-out 0.3s;
 `;
 
@@ -117,8 +117,8 @@ const Rectangle1 = styled.div`
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50px 50px 0px 50px;
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  transform: ${({ show }) => (show ? 'translateY(0)' : 'translateY(20px)')};
+  opacity: ${({ $show }) => ($show ? 1 : 0)};
+  transform: ${({ $show }) => ($show ? 'translateY(0)' : 'translateY(20px)')};
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   will-change: transform, opacity;
 `;
@@ -132,8 +132,8 @@ const Rectangle2 = styled.div`
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 30px 30px 0px 30px;
-  transform: ${({ show }) => (show ? 'scaleX(-1) translateY(0)' : 'scaleX(-1) translateY(20px)')};
-  opacity: ${({ show }) => (show ? 1 : 0)};
+  transform: ${({ $show }) => ($show ? 'scaleX(-1) translateY(0)' : 'scaleX(-1) translateY(20px)')};
+  opacity: ${({ $show }) => ($show ? 1 : 0)};
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   will-change: transform, opacity;
 `;
@@ -151,8 +151,8 @@ const BubbleText1 = styled.p`
   text-align: center;
   color: #B5B5B5;
   margin: 0;
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  transform: ${({ show }) => (show ? 'translateY(0)' : 'translateY(20px)')};
+  opacity: ${({ $show }) => ($show ? 1 : 0)};
+  transform: ${({ $show }) => ($show ? 'translateY(0)' : 'translateY(20px)')};
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   will-change: transform, opacity;
 `;
@@ -174,8 +174,8 @@ const BubbleButton = styled.button`
   cursor: pointer;
   padding: 0;
   white-space: pre-wrap;
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  transform: ${({ show }) => (show ? 'translateY(0)' : 'translateY(20px)')};
+  opacity: ${({ $show }) => ($show ? 1 : 0)};
+  transform: ${({ $show }) => ($show ? 'translateY(0)' : 'translateY(20px)')};
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   will-change: transform, opacity;
 `;
@@ -226,16 +226,13 @@ const ContainerLoader = styled.aside`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(calc(-50% - 180px), calc(-50% + 101px)) scale(${({ show }) => (show ? 1 : 0.2)});
+  transform: translate(calc(-50% - 160px), calc(-50% + 156px)) scale(${({ $show }) => ($show ? 0.9 : 0.18)});
   z-index: -2;
-  opacity: ${({ show }) => (show ? 0.3 : 0)};
+  opacity: ${({ $show }) => ($show ? 0.3 : 0)};
   transition: opacity 2s ease-out, transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 `;
 
-const ModelContainer = styled.div`
-  opacity: ${({ show }) => (show ? 1 : 0)};
-  transition: opacity 1s ease-in-out;
-`;
+
 
 const Ball = styled.article`
   position: absolute;
@@ -319,25 +316,23 @@ export default function FingerProducePage() {
     const { name = '지수', selectedHabits, finalHabit } = router.query;
     const [showTitle, setShowTitle] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
-    const [showModel, setShowModel] = useState(false);
+
     const [showRectangle1, setShowRectangle1] = useState(false);
     const [showBubbleText1, setShowBubbleText1] = useState(false);
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n따듯하고 포근한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 지수와 함께\n지내며 머리카락 대신 내 고리들을 천천히 문질러\n긴장을 풀고 당기는 습관을 자연스럽게 덜어주는 친구야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
         const titleTimer = setTimeout(() => setShowTitle(true), 500);
         const loaderTimer = setTimeout(() => setShowLoader(true), 1000);
-        const modelTimer = setTimeout(() => setShowModel(true), 2500);
         const timer1 = setTimeout(() => setShowRectangle1(true), 3500);
         const timer2 = setTimeout(() => setShowBubbleText1(true), 4000);
         return () => {
             clearTimeout(titleTimer);
             clearTimeout(loaderTimer);
-            clearTimeout(modelTimer);
             clearTimeout(timer1);
             clearTimeout(timer2);
         };
@@ -374,11 +369,9 @@ export default function FingerProducePage() {
             <GlobalStyle />
             <Root>
                 <LogoImage onClick={handleGoBack} />
-                <ModelContainer show={showModel}>
-                    <FingerModelView onModelClick={handleStartConversation} modelPath="/finger23.glb"/>
-                </ModelContainer>
+                <FingerModelView onModelClick={handleStartConversation} modelPath="/finger23.glb"/>
                 
-                <ContainerLoader show={showLoader}>
+                <ContainerLoader $show={showLoader}>
                     <Ball style={{"--color": "#ff6347", "--i": "13px", "--d": "6.8s"}} />
                     <Ball style={{"--color": "#00ced1", "--i": "19px", "--d": "3.5s"}} />
                     <Ball style={{"--color": "#adff2f", "--i": "11px", "--d": "4.9s"}} />
@@ -401,22 +394,22 @@ export default function FingerProducePage() {
                     <Ball style={{"--color": "#20b2aa", "--i": "18px", "--d": "2.8s"}} />
                 </ContainerLoader>
                 
-                <Title show={showTitle}>{name}님의 첫 맞춤형 Fingercouch 피빗이 태어났어요!</Title>
-                <Subtitle show={showTitle}>
+                <Title $show={showTitle}>{name}님의 첫 맞춤형 Fingercouch 피빗이 태어났어요!</Title>
+                <Subtitle $show={showTitle}>
                     데스크탑 앞에 놓여있는 fingercouch 모듈과의 대화를 통해<br/>
                     새로운 습관 개선 여정을 시작하세요
                 </Subtitle>
                 
-                <Rectangle1 show={showRectangle1} />
-                <BubbleText1 show={showBubbleText1}>
+                <Rectangle1 $show={showRectangle1} />
+                <BubbleText1 $show={showBubbleText1}>
                     {showBubbleText1 && (
                         <Typewriter text={fullText1} onComplete={handleText1Complete} />
                     )}
                 </BubbleText1>
 
-                <Rectangle2 show={showRectangle2} />
+                <Rectangle2 $show={showRectangle2} />
                 <BubbleButton 
-                    show={showBubbleButton} 
+                    $show={showBubbleButton} 
                     onClick={handleStartConversation}
                 >
                     {showBubbleButton && <Typewriter text={fullText2} />}
