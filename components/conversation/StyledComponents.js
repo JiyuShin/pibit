@@ -594,7 +594,7 @@ export const TextureSelectionEllipse = styled.div`
   position: absolute;
   width: 363px;
   height: 363px;
-  left: 35px;
+  left: 68px;
   top: 5px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.15);
@@ -608,11 +608,12 @@ export const TextureSelectionBox = styled.div`
   height: 220px;
   left: 25px;
   top: 65px;
-  background: #FFFFFF;
+  background: ${props => props.backgroundColor || '#FFFFFF'};
   border-radius: 23px;
   overflow: hidden;
   z-index: 1;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 `;
 
 // 텍스처 이미지 컴포넌트
@@ -622,10 +623,10 @@ export const TextureImage = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('/${props => props.imageName}.png') calc(50% + 25px) calc(50% + 25px)/50% no-repeat;
+  background: url('/${props => props.imageName}.png') calc(50% + 10px) calc(50% + 1px)/50% no-repeat;
   transform: scale(1) translateX(${props => props.isVisible ? '0' : (props.direction === 'left' ? '-100%' : '100%')});
   opacity: ${props => props.isVisible ? 1 : 0};
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.05s ease-out, opacity 0.03s ease-out;
   will-change: transform, opacity;
   
   ${props => props.isVisible && `
@@ -640,10 +641,26 @@ export const FlowerLogo = styled.div`
   position: absolute;
   width: 60px;
   height: 60px;
-  left: 45px;
-  top: 85px;
+  left: 31px;
+  top: 215px;
   background: url('/flowerlogo.png') center/contain no-repeat;
   z-index: 2;
+`;
+
+// Texture Type Label - ff2.png 보일 때 왼쪽에 표시되는 텍스트
+export const TextureTypeLabel = styled.div`
+  position: absolute;
+  left: 48px;
+  top: 83px;
+  font-family: 'Pretendard Variable', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 19.1pt;
+  line-height: 1.2;
+  color: #92B5BA;
+  z-index: 2;
+  opacity: ${props => props.isVisible ? 1 : 0};
+  transition: opacity 0.08s ease-out;
 `;
 
 
@@ -653,7 +670,7 @@ export const TextureSelectButton = styled.div`
   position: absolute;
   width: 149px;
   height: 57px;
-  left: 25px;
+  left: ${props => props.isSelecting ? '30px' : '165px'};
   top: 305px;
   background: #FFFFFF;
   border-radius: 23px;
@@ -661,7 +678,7 @@ export const TextureSelectButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease-in-out;
   
   &:hover {
     transform: scale(1.05);
@@ -716,13 +733,20 @@ export const TextureOption1 = styled.div`
   position: absolute;
   width: 57px;
   height: 56px;
-  left: 198px;
+  left: 195px;
   top: 305px;
-  background: #FFFFFF;
+  background: #FFDF76;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transform: scale(0);
+  animation: popIn 0.2s ease-out forwards;
+  
+  @keyframes popIn {
+    to {
+      transform: scale(1);
+    }
+  }
   
   &:hover {
     transform: scale(1.1);
@@ -734,13 +758,20 @@ export const TextureOption2 = styled.div`
   position: absolute;
   width: 57px;
   height: 56px;
-  left: 271px;
+  left: 268px;
   top: 305px;
-  background: #FFFFFF;
+  background: #DDEBC1;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transform: scale(0);
+  animation: popIn 0.2s ease-out forwards;
+  
+  @keyframes popIn {
+    to {
+      transform: scale(1);
+    }
+  }
   
   &:hover {
     transform: scale(1.1);
@@ -752,13 +783,20 @@ export const TextureOption3 = styled.div`
   position: absolute;
   width: 57px;
   height: 56px;
-  left: 344px;
+  left: 341px;
   top: 305px;
-  background: #FFFFFF;
+  background: #C5E1FF;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transform: scale(0);
+  animation: popIn 0.2s ease-out forwards;
+  
+  @keyframes popIn {
+    to {
+      transform: scale(1);
+    }
+  }
   
   &:hover {
     transform: scale(1.1);
@@ -770,13 +808,20 @@ export const TextureOption4 = styled.div`
   position: absolute;
   width: 57px;
   height: 56px;
-  left: 417px;
+  left: 414px;
   top: 305px;
-  background: #FFFFFF;
+  background: #EEC9E0;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transform: scale(0);
+  animation: popIn 0.2s ease-out forwards;
+  
+  @keyframes popIn {
+    to {
+      transform: scale(1);
+    }
+  }
   
   &:hover {
     transform: scale(1.1);

@@ -44,6 +44,7 @@ import {
   TextureSelectionBox,
   TextureImage,
   FlowerLogo,
+  TextureTypeLabel,
   TextureSelectButton,
   TextureSelectText,
   TextureArrowCircle,
@@ -311,17 +312,92 @@ export default function ConversationView() {
   const [isTyping, setIsTyping] = useState(false);
   const [isTextureSelectionPhase, setIsTextureSelectionPhase] = useState(false);
   const [userAge, setUserAge] = useState(null);
-  const [currentTextureImage, setCurrentTextureImage] = useState('ff2'); // 'ff2' 또는 'df'
+  const [currentTextureImage, setCurrentTextureImage] = useState('ff2'); // 'ff2', 'df', 'sil' 순환
+  const [isTextureSelecting, setIsTextureSelecting] = useState(false); // 질감 선택 모드
+  const [visibleOptions, setVisibleOptions] = useState([]); // 보이는 옵션들 [0, 1, 2, 3]
+  const [textureImagesLoaded, setTextureImagesLoaded] = useState(false); // 질감 이미지 프리로딩 상태
+  const [selectedTexture, setSelectedTexture] = useState(null); // 선택된 질감
+  const [showTextureMessage, setShowTextureMessage] = useState(false); // 질감 선택 완료 메시지 표시
+  const [showColorSelection, setShowColorSelection] = useState(false); // 색상 선택 UI 표시
+  const [isColorSelecting, setIsColorSelecting] = useState(false); // 색상 선택 모드
+  const [visibleColorOptions, setVisibleColorOptions] = useState([]); // 색상 선택 동그라미들
+  const [selectedColor, setSelectedColor] = useState('#FFFFFF'); // 선택된 색상, 기본값은 흰색
   
   const socketRef = useRef(null);
   const nfcSocketRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const secondQuestionSentRef = useRef(false);
 
+  // 선택된 질감에 따른 설명 생성 함수
+  const getTextureDescription = (textureType) => {
+    switch(textureType) {
+      case 'ff2':
+        return '털털한 질감';
+      case 'df':
+        return '돌기같은 질감';
+      case 'sil':
+        return '젤리같은 질감';
+      default:
+        return '특별한 질감';
+    }
+  };
+
+  // 색상 선택 함수
+  const handleColorSelect = (color) => {
+    console.log('색상 선택:', color);
+    setSelectedColor(color);
+  };
+
+  // 질감 이미지 프리로딩 함수 (우선순위 기반)
+  const preloadTextureImages = () => {
+    const imageNames = ['ff2', 'df', 'sil'];
+    let loadedCount = 0;
+    
+    const promises = imageNames.map((imageName, index) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          loadedCount++;
+          console.log(`✅ ${imageName}.png 로딩 완료 (${loadedCount}/${imageNames.length})`);
+          
+          // 첫 번째 이미지(ff2)가 로딩되면 바로 UI 표시 시작
+          if (imageName === 'ff2') {
+            console.log('🎯 첫 번째 이미지 로딩 완료! UI 표시 시작');
+            setTextureImagesLoaded(true);
+          }
+          resolve();
+        };
+        img.onerror = (error) => {
+          console.error(`❌ ${imageName}.png 로딩 실패:`, error);
+          reject(error);
+        };
+        
+                 // 이미지 소스 설정
+         img.src = `/${imageName}.png`;
+      });
+    });
+
+    // 첫 번째 이미지만으로도 UI 시작하고, 나머지는 백그라운드에서 로딩
+    Promise.allSettled(promises)
+      .then((results) => {
+        const successCount = results.filter(r => r.status === 'fulfilled').length;
+        console.log(`🎨 질감 이미지 프리로딩 결과: ${successCount}/${imageNames.length} 성공`);
+        setTextureImagesLoaded(true); // 안전장치
+      });
+  };
+
   const nicknameRef = useRef(nickname);
   useEffect(() => {
     nicknameRef.current = nickname;
   }, [nickname]);
+
+  // 질감 선택 단계 시작 시 이미지 프리로딩
+  useEffect(() => {
+    if (isTextureSelectionPhase && !textureImagesLoaded) {
+      console.log('질감 이미지 프리로딩 시작...');
+      preloadTextureImages();
+    }
+  }, [isTextureSelectionPhase, textureImagesLoaded]);
 
   useEffect(() => {
     if (router.isReady) {
@@ -539,6 +615,10 @@ export default function ConversationView() {
         currentInput
       });
       setUserAge(age);
+      
+      // 🚀 나이 입력 즉시 이미지 프리로딩 시작!
+      console.log('🎨 질감 이미지 미리 로딩 시작...');
+      preloadTextureImages();
       
       setTimeout(() => {
         let ageMessage = '';
@@ -927,8 +1007,21 @@ ${previousMessages}
                     )}
                   </Message>
                   
-                  {/* 질감 추천 메시지 바로 밑에 질감 선택 UI 표시 */}
-                  {(msg.text.includes('4가지 질감을 추천할게') || msg.text.includes('20대 사용자들은')) && (
+                  {/* 질감 추천 메시지 바로 밑에 로딩 인디케이터 또는 질감 선택 UI 표시 */}
+                  {(msg.text.includes('4가지 질감을 추천할게') || msg.text.includes('20대 사용자들은')) && !textureImagesLoaded && (
+                    <div style={{
+                      marginTop: '20px',
+                      marginLeft: '70px',
+                      color: '#828282',
+                      fontSize: '16px',
+                      fontFamily: 'Pretendard Variable'
+                    }}>
+                      🎨 질감 이미지를 준비하고 있어... 잠시만 기다려줘!
+                    </div>
+                  )}
+                  
+                  {/* 질감 추천 메시지 바로 밑에 질감 선택 UI 표시 - 이미지가 로딩된 후에만 */}
+                  {(msg.text.includes('4가지 질감을 추천할게') || msg.text.includes('20대 사용자들은')) && textureImagesLoaded && (
                     <div 
                       className="texture-selection-ui"
                       style={{ 
@@ -953,12 +1046,25 @@ ${previousMessages}
                           isVisible={currentTextureImage === 'df'} 
                           direction="right"
                         />
+                        <TextureImage 
+                          imageName="sil" 
+                          isVisible={currentTextureImage === 'sil'} 
+                          direction="right"
+                        />
                       </TextureSelectionBox>
                       <FlowerLogo />
-                      <TextureSelectButton onClick={() => {
-                        console.log('질감 선택 버튼 클릭');
-                        // 여기에 질감 선택 로직 추가 예정
-                      }}>
+                      <TextureTypeLabel isVisible={true}>
+                        {currentTextureImage === 'ff2' ? 'Furry Type' : 
+                         currentTextureImage === 'df' ? 'Lumpy Type' : 'Jello Type'}
+                      </TextureTypeLabel>
+                      <TextureSelectButton 
+                        isSelecting={isTextureSelecting}
+                        onClick={() => {
+                          console.log('질감 선택 버튼 클릭');
+                          setSelectedTexture(currentTextureImage);
+                          setShowTextureMessage(true);
+                          setShowColorSelection(true);
+                        }}>
                         <span style={{
                           fontFamily: 'Pretendard Variable',
                           fontWeight: 500,
@@ -970,24 +1076,94 @@ ${previousMessages}
                       </TextureSelectButton>
                       <TextureArrowCircle onClick={() => {
                         console.log('화살표 버튼 클릭');
-                        setCurrentTextureImage(prev => prev === 'ff2' ? 'df' : 'ff2');
+                        setCurrentTextureImage(prev => {
+                          if (prev === 'ff2') return 'df';
+                          if (prev === 'df') return 'sil';
+                          return 'ff2'; // sil인 경우 ff2로
+                        });
                       }}>
                         <TextureArrowIcon src="/arrow23.png" alt="arrow" />
                       </TextureArrowCircle>
+                    </div>
+                  )}
+                  
+                  {/* 질감 선택 완료 메시지 */}
+                  {showTextureMessage && selectedTexture && (
+                    <div style={{
+                      marginTop: '20px',
+                      marginLeft: '70px',
+                      color: '#828282',
+                      fontSize: '16px',
+                      fontFamily: 'Pretendard Variable',
+                      lineHeight: '1.6',
+                      whiteSpace: 'pre-line'
+                    }}>
+                                             좋은 선택이야! {getTextureDescription(selectedTexture)}은 확실히 눌렀을 때 강력한 자극을 줘서 다른 행동으로 이어지지 않고 스스로가 집중하고자 하는 것에 더 효과적일꺼야!{'\n'}이번엔 모듈의 외부를 이루는 영역의 색을 선택해서 커스터마이징을 마무리해줘 ! 심리적으로 편안해지는 색상들을 위주로 제안했어
+                    </div>
+                  )}
+                  
+                  {/* 색상 선택 UI - 질감 선택 완료 메시지가 있을 때만 */}
+                  {showColorSelection && showTextureMessage && selectedTexture && (
+                    <div 
+                      className="color-selection-ui"
+                      style={{ 
+                        position: 'relative', 
+                        width: '100%', 
+                        height: '580px',
+                        marginTop: '20px',
+                        marginLeft: '70px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start'
+                      }}>
+                      <TextureSelectionEllipse />
+                      <TextureSelectionBox backgroundColor={selectedColor}>
+                        <TextureImage 
+                          imageName={selectedTexture} 
+                          isVisible={true} 
+                          direction="left"
+                        />
+                      </TextureSelectionBox>
+                      <FlowerLogo />
+                      <TextureTypeLabel isVisible={true}>
+                        {selectedTexture === 'ff2' ? 'Furry Type' : 
+                         selectedTexture === 'df' ? 'Lumpy Type' : 'Jello Type'}
+                      </TextureTypeLabel>
+                      <TextureSelectButton 
+                        isSelecting={isColorSelecting}
+                        onClick={() => {
+                          console.log('모듈 외부 색상 버튼 클릭');
+                          setIsColorSelecting(true);
+                          // 동그라미들 순차적으로 나타내기
+                          setVisibleColorOptions([]);
+                          setTimeout(() => setVisibleColorOptions([0]), 100);
+                          setTimeout(() => setVisibleColorOptions([0, 1]), 200);
+                          setTimeout(() => setVisibleColorOptions([0, 1, 2]), 300);
+                          setTimeout(() => setVisibleColorOptions([0, 1, 2, 3]), 400);
+                        }}>
+                        <span style={{
+                          fontFamily: 'Pretendard Variable',
+                          fontWeight: 500,
+                          fontSize: '18px',
+                          color: '#828282'
+                        }}>
+                          {isColorSelecting ? '색상 선택하기' : '모듈 외부 색상'}
+                        </span>
+                      </TextureSelectButton>
                       
-                      {/* 4개의 질감 선택 원형 요소들 */}
-                      <TextureOption1 onClick={() => {
-                        console.log('질감 옵션 1 선택');
-                      }} />
-                      <TextureOption2 onClick={() => {
-                        console.log('질감 옵션 2 선택');
-                      }} />
-                      <TextureOption3 onClick={() => {
-                        console.log('질감 옵션 3 선택');
-                      }} />
-                      <TextureOption4 onClick={() => {
-                        console.log('질감 옵션 4 선택');
-                      }} />
+                      {/* 색상 선택 동그라미 4개 조건부 렌더링 */}
+                      {visibleColorOptions.includes(0) && (
+                        <TextureOption1 onClick={() => handleColorSelect('#FFDF76')} />
+                      )}
+                      {visibleColorOptions.includes(1) && (
+                        <TextureOption2 onClick={() => handleColorSelect('#DDEBC1')} />
+                      )}
+                      {visibleColorOptions.includes(2) && (
+                        <TextureOption3 onClick={() => handleColorSelect('#C5E1FF')} />
+                      )}
+                      {visibleColorOptions.includes(3) && (
+                        <TextureOption4 onClick={() => handleColorSelect('#EEC9E0')} />
+                      )}
                     </div>
                   )}
                   
