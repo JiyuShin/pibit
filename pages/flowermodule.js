@@ -570,7 +570,7 @@ export default function FlowerModulePage() {
                     <UserPreferenceCard />
                     <UserPreferenceIcon />
                     <UserPreferenceTitle>USER PREFERENCE</UserPreferenceTitle>
-                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>75%</span>의 유저가 손톱물어뜯기 습관을<br/>개선하는데 이 모듈을 추천해요!</UserPreferenceDescription>
+                    <UserPreferenceDescription><span style={{ fontSize: '22px' }}>75%</span>의 유저가 손톱물어뜯기 습관을<br/>예방하는데 이 모듈을 추천해요!</UserPreferenceDescription>
                     <CompanionTypeCard />
                     <CompanionTypeIcon />
                     <CompanionTypeTitle>COMPANION TYPE</CompanionTypeTitle>

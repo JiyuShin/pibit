@@ -616,7 +616,7 @@ export const TextureSelectionBox = styled.div`
   transition: background-color 0.3s ease;
 `;
 
-// 텍스처 이미지 컴포넌트
+// 텍스처 이미지 컴포넌트 (⚡ 2배 빠른 전환)
 export const TextureImage = styled.div`
   position: absolute;
   top: 0;
@@ -624,14 +624,15 @@ export const TextureImage = styled.div`
   width: 100%;
   height: 100%;
   background: url('/${props => props.imageName}.png') calc(50% + 23px) calc(50% + 31px)/52.5% no-repeat;
-  transform: scale(1) translateX(${props => props.isVisible ? '0' : (props.direction === 'left' ? '-100%' : '100%')});
+  transform: translate3d(${props => props.isVisible ? '0' : (props.direction === 'left' ? '-100%' : '100%')}, 0, 0) scale(1);
   opacity: ${props => props.isVisible ? 1 : 0};
-  transition: transform 0.05s ease-out, opacity 0.03s ease-out;
+  transition: transform 0.025s ease-out, opacity 0.015s ease-out;
   will-change: transform, opacity;
+  backface-visibility: hidden;
   
   ${props => props.isVisible && `
     &:hover {
-      transform: scale(1.3) translateX(0);
+      transform: translate3d(0, 0, 0) scale(1.3);
     }
   `}
 `;
@@ -643,7 +644,7 @@ export const FlowerLogo = styled.div`
   height: 60px;
   left: 31px;
   top: 215px;
-  background: url('/flowerlogo.png') center/contain no-repeat;
+  background: url('/module/flower.png') center/contain no-repeat;
   z-index: 2;
 `;
 
@@ -660,7 +661,7 @@ export const TextureTypeLabel = styled.div`
   color: #92B5BA;
   z-index: 2;
   opacity: ${props => props.isVisible ? 1 : 0};
-  transition: opacity 0.08s ease-out;
+  transition: opacity 0.04s ease-out;
 `;
 
 
@@ -697,7 +698,7 @@ export const TextureSelectText = styled.div`
   pointer-events: none;
 `;
 
-// Ellipse 49 - 작은 원형 (화살표 버튼 배경)
+// Ellipse 49 - 작은 원형 (화살표 버튼 배경) ⚡ 즉시 반응
 export const TextureArrowCircle = styled.div`
   position: absolute;
   width: 57px;
@@ -711,12 +712,18 @@ export const TextureArrowCircle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease-in-out;
+  transition: transform 0.05s ease-out, box-shadow 0.1s ease-out;
   z-index: 3;
+  will-change: transform;
+  backface-visibility: hidden;
   
   &:hover {
     transform: scale(1.1);
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:active {
+    transform: scale(0.95);
   }
 `;
 
@@ -740,7 +747,8 @@ export const TextureOption1 = styled.div`
   border-radius: 50%;
   cursor: pointer;
   transform: scale(0);
-  animation: popIn 0.2s ease-out forwards;
+  animation: popIn 0.08s ease-out forwards;
+  will-change: transform;
   
   @keyframes popIn {
     to {
@@ -765,7 +773,8 @@ export const TextureOption2 = styled.div`
   border-radius: 50%;
   cursor: pointer;
   transform: scale(0);
-  animation: popIn 0.2s ease-out forwards;
+  animation: popIn 0.08s ease-out forwards;
+  will-change: transform;
   
   @keyframes popIn {
     to {
@@ -790,7 +799,8 @@ export const TextureOption3 = styled.div`
   border-radius: 50%;
   cursor: pointer;
   transform: scale(0);
-  animation: popIn 0.2s ease-out forwards;
+  animation: popIn 0.08s ease-out forwards;
+  will-change: transform;
   
   @keyframes popIn {
     to {
@@ -815,7 +825,8 @@ export const TextureOption4 = styled.div`
   border-radius: 50%;
   cursor: pointer;
   transform: scale(0);
-  animation: popIn 0.2s ease-out forwards;
+  animation: popIn 0.08s ease-out forwards;
+  will-change: transform;
   
   @keyframes popIn {
     to {
@@ -826,6 +837,277 @@ export const TextureOption4 = styled.div`
   &:hover {
     transform: scale(1.1);
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+
+
+// 최종 모달 overlay
+export const FinalModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 0.2s ease-in-out forwards;
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+// Rectangle 72 - 최종 모달 메인 박스
+export const FinalModalContainer = styled.div`
+  position: relative;
+  width: 572px;
+  height: 450px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 4px 23px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  opacity: 0;
+  transform: scale(0.8);
+  animation: modalSlideIn 0.2s ease-out forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  
+  @keyframes modalSlideIn {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+`;
+
+// 최종 모달 텍스트
+export const FinalModalText = styled.div`
+  position: absolute;
+  width: 442px;
+  height: 64px;
+  left: 65px;
+  top: 36px;
+  font-family: 'Pretendard Variable';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 25px;
+  text-align: center;
+  color: #828282;
+  opacity: 0;
+  animation: textFadeIn 0.2s ease-out 0.1s forwards;
+  will-change: opacity;
+  
+  @keyframes textFadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+// opened box 이미지
+export const FinalModalBoxImage = styled.div`
+  position: absolute;
+  width: 475px;
+  height: 316px;
+  left: 48px;
+  top: 120px;
+  background: url('/box.png') center/contain no-repeat;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: boxSlideIn 0.3s ease-out 0.2s forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  
+  @keyframes boxSlideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+// flower 이미지
+export const FinalModalFlowerImage = styled.div`
+  position: absolute;
+  width: 239.83px;
+  height: 169.05px;
+  left: calc(50% - 239.83px/2 + 16.29px);
+  top: calc(50% - 169.05px/2 - 20.66px);
+  background: url('/module/flower.png') center/contain no-repeat;
+  filter: drop-shadow(0px 9px 40px rgba(0, 0, 0, 0.13));
+  transform: rotate(12.77deg) scale(0);
+  animation: flowerPop 0.4s ease-out 0.4s forwards;
+  will-change: transform;
+  backface-visibility: hidden;
+  
+  @keyframes flowerPop {
+    to {
+      transform: rotate(12.77deg) scale(1);
+    }
+  }
+`;
+
+// 모듈 이름 입력 영역
+export const FinalModalNameContainer = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 320px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  animation: nameInputFadeIn 0.3s ease-out 0.9s forwards;
+  will-change: opacity;
+  
+  @keyframes nameInputFadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+// 모듈 이름 입력 필드
+export const FinalModalNameInput = styled.input`
+  width: 280px;
+  height: 40px;
+  padding: 0 15px;
+  border: 2px solid #7b61ff;
+  border-radius: 20px;
+  font-family: 'Pretendard Variable';
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  background: #fff;
+  outline: none;
+  text-align: center;
+  transition: all 0.2s ease;
+  
+  &::placeholder {
+    color: #999;
+  }
+  
+  &:focus {
+    border-color: #6951e8;
+    box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
+    transform: scale(1.02);
+  }
+`;
+
+// 모듈 이름 제출 버튼
+export const FinalModalNameButton = styled.button`
+  width: 180px;
+  height: 40px;
+  background: #7b61ff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-family: 'Pretendard Variable';
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #6951e8;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+`;
+
+// Rectangle 73 - 배송 완료 흰색 박스
+export const ShippingCompleteBox = styled.div`
+  position: absolute;
+  width: 405px;
+  height: 109px;
+  left: 526px;
+  top: 436px;
+  background: #FFFFFF;
+  box-shadow: 0px 4px 7px rgba(0, 0, 0, 0.25);
+  border-radius: 48px;
+  opacity: 0;
+  transform: translateX(50px);
+  animation: slideInComplete 0.4s ease-out forwards;
+  will-change: transform, opacity;
+  
+  @keyframes slideInComplete {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+`;
+
+// 배송 완료 텍스트
+export const ShippingCompleteText = styled.div`
+  position: absolute;
+  width: 236px;
+  height: 66px;
+  left: 572px;
+  top: 451px;
+  font-family: 'Pretendard Variable';
+  font-style: normal;
+  color: #828282;
+  opacity: 0;
+  animation: textSlideIn 0.4s ease-out 0.2s forwards;
+  will-change: opacity;
+  
+  .shipping-title {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    margin-bottom: 4px;
+  }
+  
+  .shipping-content {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+  }
+  
+  @keyframes textSlideIn {
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+// Box mockup2 이미지
+export const ShippingCompleteBoxMockup = styled.div`
+  position: absolute;
+  width: 219.07px;
+  height: 219.07px;
+  left: 723px;
+  top: 365px;
+  background: url('/box2.png') center/contain no-repeat;
+  transform: rotate(-16.87deg) scale(0);
+  animation: boxMockupPop 0.5s ease-out 0.4s forwards;
+  will-change: transform;
+  backface-visibility: hidden;
+  
+  @keyframes boxMockupPop {
+    to {
+      transform: rotate(-16.87deg) scale(1);
+    }
   }
 `;
 

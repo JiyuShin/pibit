@@ -541,7 +541,7 @@ export default function StimulationPage() {
             심리적으로 낮은 자극 상태에서 스스로 각성을 높이려는 과정에서 <span style={{ color: '#707070', fontWeight: '700' }}>다리 떨기</span> 같은 습관으로 이어질 수 있습니다.
           </SubDesc>
           <UserDesc>
-            신지유님의 감정유형에 따른 습관 분석이 완료되었어요!<br />
+            {name ? `${name}님의` : '당신의'} 감정유형에 따른 습관 분석이 완료되었어요!<br />
             평소에 익숙할 수도, 예상치 못한 습관일 수도 있는 이 습관을 선택하여 따듯한 동반자 피빗을 만나보세요.
           </UserDesc>
           <Line2 />

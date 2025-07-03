@@ -27,7 +27,7 @@ const moveGradient = keyframes`
   }
   50% {
     background-position: 100% 50%;
-  }
+  }ㅇㄹ
   100% {
     background-position: 0% 50%;
   }
@@ -535,7 +535,7 @@ export default function PibitEmotion() {
           <MainTitle>불안민감형에 해당할 확률이 높아요!</MainTitle>
           <SubDesc>불안 민감형은 작은 변화나 예기치 않은 상황에도 마음이 쉽게 긴장되고 조급해질 수 있어요. 그로 인해 손톱을 뜯거나 입술을 만지는 등의 습관이 무의식중에 나타나기도 해요. 자꾸 확인하거나, 대답을 기다리며 걱정이 많아지는 모습도 자주 보일 수 있어요. 이런 행동들은 마음을 진정시키려는 나름의 방식이지만, 나도 모르게 반복되기 쉬워요.</SubDesc>
           <UserDesc>
-            신지유님의 감정유형에 따른 습관 분석이 완료되었어요!<br />
+            {name ? `${name}님의` : '당신의'} 감정유형에 따른 습관 분석이 완료되었어요!<br />
             평소에 익숙할 수도, 예상치 못한 습관일 수도 있는 이 습관을 선택하여 따듯한 동반자 피빗을 만나보세요.
           </UserDesc>
           <Line2 />
