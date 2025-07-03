@@ -629,6 +629,51 @@ export const TextureSelectionBox = styled.div`
   z-index: 1;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  /* 로딩 상태일 때만 center 정렬 */
+  ${props => props.isLoading ? `
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  ` : ''}
+`;
+
+// 로딩 애니메이션 컴포넌트
+export const LoadingAnimation = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  .loading-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #92B5BA;
+    animation: loadingPulse 1.4s ease-in-out infinite both;
+  }
+  
+  .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+  .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+  .loading-dot:nth-child(3) { animation-delay: 0s; }
+  
+  @keyframes loadingPulse {
+    0%, 80%, 100% {
+      transform: scale(0.6);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+`;
+
+export const LoadingText = styled.div`
+  font-family: 'Pretendard Variable', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #92B5BA;
+  margin-left: 12px;
 `;
 
 // 텍스처 이미지 컴포넌트 (🔥 초고속 즉시 전환)
@@ -870,7 +915,7 @@ export const TextureOption4 = styled.div`
 
 
 
-// 최종 모달 overlay
+// 최종 모달 overlay (즉시 나타남)
 export const FinalModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -883,7 +928,7 @@ export const FinalModalOverlay = styled.div`
   align-items: center;
   justify-content: center;
   opacity: 0;
-  animation: fadeIn 0.2s ease-in-out forwards;
+  animation: fadeIn 0.1s ease-in-out forwards;
   
   @keyframes fadeIn {
     to {
@@ -892,7 +937,7 @@ export const FinalModalOverlay = styled.div`
   }
 `;
 
-// Rectangle 72 - 최종 모달 메인 박스
+// Rectangle 72 - 최종 모달 메인 박스 (즉시 나타남)
 export const FinalModalContainer = styled.div`
   position: relative;
   width: 572px;
@@ -902,7 +947,7 @@ export const FinalModalContainer = styled.div`
   border-radius: 20px;
   opacity: 0;
   transform: scale(0.8);
-  animation: modalSlideIn 0.2s ease-out forwards;
+  animation: modalSlideIn 0.1s ease-out forwards;
   will-change: transform, opacity;
   backface-visibility: hidden;
   
@@ -914,7 +959,7 @@ export const FinalModalContainer = styled.div`
   }
 `;
 
-// 최종 모달 텍스트
+// 최종 모달 텍스트 (즉시 나타남)
 export const FinalModalText = styled.div`
   position: absolute;
   width: 442px;
@@ -929,7 +974,7 @@ export const FinalModalText = styled.div`
   text-align: center;
   color: #828282;
   opacity: 0;
-  animation: textFadeIn 0.2s ease-out 0.1s forwards;
+  animation: textFadeIn 0.1s ease-out 0.05s forwards;
   will-change: opacity;
   
   @keyframes textFadeIn {
@@ -939,7 +984,7 @@ export const FinalModalText = styled.div`
   }
 `;
 
-// opened box 이미지
+// opened box 이미지 (즉시 나타남)
 export const FinalModalBoxImage = styled.div`
   position: absolute;
   width: 570px;
@@ -950,7 +995,7 @@ export const FinalModalBoxImage = styled.div`
   filter: brightness(1.15) contrast(1.05) saturate(1.1);
   opacity: 0;
   transform: translateY(20px);
-  animation: boxSlideIn 0.3s ease-out 0.2s forwards;
+  animation: boxSlideIn 0.15s ease-out 0.1s forwards;
   will-change: transform, opacity;
   backface-visibility: hidden;
   
@@ -962,7 +1007,7 @@ export const FinalModalBoxImage = styled.div`
   }
 `;
 
-// flower 이미지
+// flower 이미지 (즉시 나타남)
 export const FinalModalFlowerImage = styled.div`
   position: absolute;
   width: 239.83px;
@@ -973,7 +1018,7 @@ export const FinalModalFlowerImage = styled.div`
   filter: drop-shadow(0px 9px 40px rgba(0, 0, 0, 0.13));
   opacity: 0;
   transform: rotate(12.77deg) scale(0.8) translateY(15px);
-  animation: flowerFadeInPop 0.5s ease-out 0.6s forwards;
+  animation: flowerFadeInPop 0.2s ease-out 0.2s forwards;
   will-change: transform, opacity;
   backface-visibility: hidden;
   
@@ -993,7 +1038,7 @@ export const FinalModalFlowerImage = styled.div`
   }
 `;
 
-// 모듈 이름 입력 영역
+// 모듈 이름 입력 영역 (즉시 나타남)
 export const FinalModalNameContainer = styled.div`
   position: absolute;
   left: 50%;
@@ -1004,7 +1049,7 @@ export const FinalModalNameContainer = styled.div`
   align-items: center;
   gap: 12px;
   opacity: 0;
-  animation: nameInputFadeIn 0.3s ease-out 1.2s forwards;
+  animation: nameInputFadeIn 0.15s ease-out 0.4s forwards;
   will-change: opacity;
   
   @keyframes nameInputFadeIn {
@@ -1073,81 +1118,131 @@ export const FinalModalNameButton = styled.button`
   }
 `;
 
-// Rectangle 73 - 배송 완료 흰색 박스
-export const ShippingCompleteBox = styled.div`
-  position: absolute;
-  width: 405px;
-  height: 109px;
-  left: 526px;
-  top: 436px;
-  background: #FFFFFF;
-  box-shadow: 0px 4px 7px rgba(0, 0, 0, 0.25);
-  border-radius: 48px;
+// 배송 완료 오버레이 (블러 배경)
+export const ShippingCompleteOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 0;
-  transform: translateX(50px);
-  animation: slideInComplete 0.4s ease-out forwards;
-  will-change: transform, opacity;
+  animation: overlayFadeInBlur 0.5s ease-out forwards;
   
-  @keyframes slideInComplete {
+  @keyframes overlayFadeInBlur {
     to {
       opacity: 1;
-      transform: translateX(0);
     }
   }
 `;
 
-// 배송 완료 텍스트
+// Rectangle 73 - 배송 완료 흰색 박스 (화면 중앙)
+export const ShippingCompleteBox = styled.div`
+  position: relative;
+  width: 450px;
+  height: 120px;
+  background: #FFFFFF;
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.15);
+  border-radius: 48px;
+  opacity: 0;
+  transform: translateY(30px) scale(0.9);
+  animation: slideInCompleteCenter 0.6s ease-out 0.2s forwards;
+  will-change: transform, opacity;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  @keyframes slideInCompleteCenter {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+`;
+
+// 배송 완료 컨테이너 (화면 중앙 정렬)
+export const ShippingCompleteContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: containerSlideIn 0.6s ease-out 0.1s forwards;
+  
+  @keyframes containerSlideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+// 배송 완료 텍스트 (화면 중앙, 0.14배 축소)
 export const ShippingCompleteText = styled.div`
-  position: absolute;
-  width: 236px;
-  height: 66px;
-  left: 572px;
-  top: 451px;
   font-family: 'Pretendard Variable';
   font-style: normal;
   color: #828282;
-  opacity: 0;
-  animation: textSlideIn 0.4s ease-out 0.2s forwards;
-  will-change: opacity;
+  text-align: center;
+  transform: scale(0.86); /* 0.14배 줄이기 (1 - 0.14 = 0.86) */
+  transform-origin: center; /* 중앙 기준으로 축소 */
   
   .shipping-title {
     font-weight: 700;
-    font-size: 18px;
-    line-height: 22px;
-    margin-bottom: 4px;
+    font-size: 22px;
+    line-height: 26px;
+    margin-bottom: 6px;
   }
   
   .shipping-content {
     font-weight: 500;
-    font-size: 16px;
-    line-height: 20px;
+    font-size: 18px;
+    line-height: 22px;
   }
+`;
+
+// Box mockup2 이미지 (화면 중앙)
+export const ShippingCompleteBoxMockup = styled.div`
+  width: 200px;
+  height: 200px;
+  background: url('/box2.png') center/contain no-repeat;
+  transform: rotate(-16.87deg) scale(0);
+  animation: boxMockupPopCenter 0.6s ease-out 0.4s forwards;
+  will-change: transform;
+  backface-visibility: hidden;
+  filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.15));
   
-  @keyframes textSlideIn {
-    to {
-      opacity: 1;
+  @keyframes boxMockupPopCenter {
+    0% {
+      transform: rotate(-16.87deg) scale(0);
+    }
+    60% {
+      transform: rotate(-16.87deg) scale(1.1);
+    }
+    100% {
+      transform: rotate(-16.87deg) scale(1);
     }
   }
 `;
 
-// Box mockup2 이미지
-export const ShippingCompleteBoxMockup = styled.div`
-  position: absolute;
-  width: 219.07px;
-  height: 219.07px;
-  left: 723px;
-  top: 365px;
-  background: url('/box2.png') center/contain no-repeat;
-  transform: rotate(-16.87deg) scale(0);
-  animation: boxMockupPop 0.5s ease-out 0.4s forwards;
-  will-change: transform;
-  backface-visibility: hidden;
-  
-  @keyframes boxMockupPop {
-    to {
-      transform: rotate(-16.87deg) scale(1);
-    }
-  }
+// Fade 전환 오버레이
+export const FadeTransitionOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 99999;
+  opacity: ${props => props.isVisible ? 1 : 0};
+  transition: opacity 0.8s ease-in-out;
+  pointer-events: ${props => props.isVisible ? 'auto' : 'none'};
 `;
 
 

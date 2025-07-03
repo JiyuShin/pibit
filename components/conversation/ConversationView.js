@@ -63,9 +63,15 @@ import {
   FinalModalNameInput,
   FinalModalNameButton,
   // 배송 완료 컴포넌트들
+  ShippingCompleteOverlay,
   ShippingCompleteBox,
+  ShippingCompleteContainer,
   ShippingCompleteText,
   ShippingCompleteBoxMockup,
+  FadeTransitionOverlay,
+  // 로딩 애니메이션 컴포넌트들
+  LoadingAnimation,
+  LoadingText,
 } from './StyledComponents';
 import { toneAndManner } from './constants';
 // teenReplies는 현재 이 컴포넌트에서 직접 사용되지 않으므로 import하지 않습니다.
@@ -342,6 +348,10 @@ export default function ConversationView() {
   const [moduleName, setModuleName] = useState(''); // 모듈 이름
   const [submittedModuleName, setSubmittedModuleName] = useState(''); // 제출된 모듈 이름
   const [showShippingComplete, setShowShippingComplete] = useState(false); // 배송 완료 화면 표시
+  const [isTextureLoading, setIsTextureLoading] = useState(false); // 질감 이미지 로딩 상태
+  const [isColorLoading, setIsColorLoading] = useState(false); // 색상 UI 로딩 상태
+  const [showFadeTransition, setShowFadeTransition] = useState(false); // fade 전환 효과
+  const [isImageChanging, setIsImageChanging] = useState(false); // 화살표 버튼 클릭 시 이미지 변경 로딩
   
   const socketRef = useRef(null);
   const nfcSocketRef = useRef(null);
@@ -360,6 +370,18 @@ export default function ConversationView() {
       default:
         return '특별한 질감';
     }
+  };
+
+  // 색상 선택 UI 로딩 시작 (즉시 로딩)
+  const startColorLoading = () => {
+    console.log('🎨 색상 UI 즉시 로딩');
+    setIsColorLoading(true);
+    
+    // 0.2초 후 즉시 로딩 완료
+    setTimeout(() => {
+      console.log('🎨 색상 UI 로딩 완료');
+      setIsColorLoading(false);
+    }, 200);
   };
 
   // 색상 선택 함수
@@ -396,48 +418,58 @@ export default function ConversationView() {
       setShowFinalModal(false);
       setTimeout(() => {
         setShowShippingComplete(true);
+        // 🎭 배송완료 화면 표시 후 3초 뒤 fade 전환 시작
+        setTimeout(() => {
+          console.log('🎭 Fade out 시작');
+          setShowFadeTransition(true);
+          // fade out 완료 후 0.8초 뒤 index.js로 이동
+          setTimeout(() => {
+            console.log('🎭 Index.js로 이동');
+            router.push('/');
+          }, 800);
+        }, 3000); // 3초 후 fade 시작
       }, 500); // 0.5초 후 배송 완료 화면 표시
       setModuleName('');
     }
   };
 
-  // 🔥 초고속 질감 이미지 프리로딩 (캐시 강화)
+  // 🔥 초고속 질감 이미지 프리로딩 (로딩 애니메이션 포함)
   const preloadTextureImages = () => {
-    console.log('🚀 질감 UI 즉시 활성화 - 이미지 캐시 강화');
-    setTextureImagesLoaded(true);
+    console.log('🚀 질감 이미지 로딩 시작');
+    setIsTextureLoading(true);
     
     const imageNames = ['ff2', 'df', 'sil'];
+    const imagePromises = [];
     
-    // 🔥 브라우저 캐시에 강제로 이미지 저장
+    // 🔥 모든 이미지를 Promise로 병렬 로딩
     imageNames.forEach((imageName) => {
-      // 1. 이미지 객체로 미리 로드
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = `/${imageName}.png`;
-      
-      // 2. 링크 태그로 브라우저 캐시에 저장
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.as = 'image';
-      link.href = `/${imageName}.png`;
-      document.head.appendChild(link);
-      
-      // 3. CSS로도 미리 로드
-      const style = document.createElement('style');
-      style.textContent = `
-        .preload-${imageName}::before {
-          content: '';
-          background-image: url(/${imageName}.png);
-          position: absolute;
-          left: -9999px;
-        }
-      `;
-      document.head.appendChild(style);
-      
-      console.log(`⚡ ${imageName}.png 캐시 강화 완료`);
+      const imagePromise = new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          console.log(`✅ ${imageName}.png 로딩 완료`);
+          resolve(imageName);
+        };
+        img.onerror = () => {
+          console.error(`❌ ${imageName}.png 로딩 실패`);
+          reject(imageName);
+        };
+        img.src = `/${imageName}.png`;
+      });
+      imagePromises.push(imagePromise);
     });
     
-    console.log('🎨 모든 이미지 캐시 강화 완료 - 즉시 전환 준비됨');
+    // 모든 이미지 로딩 완료 후 UI 표시
+    Promise.allSettled(imagePromises)
+      .then(() => {
+        console.log('🎨 모든 질감 이미지 로딩 완료');
+        setIsTextureLoading(false);
+        setTextureImagesLoaded(true);
+      })
+      .catch(() => {
+        console.log('⚠️ 일부 이미지 로딩 실패, 그래도 진행');
+        setIsTextureLoading(false);
+        setTextureImagesLoaded(true);
+      });
   };
 
   const nicknameRef = useRef(nickname);
@@ -739,29 +771,32 @@ export default function ConversationView() {
     }
   }, [allMessages]);
 
-  // 질감/색상 선택 UI가 나타날 때도 스크롤 처리 (UI가 잘 보이도록 맨 아래로)
+  // 🔥 질감/색상 UI 크기만큼만 스크롤 (즉시 반응)
   useEffect(() => {
-    if (messagesContainerRef.current && (isTextureSelectionPhase || showTextureMessage || showColorSelection)) {
-      // 약간의 지연을 두어 UI 렌더링 완료 후 스크롤
+    if (messagesContainerRef.current && (isTextureSelectionPhase || showColorSelection)) {
       setTimeout(() => {
         if (messagesContainerRef.current) {
           const container = messagesContainerRef.current;
+          const currentScrollTop = container.scrollTop;
           
-          // 🔥 UI가 잘 보이도록 컨테이너의 맨 아래로 스크롤
+          // UI 크기만큼만 스크롤 (600px UI 기준)
+          const targetScroll = currentScrollTop + 300; // UI가 잘 보이도록 300px만 스크롤
+          
           container.scrollTo({
-            top: container.scrollHeight, // 맨 아래로 스크롤
+            top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
             behavior: 'smooth'
           });
-          console.log('📜 UI 표시 - 맨 아래로 스크롤:', { 
-            scrollHeight: container.scrollHeight,
+          
+          console.log('📜 UI 크기만큼 스크롤:', { 
+            currentScrollTop,
+            targetScroll,
             isTextureSelectionPhase, 
-            showColorSelection, 
-            showShippingMessage
+            showColorSelection
           });
         }
-      }, 100);
+      }, 50); // 더 빠른 반응
     }
-  }, [isTextureSelectionPhase, showTextureMessage, showColorSelection, showShippingMessage]);
+  }, [isTextureSelectionPhase, showColorSelection]);
 
   const handleRoutineAccept = () => {
     console.log('🔥 handleRoutineAccept 클릭됨!');
@@ -839,7 +874,13 @@ export default function ConversationView() {
       
       // 🚀 나이 입력 즉시 이미지 프리로딩 시작!
       console.log('🎨 질감 이미지 미리 로딩 시작...');
+      setIsTextureLoading(true);
       preloadTextureImages();
+      
+      // 이미지 로딩 시간 (로딩 애니메이션이 보이도록 충분한 시간)
+      setTimeout(() => {
+        setIsTextureLoading(false);
+      }, 600); // 600ms로 늘려서 로딩 애니메이션이 보이도록
       
       setTimeout(() => {
         let ageMessage = '';
@@ -872,19 +913,23 @@ export default function ConversationView() {
         console.log('🎨 질감 선택 단계 즉시 활성화!');
         setIsTextureSelectionPhase(true);
         
-        // 🔥 질감 UI가 잘 보이도록 맨 아래로 스크롤
+        // 🔥 질감 UI가 잘 보이도록 적당히 스크롤
         setTimeout(() => {
           if (messagesContainerRef.current) {
             const container = messagesContainerRef.current;
+            const currentScrollTop = container.scrollTop;
+            const targetScroll = currentScrollTop + 350; // 질감 UI가 잘 보이도록 350px 스크롤
+            
             container.scrollTo({
-              top: container.scrollHeight, // 맨 아래로 스크롤
+              top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
               behavior: 'smooth'
             });
-            console.log('📜 질감 UI 나타남 - 맨 아래로 스크롤:', { 
-              scrollHeight: container.scrollHeight
+            console.log('📜 질감 UI 나타남 - 적당히 스크롤:', { 
+              currentScrollTop,
+              targetScroll
             });
           }
-        }, 150); // 질감 UI 렌더링 후 스크롤
+        }, 80); // 더 빠른 반응
       }, 1000);
       
       return; // API 호출 방지
@@ -1285,8 +1330,8 @@ ${previousMessages}
      }
  };
 
-  // 🔥 안전한 nickname 사용 - 빈 값일 때 기본값 제공
-  const safeDisplayName = nickname || '당신';
+  // 🔥 pibitintro.js에서 입력된 이름 사용 - 없으면 nickname, 둘 다 없으면 '당신'
+  const safeDisplayName = name || nickname || '당신';
   const greetingText = `${safeDisplayName} 안녕, 여기까지 오느라 수고 많았어!`;
   const mainInstructionText = `이제 나와 대화하면서 ${safeDisplayName}에게 가장 효과적인 손톱물어뜯기\\n습관 예방 루틴을 체험해보고 커스터마이징을 진행해보자!`;
 
@@ -1520,8 +1565,85 @@ ${previousMessages}
                     </div>
                   )}
                   
+                  {/* 질감 추천 메시지 바로 밑에 로딩 중일 때 로딩 애니메이션 표시 */}
+                  {index === textureMessageIndex && isTextureLoading && (
+                    <div 
+                      style={{ 
+                        position: 'relative', 
+                        width: '100%', 
+                        height: '580px',
+                        marginTop: '20px',
+                        marginLeft: '70px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start'
+                      }}>
+                      <TextureSelectionEllipse />
+                      <TextureSelectionBox isLoading={true}>
+                        <LoadingAnimation>
+                          <div className="loading-dot"></div>
+                          <div className="loading-dot"></div>
+                          <div className="loading-dot"></div>
+                        </LoadingAnimation>
+                        <LoadingText>질감 이미지 준비 중...</LoadingText>
+                      </TextureSelectionBox>
+                      <FlowerLogo />
+                    </div>
+                  )}
+                  
+                  {/* 🎨 이미지 변경 중 로딩 애니메이션 */}
+                  {index === textureMessageIndex && textureImagesLoaded && isImageChanging && (
+                    <div 
+                      className="texture-selection-ui"
+                      style={{ 
+                        position: 'relative', 
+                        width: '100%', 
+                        height: '580px',
+                        marginTop: '20px',
+                        marginLeft: '70px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start'
+                      }}>
+                      <TextureSelectionEllipse />
+                      <TextureSelectionBox isLoading={true}>
+                        <LoadingAnimation>
+                          <div className="loading-dot"></div>
+                          <div className="loading-dot"></div>
+                          <div className="loading-dot"></div>
+                        </LoadingAnimation>
+                        <LoadingText>이미지 변경 중...</LoadingText>
+                      </TextureSelectionBox>
+                      <FlowerLogo />
+                      <TextureTypeLabel isVisible={true}>
+                        {currentTextureImage === 'ff2' ? 'Furry Type' : 
+                         currentTextureImage === 'df' ? 'Lumpy Type' : 'Jello Type'}
+                      </TextureTypeLabel>
+                      <TextureSelectButton 
+                        isSelecting={false}
+                        onClick={() => {}} // 로딩 중에는 클릭 불가
+                        style={{ cursor: 'not-allowed', opacity: 0.6 }}>
+                        <span style={{
+                          fontFamily: 'Pretendard Variable',
+                          fontWeight: 500,
+                          fontSize: '18px',
+                          color: '#828282'
+                        }}>
+                          질감 선택하기
+                        </span>
+                      </TextureSelectButton>
+                      <TextureArrowCircle 
+                        style={{ 
+                          cursor: 'not-allowed',
+                          opacity: 0.6
+                        }}>
+                        <TextureArrowIcon src="/arrow23.png" alt="arrow" />
+                      </TextureArrowCircle>
+                    </div>
+                  )}
+                  
                   {/* 질감 추천 메시지 바로 밑에 질감 선택 UI 표시 - 정확한 질감 메시지 인덱스이면서 이미지가 로딩된 후에만 */}
-                  {index === textureMessageIndex && textureImagesLoaded && (
+                  {index === textureMessageIndex && textureImagesLoaded && !isTextureLoading && !isImageChanging && (
                     <div 
                       className="texture-selection-ui"
                       style={{ 
@@ -1564,18 +1686,23 @@ ${previousMessages}
                           if (!selectedTexture) {
                             setSelectedTexture(currentTextureImage);
                             setShowTextureMessage(true);
+                            // 색상 로딩 시작
+                            startColorLoading();
                             setShowColorSelection(true);
-                            // 🔥 색상 선택 UI가 잘 보이도록 맨 아래로 스크롤
+                            // 🔥 색상 선택 UI가 잘 보이도록 적당히 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
+                                const currentScrollTop = container.scrollTop;
+                                const targetScroll = currentScrollTop + 250; // 색상 UI가 잘 보이도록 250px 스크롤
+                                
                                 container.scrollTo({
-                                  top: container.scrollHeight, // 맨 아래로 스크롤
+                                  top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
                                   behavior: 'smooth'
                                 });
-                                console.log('📜 색상 UI 표시 - 맨 아래로 스크롤');
+                                console.log('📜 색상 UI 표시 - 적당히 스크롤');
                               }
-                            }, 100);
+                            }, 50);
                           }
                         }}>
                         <span style={{
@@ -1593,15 +1720,25 @@ ${previousMessages}
                           cursor: selectedTexture ? 'not-allowed' : 'pointer'
                         }}
                         onClick={() => {
-                          console.log('🔥 화살표 버튼 클릭 - 초고속 즉시 전환');
-                          if (!selectedTexture) {
-                            // 🔥 완전히 즉시 반응하는 이미지 전환
-                            setCurrentTextureImage(prev => {
-                              const nextImage = prev === 'ff2' ? 'df' : 
-                                               prev === 'df' ? 'sil' : 'ff2';
-                              console.log(`🎨 이미지 전환: ${prev} → ${nextImage}`);
-                              return nextImage;
-                            });
+                          console.log('🔥 화살표 버튼 클릭 - 로딩 애니메이션 추가');
+                          if (!selectedTexture && !isImageChanging) {
+                            // 🎨 이미지 변경 로딩 시작
+                            setIsImageChanging(true);
+                            
+                            setTimeout(() => {
+                              // 이미지 전환
+                              setCurrentTextureImage(prev => {
+                                const nextImage = prev === 'ff2' ? 'df' : 
+                                                 prev === 'df' ? 'sil' : 'ff2';
+                                console.log(`🎨 이미지 전환: ${prev} → ${nextImage}`);
+                                return nextImage;
+                              });
+                              
+                              // 로딩 완료
+                              setTimeout(() => {
+                                setIsImageChanging(false);
+                              }, 150); // 이미지 로딩 완료까지 150ms
+                            }, 100); // 100ms 후 이미지 변경
                           }
                         }}
                         onMouseDown={(e) => {
@@ -1635,8 +1772,35 @@ ${previousMessages}
                     </div>
                   )}
                   
+                  {/* 색상 선택 UI 로딩 애니메이션 */}
+                  {index === textureMessageIndex && showColorSelection && showTextureMessage && selectedTexture && isColorLoading && (
+                    <div 
+                      className="color-selection-ui"
+                      style={{ 
+                        position: 'relative', 
+                        width: '100%', 
+                        height: '580px',
+                        marginTop: '40px',
+                        marginLeft: '70px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start'
+                      }}>
+                      <TextureSelectionEllipse />
+                      <TextureSelectionBox backgroundColor={selectedColor} isLoading={true}>
+                        <LoadingAnimation>
+                          <div className="loading-dot"></div>
+                          <div className="loading-dot"></div>
+                          <div className="loading-dot"></div>
+                        </LoadingAnimation>
+                        <LoadingText>색상 옵션 준비 중...</LoadingText>
+                      </TextureSelectionBox>
+                      <FlowerLogo />
+                    </div>
+                  )}
+                  
                   {/* 색상 선택 UI - 질감 선택 UI 아래에 별도로 표시 */}
-                  {index === textureMessageIndex && showColorSelection && showTextureMessage && selectedTexture && (
+                  {index === textureMessageIndex && showColorSelection && showTextureMessage && selectedTexture && !isColorLoading && (
                     <div 
                       className="color-selection-ui"
                       style={{ 
@@ -1668,39 +1832,45 @@ ${previousMessages}
                           console.log('모듈 외부 색상 버튼 클릭');
                           if (!isColorSelecting) {
                             setIsColorSelecting(true);
-                            // ⚡ 색상 동그라미들 초고속 순차 표시
+                            // ⚡ 색상 동그라미들 즉시 표시
                             setVisibleColorOptions([]);
-                            setTimeout(() => setVisibleColorOptions([0]), 2);
-                            setTimeout(() => setVisibleColorOptions([0, 1]), 4);
-                            setTimeout(() => setVisibleColorOptions([0, 1, 2]), 6);
-                            setTimeout(() => setVisibleColorOptions([0, 1, 2, 3]), 8);
+                            setTimeout(() => setVisibleColorOptions([0]), 1);
+                            setTimeout(() => setVisibleColorOptions([0, 1]), 2);
+                            setTimeout(() => setVisibleColorOptions([0, 1, 2]), 3);
+                            setTimeout(() => setVisibleColorOptions([0, 1, 2, 3]), 4);
                             
-                            // 🔥 색상 옵션이 잘 보이도록 맨 아래로 스크롤
+                            // 🔥 색상 옵션이 잘 보이도록 약간 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
+                                const currentScrollTop = container.scrollTop;
+                                const targetScroll = currentScrollTop + 150; // 색상 옵션이 보이도록 150px 스크롤
+                                
                                 container.scrollTo({
-                                  top: container.scrollHeight, // 맨 아래로 스크롤
+                                  top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
                                   behavior: 'smooth'
                                 });
-                                console.log('📜 색상 옵션 표시 - 맨 아래로 스크롤');
+                                console.log('📜 색상 옵션 표시 - 약간 스크롤');
                               }
-                            }, 100);
+                            }, 20);
                           } else if (isColorSelected) {
                             // "색상 선택하기" 버튼을 눌렀을 때만 배송 메시지 표시
                             console.log('색상 선택 완료 - 배송 메시지 표시');
                             setShowShippingMessage(true);
-                            // ⚡ 배송 메시지가 잘 보이도록 맨 아래로 스크롤
+                            // ⚡ 배송 메시지가 잘 보이도록 적당히 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
+                                const currentScrollTop = container.scrollTop;
+                                const targetScroll = currentScrollTop + 200; // 배송 메시지가 보이도록 200px 스크롤
+                                
                                 container.scrollTo({
-                                  top: container.scrollHeight, // 맨 아래로 스크롤
+                                  top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
                                   behavior: 'smooth'
                                 });
-                                console.log('📜 배송 메시지 표시 - 맨 아래로 스크롤');
+                                console.log('📜 배송 메시지 표시 - 적당히 스크롤');
                               }
-                            }, 200);
+                            }, 100);
                           }
                         }}>
                         <span style={{
@@ -1986,17 +2156,23 @@ ${previousMessages}
       </FinalModalOverlay>
     )}
     
-    {/* 배송 완료 화면 */}
+    {/* 배송 완료 화면 (화면 중앙, 블러 배경) */}
     {showShippingComplete && (
-      <>
-        <ShippingCompleteBox />
-        <ShippingCompleteText>
-          <div className="shipping-title">배송 완료!</div>
-          <div className="shipping-content">{submittedModuleName}과 함께 {name ? `${name}님의` : '당신의'} 습관과 감정을 오랜 시간동안 함께 관리하고 살아가길 기대할게요!</div>
-        </ShippingCompleteText>
-        <ShippingCompleteBoxMockup />
-      </>
+      <ShippingCompleteOverlay>
+        <ShippingCompleteContainer>
+          <ShippingCompleteBox>
+            <ShippingCompleteText>
+              <div className="shipping-title">배송 완료!</div>
+              <div className="shipping-content">{submittedModuleName}과 함께 {name ? `${name}님의` : '당신의'} 습관과 감정을 오랜 시간동안 함께 관리하고 살아가길 기대할게요!</div>
+            </ShippingCompleteText>
+          </ShippingCompleteBox>
+          <ShippingCompleteBoxMockup />
+        </ShippingCompleteContainer>
+      </ShippingCompleteOverlay>
     )}
+    
+    {/* Fade 전환 오버레이 */}
+    <FadeTransitionOverlay isVisible={showFadeTransition} />
     </>
   );
 }
