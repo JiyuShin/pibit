@@ -322,6 +322,9 @@ export default function ConversationView() {
   const [isColorSelecting, setIsColorSelecting] = useState(false); // 색상 선택 모드
   const [visibleColorOptions, setVisibleColorOptions] = useState([]); // 색상 선택 동그라미들
   const [selectedColor, setSelectedColor] = useState('#FFFFFF'); // 선택된 색상, 기본값은 흰색
+  const [textureMessageIndex, setTextureMessageIndex] = useState(-1); // 질감 추천 메시지의 인덱스
+  const [showShippingMessage, setShowShippingMessage] = useState(false); // 배송 메시지 표시
+  const [isColorSelected, setIsColorSelected] = useState(false); // 색상 선택 완료 여부
   
   const socketRef = useRef(null);
   const nfcSocketRef = useRef(null);
@@ -346,23 +349,42 @@ export default function ConversationView() {
   const handleColorSelect = (color) => {
     console.log('색상 선택:', color);
     setSelectedColor(color);
+    setIsColorSelected(true);
+    setShowShippingMessage(true);
   };
 
-  // 질감 이미지 프리로딩 함수 (우선순위 기반)
+  // 색상명 변환 함수
+  const getColorName = (color) => {
+    switch(color) {
+      case '#FFDF76':
+        return '연노랑';
+      case '#DDEBC1':
+        return '연초록';
+      case '#C5E1FF':
+        return '연파랑';
+      case '#EEC9E0':
+        return '연분홍';
+      default:
+        return '흰색';
+    }
+  };
+
+  // 질감 이미지 프리로딩 함수 (즉시 로딩)
   const preloadTextureImages = () => {
     const imageNames = ['ff2', 'df', 'sil'];
     let loadedCount = 0;
     
-    const promises = imageNames.map((imageName, index) => {
+    // 모든 이미지를 즉시 병렬 로딩
+    const promises = imageNames.map((imageName) => {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
           loadedCount++;
           console.log(`✅ ${imageName}.png 로딩 완료 (${loadedCount}/${imageNames.length})`);
           
-          // 첫 번째 이미지(ff2)가 로딩되면 바로 UI 표시 시작
+          // 첫 번째 이미지가 로딩되면 즉시 UI 표시
           if (imageName === 'ff2') {
-            console.log('🎯 첫 번째 이미지 로딩 완료! UI 표시 시작');
+            console.log('🎯 첫 번째 이미지 로딩 완료! UI 즉시 표시');
             setTextureImagesLoaded(true);
           }
           resolve();
@@ -372,12 +394,12 @@ export default function ConversationView() {
           reject(error);
         };
         
-                 // 이미지 소스 설정
-         img.src = `/${imageName}.png`;
+        // 모든 이미지 즉시 로딩 (지연 없음)
+        img.src = `/${imageName}.png`;
       });
     });
 
-    // 첫 번째 이미지만으로도 UI 시작하고, 나머지는 백그라운드에서 로딩
+    // 모든 이미지 로딩 결과 확인
     Promise.allSettled(promises)
       .then((results) => {
         const successCount = results.filter(r => r.status === 'fulfilled').length;
@@ -447,6 +469,16 @@ export default function ConversationView() {
       setIsTextureSelectionPhase(false);
       setUserAge(null);
       setCurrentTextureImage('ff2');
+      setSelectedTexture(null);
+      setShowTextureMessage(false);
+      setShowColorSelection(false);
+      setIsColorSelecting(false);
+      setVisibleColorOptions([]);
+      setSelectedColor('#FFFFFF');
+      setTextureMessageIndex(-1);
+      setTextureImagesLoaded(false);
+      setShowShippingMessage(false);
+      setIsColorSelected(false);
       
       const isFiveFlowerTag = data.id === '0488bb12361e90';
       const name = isFiveFlowerTag ? 'Five Flower' : (data.name || '방문객');
@@ -510,6 +542,16 @@ export default function ConversationView() {
       setIsTextureSelectionPhase(false);
       setUserAge(null);
       setCurrentTextureImage('ff2');
+      setSelectedTexture(null);
+      setShowTextureMessage(false);
+      setShowColorSelection(false);
+      setIsColorSelecting(false);
+      setVisibleColorOptions([]);
+      setSelectedColor('#FFFFFF');
+      setTextureMessageIndex(-1);
+      setTextureImagesLoaded(false);
+      setShowShippingMessage(false);
+      setIsColorSelected(false);
     });
 
     return () => {
@@ -593,7 +635,7 @@ export default function ConversationView() {
         setTimeout(() => {
           setAllMessages(current => [...current, {
             user: 'Five Flower',
-            text: `그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들을 하는지 자유롭게 알려주면 지수의 행동, 생각 루틴에 맞춘 five-flower 피빗 사용 루틴을 추천해줄게!`,
+            text: `그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들을 하는지 자유롭게 알려주면 지수의 행동,\n생각 루틴에 맞춘 five-flower 피빗 사용 루틴을 추천해줄게!`,
             isFixed: true
           }]);
           // 루틴 추천 단계로 변경
@@ -638,7 +680,12 @@ export default function ConversationView() {
           contains4가지: ageMessage.includes('4가지 질감을 추천할게')
         });
         setMessages(prev => [...prev, textureMessage]);
-        setAllMessages(prev => [...prev, textureMessage]);
+        setAllMessages(prev => {
+          const newMessages = [...prev, textureMessage];
+          // 질감 추천 메시지의 인덱스 저장
+          setTextureMessageIndex(newMessages.length - 1);
+          return newMessages;
+        });
         
         // 메시지 추가 후 즉시 UI 표시 (디버깅용)
         console.log('🎨 질감 선택 단계 즉시 활성화!');
@@ -1007,8 +1054,8 @@ ${previousMessages}
                     )}
                   </Message>
                   
-                  {/* 질감 추천 메시지 바로 밑에 로딩 인디케이터 또는 질감 선택 UI 표시 */}
-                  {(msg.text.includes('4가지 질감을 추천할게') || msg.text.includes('20대 사용자들은')) && !textureImagesLoaded && (
+                  {/* 질감 추천 메시지 바로 밑에 로딩 인디케이터 - 정확한 질감 메시지 인덱스일 때만 */}
+                  {index === textureMessageIndex && !textureImagesLoaded && (
                     <div style={{
                       marginTop: '20px',
                       marginLeft: '70px',
@@ -1020,8 +1067,8 @@ ${previousMessages}
                     </div>
                   )}
                   
-                  {/* 질감 추천 메시지 바로 밑에 질감 선택 UI 표시 - 이미지가 로딩된 후에만 */}
-                  {(msg.text.includes('4가지 질감을 추천할게') || msg.text.includes('20대 사용자들은')) && textureImagesLoaded && (
+                  {/* 질감 추천 메시지 바로 밑에 질감 선택 UI 표시 - 정확한 질감 메시지 인덱스이면서 이미지가 로딩된 후에만 */}
+                  {index === textureMessageIndex && textureImagesLoaded && (
                     <div 
                       className="texture-selection-ui"
                       style={{ 
@@ -1061,9 +1108,11 @@ ${previousMessages}
                         isSelecting={isTextureSelecting}
                         onClick={() => {
                           console.log('질감 선택 버튼 클릭');
-                          setSelectedTexture(currentTextureImage);
-                          setShowTextureMessage(true);
-                          setShowColorSelection(true);
+                          if (!selectedTexture) {
+                            setSelectedTexture(currentTextureImage);
+                            setShowTextureMessage(true);
+                            setShowColorSelection(true);
+                          }
                         }}>
                         <span style={{
                           fontFamily: 'Pretendard Variable',
@@ -1071,24 +1120,26 @@ ${previousMessages}
                           fontSize: '18px',
                           color: '#828282'
                         }}>
-                          질감 선택하기
+                          {selectedTexture ? '질감 선택 완료' : '질감 선택하기'}
                         </span>
                       </TextureSelectButton>
                       <TextureArrowCircle onClick={() => {
                         console.log('화살표 버튼 클릭');
-                        setCurrentTextureImage(prev => {
-                          if (prev === 'ff2') return 'df';
-                          if (prev === 'df') return 'sil';
-                          return 'ff2'; // sil인 경우 ff2로
-                        });
+                        if (!selectedTexture) {
+                          setCurrentTextureImage(prev => {
+                            if (prev === 'ff2') return 'df';
+                            if (prev === 'df') return 'sil';
+                            return 'ff2'; // sil인 경우 ff2로
+                          });
+                        }
                       }}>
                         <TextureArrowIcon src="/arrow23.png" alt="arrow" />
                       </TextureArrowCircle>
                     </div>
                   )}
                   
-                  {/* 질감 선택 완료 메시지 */}
-                  {showTextureMessage && selectedTexture && (
+                  {/* 질감 선택 완료 메시지 - 정확한 질감 메시지 인덱스일 때만 */}
+                  {index === textureMessageIndex && showTextureMessage && selectedTexture && (
                     <div style={{
                       marginTop: '20px',
                       marginLeft: '70px',
@@ -1102,15 +1153,15 @@ ${previousMessages}
                     </div>
                   )}
                   
-                  {/* 색상 선택 UI - 질감 선택 완료 메시지가 있을 때만 */}
-                  {showColorSelection && showTextureMessage && selectedTexture && (
+                  {/* 색상 선택 UI - 질감 선택 UI 아래에 별도로 표시 */}
+                  {index === textureMessageIndex && showColorSelection && showTextureMessage && selectedTexture && (
                     <div 
                       className="color-selection-ui"
                       style={{ 
                         position: 'relative', 
                         width: '100%', 
                         height: '580px',
-                        marginTop: '20px',
+                        marginTop: '40px', // 질감 선택 UI와 간격 확보
                         marginLeft: '70px',
                         display: 'flex',
                         flexDirection: 'column',
@@ -1134,12 +1185,12 @@ ${previousMessages}
                         onClick={() => {
                           console.log('모듈 외부 색상 버튼 클릭');
                           setIsColorSelecting(true);
-                          // 동그라미들 순차적으로 나타내기
+                          // 동그라미들 즉시 나타내기 (속도 개선)
                           setVisibleColorOptions([]);
-                          setTimeout(() => setVisibleColorOptions([0]), 100);
-                          setTimeout(() => setVisibleColorOptions([0, 1]), 200);
-                          setTimeout(() => setVisibleColorOptions([0, 1, 2]), 300);
-                          setTimeout(() => setVisibleColorOptions([0, 1, 2, 3]), 400);
+                          setTimeout(() => setVisibleColorOptions([0]), 50);
+                          setTimeout(() => setVisibleColorOptions([0, 1]), 100);
+                          setTimeout(() => setVisibleColorOptions([0, 1, 2]), 150);
+                          setTimeout(() => setVisibleColorOptions([0, 1, 2, 3]), 200);
                         }}>
                         <span style={{
                           fontFamily: 'Pretendard Variable',
@@ -1164,6 +1215,79 @@ ${previousMessages}
                       {visibleColorOptions.includes(3) && (
                         <TextureOption4 onClick={() => handleColorSelect('#EEC9E0')} />
                       )}
+                    </div>
+                  )}
+                  
+                  {/* 색상 선택 완료 후 배송 메시지 - 정확한 질감 메시지 인덱스일 때만 */}
+                  {index === textureMessageIndex && showShippingMessage && isColorSelected && selectedTexture && (
+                    <div style={{
+                      marginTop: '30px',
+                      marginLeft: '70px',
+                      color: '#828282',
+                      fontSize: '16px',
+                      fontFamily: 'Pretendard Variable',
+                      lineHeight: '1.6',
+                      whiteSpace: 'pre-line'
+                    }}>
+                      <div style={{
+                        fontWeight: 600,
+                        fontSize: '19px',
+                        color: '#828282',
+                        marginBottom: '10px'
+                      }}>
+                        Five Flower
+                      </div>
+                      <div>
+                        좋았어! {getColorName(selectedColor)}의 외부 모듈과 {getTextureDescription(selectedTexture)} 내부 모듈을 함께 지수네 집으로 배송할게!{'\n'}함께 선택한 루틴을 이번주에 진행해보자!{'\n'}커스터마이징 마무리와 배송을 위해 Five Flower 배송 시작 버튼을 눌러줘
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Five Flower 배송 시작 버튼 - 배송 메시지 표시 시에만 */}
+                  {index === textureMessageIndex && showShippingMessage && isColorSelected && selectedTexture && (
+                    <div style={{
+                      marginTop: '20px',
+                      marginLeft: '70px',
+                      display: 'flex',
+                      justifyContent: 'flex-start'
+                    }}>
+                      <button
+                        onClick={() => {
+                          console.log('Five Flower 배송 시작 버튼 클릭');
+                          // 여기에 배송 시작 로직 추가 가능
+                        }}
+                        style={{
+                          backgroundColor: '#A8CCEB',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: '25px',
+                          padding: '14px 28px',
+                          fontSize: '16px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          boxShadow: '0 4px 15px rgba(168, 204, 235, 0.3)',
+                          fontFamily: 'Pretendard Variable'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = '#92B8DA';
+                          e.target.style.transform = 'scale(1.05)';
+                          e.target.style.boxShadow = '0 6px 20px rgba(168, 204, 235, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#A8CCEB';
+                          e.target.style.transform = 'scale(1)';
+                          e.target.style.boxShadow = '0 4px 15px rgba(168, 204, 235, 0.3)';
+                        }}
+                        onMouseDown={(e) => {
+                          e.target.style.transform = 'scale(0.98)';
+                        }}
+                        onMouseUp={(e) => {
+                          e.target.style.transform = 'scale(1.05)';
+                        }}
+                      >
+                        Five Flower 배송 시작
+                      </button>
                     </div>
                   )}
                   

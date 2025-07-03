@@ -623,7 +623,7 @@ export const TextureImage = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('/${props => props.imageName}.png') calc(50% + 10px) calc(50% + 1px)/50% no-repeat;
+  background: url('/${props => props.imageName}.png') calc(50% + 23px) calc(50% + 31px)/52.5% no-repeat;
   transform: scale(1) translateX(${props => props.isVisible ? '0' : (props.direction === 'left' ? '-100%' : '100%')});
   opacity: ${props => props.isVisible ? 1 : 0};
   transition: transform 0.05s ease-out, opacity 0.03s ease-out;
