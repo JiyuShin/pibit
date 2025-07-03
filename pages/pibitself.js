@@ -408,6 +408,7 @@ const PlusIcon = () => (
 
 export default function PibitSelf() {
   const router = useRouter();
+  const { name } = router.query;
   const [hovered, setHovered] = useState(null);
   const [selectedCards, setSelectedCards] = useState({});
   const [showInput, setShowInput] = useState(false);
@@ -504,7 +505,7 @@ export default function PibitSelf() {
         <Company>PIBITCOMPANY@</Company>
         
         <UserTitle>
-            지수님의 감정 발현의 원인이 되는<br/>
+            {name ? `${name}님의` : '당신의'} 감정 발현의 원인이 되는<br/>
             '<span style={{ color: '#E4BFFF' }}>부정적 감정</span>'을 선택하고
         </UserTitle>
         <UserEtc>등을 선택해주세요</UserEtc>
@@ -571,7 +572,7 @@ export default function PibitSelf() {
         </CardRow>
 
         <UserDesc>
-          위의 습관들은 사용자 '지수' 님이 앱 사용 전<br/>
+          위의 습관들은 사용자 '{name || '당신'}' 님이 앱 사용 전<br/>
           제공해주신 데이터들을 기반으로 생성되었어요
         </UserDesc>
         

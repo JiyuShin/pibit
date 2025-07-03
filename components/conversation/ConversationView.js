@@ -401,40 +401,43 @@ export default function ConversationView() {
     }
   };
 
-  // 질감 이미지 프리로딩 함수 (즉시 로딩)
+  // 🔥 초고속 질감 이미지 프리로딩 (캐시 강화)
   const preloadTextureImages = () => {
-    // ⚡ 성능 최적화: 즉시 UI 활성화 (이미지는 백그라운드 로딩)
-    console.log('🚀 질감 UI 즉시 활성화 - 백그라운드 이미지 로딩');
+    console.log('🚀 질감 UI 즉시 활성화 - 이미지 캐시 강화');
     setTextureImagesLoaded(true);
     
     const imageNames = ['ff2', 'df', 'sil'];
-    let loadedCount = 0;
     
-    // 🔥 초고속 병렬 이미지 로딩 (Promise.all 사용)
-    const imagePromises = imageNames.map((imageName) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          loadedCount++;
-          console.log(`⚡ ${imageName}.png 로딩 완료 (${loadedCount}/${imageNames.length})`);
-          resolve(imageName);
-        };
-        img.onerror = () => {
-          console.error(`❌ ${imageName}.png 로딩 실패`);
-          reject(imageName);
-        };
-        // 즉시 로딩 시작
-        img.src = `/${imageName}.png`;
-      });
+    // 🔥 브라우저 캐시에 강제로 이미지 저장
+    imageNames.forEach((imageName) => {
+      // 1. 이미지 객체로 미리 로드
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = `/${imageName}.png`;
+      
+      // 2. 링크 태그로 브라우저 캐시에 저장
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.as = 'image';
+      link.href = `/${imageName}.png`;
+      document.head.appendChild(link);
+      
+      // 3. CSS로도 미리 로드
+      const style = document.createElement('style');
+      style.textContent = `
+        .preload-${imageName}::before {
+          content: '';
+          background-image: url(/${imageName}.png);
+          position: absolute;
+          left: -9999px;
+        }
+      `;
+      document.head.appendChild(style);
+      
+      console.log(`⚡ ${imageName}.png 캐시 강화 완료`);
     });
     
-    // 모든 이미지 로딩 완료 시 로그
-    Promise.allSettled(imagePromises).then((results) => {
-      const successful = results.filter(r => r.status === 'fulfilled').length;
-      console.log(`🎨 이미지 로딩 완료: ${successful}/${imageNames.length}개 성공`);
-    });
-    
-    console.log('🎨 모든 이미지 초고속 병렬 로딩 시작됨');
+    console.log('🎨 모든 이미지 캐시 강화 완료 - 즉시 전환 준비됨');
   };
 
   const nicknameRef = useRef(nickname);
@@ -450,14 +453,32 @@ export default function ConversationView() {
     }
   }, [isTextureSelectionPhase, textureImagesLoaded]);
 
+  // 🔥 배경 이미지 미리 로드하여 버벅거림 방지
+  useEffect(() => {
+    const preloadBackgroundImage = () => {
+      const img = new Image();
+      img.onload = () => {
+        console.log('✅ 배경 이미지 미리 로드 완료');
+        // 브라우저 캐시에 확실히 저장
+        document.head.appendChild(document.createElement('link')).rel = 'prefetch';
+        document.head.lastChild.href = '/newbk2.png';
+      };
+      img.onerror = () => {
+        console.error('❌ 배경 이미지 로드 실패');
+      };
+      img.src = '/newbk2.png'; // 배경 이미지 미리 로드
+    };
+    
+    preloadBackgroundImage();
+  }, []);
+
+  // 🔥 이름 초기화 개선 - 항상 이름이 설정되도록 보장
   useEffect(() => {
     if (router.isReady) {
-      if (name) {
-        setNickname(name);
-        setMessages([]);
-      } else {
-        setNickname('당신');
-      }
+      const userName = name || '당신';
+      console.log('🔧 이름 설정:', { name, userName, routerQuery: router.query });
+      setNickname(userName);
+      setMessages([]);
     }
   }, [name, router.isReady]);
 
@@ -538,9 +559,13 @@ export default function ConversationView() {
         const initialMessage = { user: 'PIBIT', text: message };
         setMessages([initialMessage]);
         
+        // 🔥 안전한 이름 사용 - nickname이 빈 값일 때 대비
+        const safeNickname = nickname || name || '당신';
+        console.log('🔧 NFC 메시지 생성:', { nickname, name, safeNickname });
+        
         // 모든 메시지를 allMessages에 순차적으로 추가
         setAllMessages([
-          { user: 'Five Flower', text: `${nickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
+          { user: 'Five Flower', text: `${safeNickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
         ]);
         
         setShowInitialMessage(true);
@@ -549,21 +574,21 @@ export default function ConversationView() {
         setTimeout(() => {
           setAllMessages(prev => [...prev, { 
             user: 'Five Flower', 
-            text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${nickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, 
+            text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${safeNickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, 
             isFixed: true 
           }]);
           setShowSecondMessage(true);
           setTimeout(() => {
-                         setAllMessages(prev => [...prev, { 
-               user: 'Five Flower', 
-               text: `난 앞으로 지수가 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, 
-               isFixed: true 
-             }]);
+            setAllMessages(prev => [...prev, { 
+              user: 'Five Flower', 
+              text: `난 앞으로 ${safeNickname}가 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, 
+              isFixed: true 
+            }]);
             setShowThirdMessage(true);
             setTimeout(() => {
               setAllMessages(prev => [...prev, { 
                 user: 'Five Flower', 
-                text: `지수는 dna 감정유형 테스트 결과 불안민감형으로 결과가 나왔는데,\n지수의 일상에서 가장 불안하거나 예민해지는 순간이 있다면 언제야?`, 
+                text: `${safeNickname}는 dna 감정유형 테스트 결과 불안민감형으로 결과가 나왔는데,\n${safeNickname}의 일상에서 가장 불안하거나 예민해지는 순간이 있다면 언제야?`, 
                 isFixed: true 
               }]);
             }, 1000);
@@ -616,37 +641,41 @@ export default function ConversationView() {
       const initialMessage = { user: 'PIBIT', text: message };
       setMessages([initialMessage]);
       
+      // 🔥 안전한 이름 사용 - nickname이 빈 값일 때 대비
+      const safeNickname = nickname || name || '당신';
+      console.log('🔧 실제 NFC 메시지 생성:', { nickname, name, safeNickname });
+      
       // 모든 메시지를 allMessages에 순차적으로 추가
       setAllMessages([
-        { user: 'Five Flower', text: `${nickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
+        { user: 'Five Flower', text: `${safeNickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
       ]);
       
       setShowInitialMessage(true);
       setShowCircle(true);  // NFC 태그 읽힌 직후 바로 circle 표시
       
-      setTimeout(() => {
-        setAllMessages(prev => [...prev, { 
-          user: 'Five Flower', 
-          text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${nickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, 
-          isFixed: true 
-        }]);
-        setShowSecondMessage(true);
-        setTimeout(() => {
+              setTimeout(() => {
           setAllMessages(prev => [...prev, { 
             user: 'Five Flower', 
-            text: `난 앞으로 지수가 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, 
+            text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${safeNickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, 
             isFixed: true 
           }]);
-          setShowThirdMessage(true);
+          setShowSecondMessage(true);
           setTimeout(() => {
             setAllMessages(prev => [...prev, { 
               user: 'Five Flower', 
-              text: `지수는 dna 감정유형 테스트 결과 불안민감형으로 결과가 나왔는데,\n지수의 일상에서 가장 불안하거나 예민해지는 순간이 있다면 언제야?`, 
+              text: `난 앞으로 ${safeNickname}가 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, 
               isFixed: true 
             }]);
+            setShowThirdMessage(true);
+            setTimeout(() => {
+              setAllMessages(prev => [...prev, { 
+                user: 'Five Flower', 
+                text: `${safeNickname}는 dna 감정유형 테스트 결과 불안민감형으로 결과가 나왔는데,\n${safeNickname}의 일상에서 가장 불안하거나 예민해지는 순간이 있다면 언제야?`, 
+                isFixed: true 
+              }]);
+            }, 1000);
           }, 1000);
         }, 1000);
-      }, 1000);
 
       const tagToneId = data && data.id ? String(data.id).trim() : toneAndManner[0].id;
       setCurrentToneId(tagToneId);
@@ -710,21 +739,29 @@ export default function ConversationView() {
     }
   }, [allMessages]);
 
-  // 질감/색상 선택 UI가 나타날 때도 스크롤 처리 (적절한 위치로)
+  // 질감/색상 선택 UI가 나타날 때도 스크롤 처리 (UI가 잘 보이도록 맨 아래로)
   useEffect(() => {
     if (messagesContainerRef.current && (isTextureSelectionPhase || showTextureMessage || showColorSelection)) {
       // 약간의 지연을 두어 UI 렌더링 완료 후 스크롤
       setTimeout(() => {
         if (messagesContainerRef.current) {
           const container = messagesContainerRef.current;
+          
+          // 🔥 UI가 잘 보이도록 컨테이너의 맨 아래로 스크롤
           container.scrollTo({
-            top: container.scrollTop + 100, // 현재 위치에서 100px만 더 스크롤
+            top: container.scrollHeight, // 맨 아래로 스크롤
             behavior: 'smooth'
           });
+          console.log('📜 UI 표시 - 맨 아래로 스크롤:', { 
+            scrollHeight: container.scrollHeight,
+            isTextureSelectionPhase, 
+            showColorSelection, 
+            showShippingMessage
+          });
         }
-      }, 50);
+      }, 100);
     }
-  }, [isTextureSelectionPhase, showTextureMessage, showColorSelection]);
+  }, [isTextureSelectionPhase, showTextureMessage, showColorSelection, showShippingMessage]);
 
   const handleRoutineAccept = () => {
     console.log('🔥 handleRoutineAccept 클릭됨!');
@@ -740,7 +777,7 @@ export default function ConversationView() {
       
       // 2. 1초 후 커스터마이징 시작 메시지
       setTimeout(() => {
-        const customizingMessage = { user: 'Five Flower', text: '이제부턴 지수와 나의 루틴이 효과적으로 이루어질 수 있도록 모듈을 적합한 모습으로 커스터마이징을 시작할게!', isFixed: true };
+        const customizingMessage = { user: 'Five Flower', text: `이제부턴 ${nickname}와 나의 루틴이 효과적으로 이루어질 수 있도록 모듈을 적합한 모습으로 커스터마이징을 시작할게!`, isFixed: true };
         
         setMessages(prev => [...prev, customizingMessage]);
         setAllMessages(prev => [...prev, customizingMessage]);
@@ -750,7 +787,7 @@ export default function ConversationView() {
         
         // 3. 1.5초 후 나이 질문 메시지
         setTimeout(() => {
-          const ageQuestionMessage = { user: 'Five Flower', text: '지수에게 가장 친근하고 적합한 동반자가 되기 위한 커스터마이징을 진행하기 위해서 지수의 나이를 알려줘!', isFixed: true };
+          const ageQuestionMessage = { user: 'Five Flower', text: `${nickname}에게 가장 친근하고 적합한 동반자가 되기 위한 커스터마이징을 진행하기 위해서 ${nickname}의 나이를 알려줘!`, isFixed: true };
           
           setMessages(prev => [...prev, ageQuestionMessage]);
           setAllMessages(prev => [...prev, ageQuestionMessage]);
@@ -777,7 +814,7 @@ export default function ConversationView() {
         setTimeout(() => {
           setAllMessages(current => [...current, {
             user: 'Five Flower',
-            text: `그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들을 하는지 자유롭게 알려주면 지수의 행동,\n생각 루틴에 맞춘 five-flower 피빗 사용 루틴을 추천해줄게!`,
+            text: `그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들을 하는지 자유롭게 알려주면 ${nickname}의 행동,\n생각 루틴에 맞춘 five-flower 피빗 사용 루틴을 추천해줄게!`,
             isFixed: true
           }]);
           // 루틴 추천 단계로 변경
@@ -807,15 +844,15 @@ export default function ConversationView() {
       setTimeout(() => {
         let ageMessage = '';
         if (age >= 20 && age <= 29) {
-          ageMessage = '20대 사용자들은 대부분 질감적으로 재밌고 특이한 것들을 선호해\n그래서 난 지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+          ageMessage = `20대 사용자들은 대부분 질감적으로 재밌고 특이한 것들을 선호해\n그래서 난 ${nickname}의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!`;
         } else if (age >= 30 && age <= 39) {
-          ageMessage = '30대 사용자들은 대부분 질감적으로 재밌고 특이한 것들을 선호해\n그래서 난 지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+                      ageMessage = `30대 사용자들은 대부분 질감적으로 재밌고 특이한 것들을 선호해\n그래서 난 ${nickname}의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!`;
         } else if (age >= 10 && age < 20) {
-          ageMessage = '10대 사용자들은 대부분 부드럽고 친근한 질감을 좋아해\n그래서 난 지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+                      ageMessage = `10대 사용자들은 대부분 부드럽고 친근한 질감을 좋아해\n그래서 난 ${nickname}의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!`;
         } else if (age >= 40) {
-          ageMessage = '40대 또는 그 이상의 사용자들은 안정적이고 편안한 감정과 분위기를 만들어내는 소재들을 선호해!\n그래서 난 지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+                      ageMessage = `40대 또는 그 이상의 사용자들은 안정적이고 편안한 감정과 분위기를 만들어내는 소재들을 선호해!\n그래서 난 ${nickname}의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!`;
         } else {
-          ageMessage = '지수의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!';
+                      ageMessage = `${nickname}의 나이에 알맞는 모듈을 형성하기 위해\nfive flower의 내부 공간을 꾸밀 질감 4가지를 추천할게. 마음에 드는 것을 선택해줘!`;
         }
         
         const textureMessage = { user: 'Five Flower', text: ageMessage, isFixed: true };
@@ -835,22 +872,19 @@ export default function ConversationView() {
         console.log('🎨 질감 선택 단계 즉시 활성화!');
         setIsTextureSelectionPhase(true);
         
-        // ⚡ 자연스러운 스크롤: 질감 UI가 잘 보이도록 적절한 위치로 스크롤
+        // 🔥 질감 UI가 잘 보이도록 맨 아래로 스크롤
         setTimeout(() => {
           if (messagesContainerRef.current) {
             const container = messagesContainerRef.current;
-            // 부드러운 스크롤을 위해 현재 스크롤 위치에서 250px 더 스크롤
-            const targetScroll = container.scrollTop + 250;
             container.scrollTo({
-              top: targetScroll,
+              top: container.scrollHeight, // 맨 아래로 스크롤
               behavior: 'smooth'
             });
-            console.log('📜 질감 UI 스크롤 완료:', { 
-              from: container.scrollTop, 
-              to: targetScroll 
+            console.log('📜 질감 UI 나타남 - 맨 아래로 스크롤:', { 
+              scrollHeight: container.scrollHeight
             });
           }
-        }, 100); // 더 빠른 반응을 위해 150ms → 100ms
+        }, 150); // 질감 UI 렌더링 후 스크롤
       }, 1000);
       
       return; // API 호출 방지
@@ -1251,16 +1285,61 @@ ${previousMessages}
      }
  };
 
-  const greetingText = `${nickname} 안녕, 여기까지 오느라 수고 많았어!`;
-  const mainInstructionText = `이제 나와 대화하면서 ${nickname}에게 가장 효과적인 손톱물어뜯기\\n습관 예방 루틴을 체험해보고 커스터마이징을 진행해보자!`;
+  // 🔥 안전한 nickname 사용 - 빈 값일 때 기본값 제공
+  const safeDisplayName = nickname || '당신';
+  const greetingText = `${safeDisplayName} 안녕, 여기까지 오느라 수고 많았어!`;
+  const mainInstructionText = `이제 나와 대화하면서 ${safeDisplayName}에게 가장 효과적인 손톱물어뜯기\\n습관 예방 루틴을 체험해보고 커스터마이징을 진행해보자!`;
 
-  if (!nickname) {
-    return null; 
-  }
+  // 🔥 항상 렌더링하도록 수정 - 배경이 항상 보이도록 보장
+  console.log('🔧 렌더링 확인:', { nickname, safeDisplayName, name, routerReady: router.isReady });
 
   return (
     <>
+      {/* 🔥 고정 배경 레이어 - 메시지 생성과 완전히 독립적 */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundImage: 'url(/newbk2.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+          zIndex: -10,
+          transform: 'translate3d(0, 0, 0)',
+          willChange: 'auto',
+          backfaceVisibility: 'hidden',
+          contain: 'strict'
+        }}
+      />
+      
       <style jsx global>{`
+        /* 🔥 배경 이미지 미리 로드 및 캐시 */
+        body::before {
+          content: '';
+          position: absolute;
+          left: -9999px;
+          background-image: url(/newbk2.png);
+        }
+        
+        /* 🔥 질감 이미지들 미리 로드 및 캐시 강화 */
+        body::after {
+          content: '';
+          position: absolute;
+          left: -9999px;
+          background-image: url(/ff2.png), url(/df.png), url(/sil.png);
+        }
+        
+        /* 🔥 이미지 로딩 최적화 */
+        img {
+          image-rendering: optimizeSpeed;
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: optimize-contrast;
+        }
+        
         @keyframes typing {
           0%, 80%, 100% {
             transform: scale(0);
@@ -1399,22 +1478,11 @@ ${previousMessages}
               // 버튼 표시 조건: 📅가 포함된 루틴 추천 메시지나 함께 실천하자는 메시지에 버튼 표시
               const userAnswerCount = allMessages.filter(m => m.user === nickname).length;
               const isLastFiveFlowerMessage = msg.user === 'Five Flower' && index === allMessages.length - 1;
-              // 📅가 포함된 루틴 메시지이거나 "루틴을 수락해줘" 메시지에 버튼 표시
-              const isRoutineRecommendation = isLastFiveFlowerMessage && 
-                                              (msg.text.includes('📅') || msg.text.includes('루틴을 수락해줘')) && 
+              // 🔥 루틴 수락 버튼 표시 조건 - "루틴을 수락해줘" 메시지에만 표시
+              const isRoutineAcceptMessage = msg.text.includes('루틴을 수락해줘');
+              const isRoutineRecommendation = msg.user === 'Five Flower' && 
+                                              isRoutineAcceptMessage && 
                                               !routineAccepted;
-              
-              // 디버깅 로그
-              if (msg.user === 'Five Flower' && index === allMessages.length - 1) {
-                console.log('🔍 버튼 표시 조건 확인:', {
-                  userAnswerCount,
-                  isLastFiveFlowerMessage,
-                  routineAccepted,
-                  hasScheduleEmoji: msg.text.includes('📅'),
-                  isRoutineRecommendation,
-                  messageText: msg.text.substring(0, 50) + '...'
-                });
-              }
               
               return (
                 <div key={index}>
@@ -1497,18 +1565,17 @@ ${previousMessages}
                             setSelectedTexture(currentTextureImage);
                             setShowTextureMessage(true);
                             setShowColorSelection(true);
-                            // ⚡ 질감 선택 완료 후 부드러운 스크롤
+                            // 🔥 색상 선택 UI가 잘 보이도록 맨 아래로 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
-                                const targetScroll = container.scrollTop + 250;
                                 container.scrollTo({
-                                  top: targetScroll,
+                                  top: container.scrollHeight, // 맨 아래로 스크롤
                                   behavior: 'smooth'
                                 });
-                                console.log('📜 질감 완료 스크롤:', { to: targetScroll });
+                                console.log('📜 색상 UI 표시 - 맨 아래로 스크롤');
                               }
-                            }, 80); // 더 빠른 반응
+                            }, 100);
                           }
                         }}>
                         <span style={{
@@ -1521,19 +1588,20 @@ ${previousMessages}
                         </span>
                       </TextureSelectButton>
                       <TextureArrowCircle 
-                        style={{ transition: 'transform 0.1s ease' }}
+                        style={{ 
+                          transition: 'transform 0.05s ease',
+                          cursor: selectedTexture ? 'not-allowed' : 'pointer'
+                        }}
                         onClick={() => {
-                          console.log('⚡ 화살표 버튼 클릭 - 즉시 전환');
+                          console.log('🔥 화살표 버튼 클릭 - 초고속 즉시 전환');
                           if (!selectedTexture) {
-                            // 🔥 즉시 반응하는 이미지 전환 (상태 배치 처리 방지)
-                            const currentImage = currentTextureImage;
-                            let nextImage;
-                            if (currentImage === 'ff2') nextImage = 'df';
-                            else if (currentImage === 'df') nextImage = 'sil';
-                            else nextImage = 'ff2';
-                            
-                            // 즉시 상태 업데이트
-                            setCurrentTextureImage(nextImage);
+                            // 🔥 완전히 즉시 반응하는 이미지 전환
+                            setCurrentTextureImage(prev => {
+                              const nextImage = prev === 'ff2' ? 'df' : 
+                                               prev === 'df' ? 'sil' : 'ff2';
+                              console.log(`🎨 이미지 전환: ${prev} → ${nextImage}`);
+                              return nextImage;
+                            });
                           }
                         }}
                         onMouseDown={(e) => {
@@ -1607,34 +1675,32 @@ ${previousMessages}
                             setTimeout(() => setVisibleColorOptions([0, 1, 2]), 6);
                             setTimeout(() => setVisibleColorOptions([0, 1, 2, 3]), 8);
                             
-                            // 색상 옵션 표시 직후 자연스러운 스크롤
+                            // 🔥 색상 옵션이 잘 보이도록 맨 아래로 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
-                                const targetScroll = container.scrollTop + 200;
                                 container.scrollTo({
-                                  top: targetScroll,
+                                  top: container.scrollHeight, // 맨 아래로 스크롤
                                   behavior: 'smooth'
                                 });
-                                console.log('📜 색상 선택 스크롤:', { to: targetScroll });
+                                console.log('📜 색상 옵션 표시 - 맨 아래로 스크롤');
                               }
-                            }, 20); // 더 빠른 스크롤 타이밍
+                            }, 100);
                           } else if (isColorSelected) {
                             // "색상 선택하기" 버튼을 눌렀을 때만 배송 메시지 표시
                             console.log('색상 선택 완료 - 배송 메시지 표시');
                             setShowShippingMessage(true);
-                            // ⚡ 배송 메시지 표시 후 부드러운 스크롤
+                            // ⚡ 배송 메시지가 잘 보이도록 맨 아래로 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
-                                const targetScroll = container.scrollTop + 150;
                                 container.scrollTo({
-                                  top: targetScroll,
+                                  top: container.scrollHeight, // 맨 아래로 스크롤
                                   behavior: 'smooth'
                                 });
-                                console.log('📜 배송 메시지 스크롤:', { to: targetScroll });
+                                console.log('📜 배송 메시지 표시 - 맨 아래로 스크롤');
                               }
-                            }, 150); // 더 빠른 반응
+                            }, 200);
                           }
                         }}>
                         <span style={{
@@ -1689,7 +1755,7 @@ ${previousMessages}
                           Five Flower
                         </div>
                         <div>
-                          좋았어! {getColorName(selectedColor)}의 외부 모듈과 {getTextureDescription(selectedTexture)} 내부 모듈을 함께 지수네 집으로 배송할게!{'\n'}함께 선택한 루틴을 이번주에 진행해보자!{'\n'}커스터마이징 마무리와 배송을 위해 Five Flower 배송 시작 버튼을 눌러줘
+                          좋았어! {getColorName(selectedColor)}의 외부 모듈과 {getTextureDescription(selectedTexture)} 내부 모듈을 함께 {nickname}네 집으로 배송할게!{'\n'}함께 선택한 루틴을 이번주에 진행해보자!{'\n'}커스터마이징 마무리와 배송을 위해 Five Flower 배송 시작 버튼을 눌러줘
                         </div>
                       </div>
                       
@@ -1739,59 +1805,8 @@ ${previousMessages}
                     </div>
                   )}
                   
-                  {isRoutineRecommendation && (
-                    <div style={{
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      marginTop: '20px', 
-                      width: '100%',
-                      zIndex: 9999,
-                      position: 'relative'
-                    }}>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          console.log('🔥 버튼 클릭됨!');
-                          handleRoutineAccept();
-                        }}
-                        style={{
-                          backgroundColor: '#7b61ff',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '20px',
-                          padding: '12px 24px',
-                          fontSize: '16px',
-                          cursor: 'pointer',
-                          fontWeight: '500',
-                          transition: 'all 0.3s ease',
-                          transform: 'scale(1)',
-                          boxShadow: '0 4px 15px rgba(123, 97, 255, 0.3)',
-                          zIndex: 10000,
-                          position: 'relative',
-                          pointerEvents: 'auto'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.backgroundColor = '#6951e8';
-                          e.target.style.transform = 'scale(1.05)';
-                          e.target.style.boxShadow = '0 6px 20px rgba(123, 97, 255, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = '#7b61ff';
-                          e.target.style.transform = 'scale(1)';
-                          e.target.style.boxShadow = '0 4px 15px rgba(123, 97, 255, 0.3)';
-                        }}
-                        onMouseDown={(e) => {
-                          e.target.style.transform = 'scale(0.98)';
-                        }}
-                        onMouseUp={(e) => {
-                          e.target.style.transform = 'scale(1.05)';
-                        }}
-                      >
-                        루틴 수락하기
-                      </button>
-                    </div>
-                  )}
+                  
+
                 </div>
               );
             })}
@@ -1846,9 +1861,66 @@ ${previousMessages}
                 </div>
               </Message>
             )}
-          </Messages>
+                    </Messages>
           
-          {showCircle && (
+          {/* 🔥 완전 독립적인 루틴 수락하기 버튼 - 화면에 고정 */}
+          {(() => {
+            const lastMessage = allMessages[allMessages.length - 1];
+            const shouldShow = lastMessage && 
+                             lastMessage.user === 'Five Flower' && 
+                             lastMessage.text.includes('루틴을 수락해줘') && 
+                             !routineAccepted;
+            
+            return shouldShow ? (
+              <div
+                style={{
+                  position: 'fixed',
+                  left: '50%',
+                  bottom: '120px',
+                  transform: 'translateX(-50%)',
+                  zIndex: 999999999,
+                  pointerEvents: 'auto'
+                }}
+                onClick={() => {
+                  console.log('🔥 컨테이너 클릭됨');
+                  handleRoutineAccept();
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: '#7b61ff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '20px',
+                    padding: '14px 28px',
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    fontFamily: 'Pretendard Variable, sans-serif',
+                    boxShadow: '0 6px 20px rgba(123, 97, 255, 0.4)',
+                    userSelect: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minWidth: '144px',
+                    minHeight: '45px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#6951e8';
+                    e.target.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#7b61ff';
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  루틴 수락하기
+                </div>
+              </div>
+            ) : null;
+          })()}
+            
+            {showCircle && (
             <img 
               src="/circle.png" 
               alt="circle" 

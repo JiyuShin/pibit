@@ -322,7 +322,7 @@ export default function WiggleProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 지수의 곁에서 다리 떨기 대신\n손가락이 내 말랑한 판을 돌리며 새로운 리듬으로\n불안을 살며시 풀어내도록 하는리드미컬한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 ${name}의 곁에서 다리 떨기 대신\n손가락이 내 말랑한 판을 돌리며 새로운 리듬으로\n불안을 살며시 풀어내도록 하는리드미컬한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {

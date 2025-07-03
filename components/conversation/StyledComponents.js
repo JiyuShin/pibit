@@ -75,12 +75,18 @@ export const Bg = styled.div`
   width: 1512px;
   height: 982px;
   margin: 0 auto;
+  /* 🔥 배경 복원 - 이중 보장을 위해 Bg 컴포넌트에도 배경 설정 */
   background-image: url(/newbk2.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
   border-radius: 20px;
+  /* 성능 최적화 */
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+  backface-visibility: hidden;
+  contain: layout style paint;
   img {
     width: 96px;
     height: auto;
@@ -168,6 +174,11 @@ export const Messages = styled.div`
   background: transparent;
   border: none;
   box-sizing: border-box;
+  /* 🔥 메시지 컨테이너 최적화 - 리렌더링 성능 향상 */
+  transform: translate3d(0, 0, 0);
+  will-change: scroll-position;
+  backface-visibility: hidden;
+  contain: layout style paint;
   
   /* Hide scrollbar */
   &::-webkit-scrollbar {
@@ -204,6 +215,10 @@ export const Message = styled.div`
   transition: all 0.3s ease-in-out;
   opacity: 1;
   transform: translateY(0);
+  /* 🔥 개별 메시지 최적화 */
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  contain: layout style;
   
   &.fade-out {
     opacity: 0;
@@ -616,7 +631,7 @@ export const TextureSelectionBox = styled.div`
   transition: background-color 0.3s ease;
 `;
 
-// 텍스처 이미지 컴포넌트 (⚡ 2배 빠른 전환)
+// 텍스처 이미지 컴포넌트 (🔥 초고속 즉시 전환)
 export const TextureImage = styled.div`
   position: absolute;
   top: 0;
@@ -624,15 +639,24 @@ export const TextureImage = styled.div`
   width: 100%;
   height: 100%;
   background: url('/${props => props.imageName}.png') calc(50% + 23px) calc(50% + 31px)/52.5% no-repeat;
+  background-size: 52.5%;
+  background-repeat: no-repeat;
+  /* 🔥 즉시 전환 - 거의 0에 가까운 전환 시간 */
   transform: translate3d(${props => props.isVisible ? '0' : (props.direction === 'left' ? '-100%' : '100%')}, 0, 0) scale(1);
   opacity: ${props => props.isVisible ? 1 : 0};
-  transition: transform 0.025s ease-out, opacity 0.015s ease-out;
-  will-change: transform, opacity;
+  transition: transform 0.001s linear, opacity 0.001s linear;
+  /* 🚀 강화된 GPU 가속 */
+  will-change: transform, opacity, background-image;
   backface-visibility: hidden;
+  transform-style: preserve-3d;
+  /* 브라우저 최적화 */
+  contain: layout style paint;
+  image-rendering: optimizeSpeed;
   
   ${props => props.isVisible && `
     &:hover {
       transform: translate3d(0, 0, 0) scale(1.3);
+      transition: transform 0.1s ease-out;
     }
   `}
 `;
@@ -698,7 +722,7 @@ export const TextureSelectText = styled.div`
   pointer-events: none;
 `;
 
-// Ellipse 49 - 작은 원형 (화살표 버튼 배경) ⚡ 즉시 반응
+// Ellipse 49 - 작은 원형 (화살표 버튼 배경) 🔥 초고속 즉시 반응
 export const TextureArrowCircle = styled.div`
   position: absolute;
   width: 57px;
@@ -712,18 +736,22 @@ export const TextureArrowCircle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.05s ease-out, box-shadow 0.1s ease-out;
+  /* 🔥 즉시 반응 - 가장 빠른 전환 */
+  transition: transform 0.001s linear, box-shadow 0.05s ease-out;
   z-index: 3;
-  will-change: transform;
+  /* 🚀 강화된 GPU 가속 */
+  will-change: transform, box-shadow;
   backface-visibility: hidden;
+  transform-style: preserve-3d;
+  contain: layout style paint;
   
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) translate3d(0, 0, 0);
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   }
   
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.95) translate3d(0, 0, 0);
   }
 `;
 
@@ -914,11 +942,12 @@ export const FinalModalText = styled.div`
 // opened box 이미지
 export const FinalModalBoxImage = styled.div`
   position: absolute;
-  width: 475px;
-  height: 316px;
-  left: 48px;
-  top: 120px;
+  width: 570px;
+  height: 379.2px;
+  left: 1px;
+  top: 70px;
   background: url('/box.png') center/contain no-repeat;
+  filter: brightness(1.15) contrast(1.05) saturate(1.1);
   opacity: 0;
   transform: translateY(20px);
   animation: boxSlideIn 0.3s ease-out 0.2s forwards;
@@ -942,14 +971,24 @@ export const FinalModalFlowerImage = styled.div`
   top: calc(50% - 169.05px/2 - 20.66px);
   background: url('/module/flower.png') center/contain no-repeat;
   filter: drop-shadow(0px 9px 40px rgba(0, 0, 0, 0.13));
-  transform: rotate(12.77deg) scale(0);
-  animation: flowerPop 0.4s ease-out 0.4s forwards;
-  will-change: transform;
+  opacity: 0;
+  transform: rotate(12.77deg) scale(0.8) translateY(15px);
+  animation: flowerFadeInPop 0.5s ease-out 0.6s forwards;
+  will-change: transform, opacity;
   backface-visibility: hidden;
   
-  @keyframes flowerPop {
-    to {
-      transform: rotate(12.77deg) scale(1);
+  @keyframes flowerFadeInPop {
+    0% {
+      opacity: 0;
+      transform: rotate(12.77deg) scale(0.8) translateY(15px);
+    }
+    50% {
+      opacity: 0.7;
+      transform: rotate(12.77deg) scale(0.95) translateY(5px);
+    }
+    100% {
+      opacity: 1;
+      transform: rotate(12.77deg) scale(1) translateY(0);
     }
   }
 `;
@@ -965,7 +1004,7 @@ export const FinalModalNameContainer = styled.div`
   align-items: center;
   gap: 12px;
   opacity: 0;
-  animation: nameInputFadeIn 0.3s ease-out 0.9s forwards;
+  animation: nameInputFadeIn 0.3s ease-out 1.2s forwards;
   will-change: opacity;
   
   @keyframes nameInputFadeIn {

@@ -325,7 +325,7 @@ export default function PuffyProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 지수가 턱을 괴는 대신\n나를 꾹 눌러줄 때 마음이 묵직하게 놓이는 걸\n가장 좋아하는 든든한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 ${name}가 턱을 괴는 대신\n나를 꾹 눌러줄 때 마음이 묵직하게 놓이는 걸\n가장 좋아하는 든든한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {

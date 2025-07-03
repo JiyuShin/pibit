@@ -322,7 +322,7 @@ export default function FingerProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 지수와 함께\n지내며 머리카락 대신 내 고리들을 천천히 문질러\n긴장을 풀고 당기는 습관을 자연스럽게 덜어주는 친구야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 머리카락 대신 내 고리들을 천천히 문질러\n긴장을 풀고 당기는 습관을 자연스럽게 덜어주는 친구야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
