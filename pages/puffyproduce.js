@@ -358,7 +358,7 @@ export default function PuffyProducePage() {
 
     const handleStartConversation = useCallback(() => {
         router.push({
-            pathname: '/converf',
+            pathname: '/puffconver',
             query: { name, selectedHabits: JSON.stringify(selectedHabits) },
         });
     }, [router, name, selectedHabits]);

@@ -2,7 +2,7 @@ const { NFC } = require('nfc-pcsc');
 const { Server } = require('socket.io');
 const http = require('http');
 
-// 1. 웹소켓 서버 생성 (포트 4000)
+// 1. 웹소켓 서버 생성 (포트 4001)
 const server = http.createServer();
 const io = new Server(server, {
   cors: {
@@ -12,7 +12,8 @@ const io = new Server(server, {
 
 // NFC 태그 ID와 데이터 매핑
 const tagMappings = {
-  '0488bb12361e90': { name: 'Five Flower', message: '안녕! 난 five flower이야, 만나게 되서 너무 반가워!' }
+  '0488bb12361e90': { name: 'Five Flower', message: '안녕! 난 five flower이야, 만나게 되서 너무 반가워!' },
+  '048bb4567890ab': { name: 'Puffy', message: '안녕! 만나서 반가워, 난 턱을 괴는 대신 나를 꾹 눌러줄 때 마음이 묵직하게 놓이는 걸 가장 좋아하는 든든한 존재 Puffy야!' }
 };
 
 const nfc = new NFC(); // NFC 리더기를 서버 시작 시 한 번만 초기화
@@ -65,6 +66,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(4000, () => {
-  console.log("📡 소켓 서버 실행 중 (포트 4000)");
+server.listen(4001, () => {
+  console.log("📡 소켓 서버 실행 중 (포트 4001)");
 }); 

@@ -531,7 +531,7 @@ export default function HeartyLipPage() {
         setIsExiting(true);
         setTimeout(() => {
             router.push({
-                pathname: '/flowerproduce',
+                pathname: '/heartyproduce',
                 query: { name, selectedHabits, finalHabit }
             });
         }, 1500);

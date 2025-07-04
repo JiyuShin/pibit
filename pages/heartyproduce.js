@@ -26,7 +26,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     background: url('/bk2.png') no-repeat center center;
     background-size: cover;
-    background-attachment: fixed;
+    will-change: auto;
   }
 `;
 
@@ -42,19 +42,7 @@ const Root = styled.div`
   margin: 0 auto;
   overflow: hidden;
   animation: ${fadeIn} 1.5s ease-in-out;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/bk2.png') no-repeat center center;
-    background-size: cover;
-    filter: saturate(1.8);
-    z-index: -1;
-  }
+  will-change: opacity;
 `;
 
 const LogoImage = styled.div`
@@ -131,7 +119,7 @@ const Rectangle2 = styled.div`
   position: absolute;
   width: 325px;
   height: 63px;
-  left: 1068px;
+  left: 1115px;
   top: 434px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
@@ -164,7 +152,7 @@ const BubbleText1 = styled.p`
 const BubbleButton = styled.button`
   position: absolute;
   width: 280px;
-  left: 1094px;
+  left: 1141px;
   top: 450px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
@@ -249,16 +237,17 @@ const move = keyframes`
 `;
 
 const ContainerLoader = styled.aside`
-  --size: 268.47px;
+  --size: 314px;
   width: var(--size);
   height: var(--size);
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(calc(-50% - 150px), calc(-50% + 131px)) scale(${({ show }) => (show ? 1 : 0.2)});
+  transform: translate3d(calc(-50% - 135px), calc(-50% + 126px), 0) scale(${({ show }) => (show ? 0.78 : 0.22)});
   z-index: -2;
-  opacity: ${({ show }) => (show ? 0.3 : 0)};
+  opacity: ${({ show }) => (show ? 0.15 : 0)};
   transition: opacity 2s ease-out, transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform, opacity;
 `;
 
 const ModelContainer = styled.div`
@@ -277,6 +266,8 @@ const Ball = styled.article`
   mix-blend-mode: difference;
   animation-duration: var(--d);
   filter: blur(28px) saturate(2.8);
+  will-change: transform;
+  backface-visibility: hidden;
 
   &:nth-child(even) {
     animation-direction: reverse;
@@ -329,7 +320,7 @@ export default function HeartyProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name ? `${name}가` : '당신이'} 입술 대신 내 말랑한 결을\n천천히 쓸어내릴 때마다 작은 불안들을 말없이 녹여주는\n부드럽고 살포근한 존재야!`;
+    const fullText1 = `안녕 만나서 반가워, 난 입술 피부 조직을 닮은\n말랑이를 쓸어내리며 마음을 살살 달래줄\n따듯하고 중독성 있는 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
@@ -358,7 +349,7 @@ export default function HeartyProducePage() {
 
     const handleStartConversation = useCallback(() => {
         router.push({
-            pathname: '/converf',
+            pathname: '/heartconver',
             query: { name, selectedHabits: JSON.stringify(selectedHabits) },
         });
     }, [router, name, selectedHabits]);
@@ -370,7 +361,7 @@ export default function HeartyProducePage() {
     return (
         <>
             <Head>
-                <title>PIBIT - Hearty Lip Produce</title>
+                <title>PIBIT - Hearty Produce</title>
                 <link rel="icon" href="/favicon.ico" />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
@@ -383,26 +374,26 @@ export default function HeartyProducePage() {
                 </ModelContainer>
                 
                 <ContainerLoader show={showLoader}>
-                    <Ball style={{"--color": "#ff6b8a", "--i": "13px", "--d": "6.8s"}} />
-                    <Ball style={{"--color": "#ffc0cb", "--i": "19px", "--d": "3.5s"}} />
-                    <Ball style={{"--color": "#ff69b4", "--i": "11px", "--d": "4.9s"}} />
-                    <Ball style={{"--color": "#ff1493", "--i": "17px", "--d": "9.3s"}} />
-                    <Ball style={{"--color": "#dc143c", "--i": "14px", "--d": "2.7s"}} />
-                    <Ball style={{"--color": "#b22222", "--i": "10px", "--d": "5.1s"}} />
-                    <Ball style={{"--color": "#8b0000", "--i": "16px", "--d": "6.6s"}} />
-                    <Ball style={{"--color": "#ff4500", "--i": "18px", "--d": "7.2s"}} />
-                    <Ball style={{"--color": "#ff6347", "--i": "12px", "--d": "8.4s"}} />
-                    <Ball style={{"--color": "#ffa500", "--i": "20px", "--d": "3.9s"}} />
-                    <Ball style={{"--color": "#ffb6c1", "--i": "15px", "--d": "4.6s"}} />
-                    <Ball style={{"--color": "#db7093", "--i": "19px", "--d": "5.7s"}} />
-                    <Ball style={{"--color": "#c71585", "--i": "11px", "--d": "7.1s"}} />
-                    <Ball style={{"--color": "#ff20b2", "--i": "13px", "--d": "9.7s"}} />
-                    <Ball style={{"--color": "#da70d6", "--i": "10px", "--d": "6.2s"}} />
-                    <Ball style={{"--color": "#dda0dd", "--i": "14px", "--d": "3.4s"}} />
-                    <Ball style={{"--color": "#ee82ee", "--i": "17px", "--d": "8.9s"}} />
-                    <Ball style={{"--color": "#ba55d3", "--i": "12px", "--d": "7.6s"}} />
-                    <Ball style={{"--color": "#9370db", "--i": "16px", "--d": "4.3s"}} />
-                    <Ball style={{"--color": "#8a2be2", "--i": "18px", "--d": "2.8s"}} />
+                    <Ball style={{"--color": "#FF69B4", "--i": "13px", "--d": "6.8s"}} />
+                    <Ball style={{"--color": "#FF1493", "--i": "19px", "--d": "3.5s"}} />
+                    <Ball style={{"--color": "#FF6347", "--i": "11px", "--d": "4.9s"}} />
+                    <Ball style={{"--color": "#FF4500", "--i": "17px", "--d": "9.3s"}} />
+                    <Ball style={{"--color": "#FFA07A", "--i": "14px", "--d": "2.7s"}} />
+                    <Ball style={{"--color": "#FFB6C1", "--i": "10px", "--d": "5.1s"}} />
+                    <Ball style={{"--color": "#FFC0CB", "--i": "16px", "--d": "6.6s"}} />
+                    <Ball style={{"--color": "#FFE4E1", "--i": "18px", "--d": "7.2s"}} />
+                    <Ball style={{"--color": "#FFCCCB", "--i": "12px", "--d": "8.4s"}} />
+                    <Ball style={{"--color": "#F08080", "--i": "20px", "--d": "3.9s"}} />
+                    <Ball style={{"--color": "#CD5C5C", "--i": "15px", "--d": "4.6s"}} />
+                    <Ball style={{"--color": "#DC143C", "--i": "19px", "--d": "5.7s"}} />
+                    <Ball style={{"--color": "#B22222", "--i": "11px", "--d": "7.1s"}} />
+                    <Ball style={{"--color": "#8B0000", "--i": "13px", "--d": "9.7s"}} />
+                    <Ball style={{"--color": "#800000", "--i": "10px", "--d": "6.2s"}} />
+                    <Ball style={{"--color": "#FFE4B5", "--i": "14px", "--d": "3.4s"}} />
+                    <Ball style={{"--color": "#FFDAB9", "--i": "17px", "--d": "8.9s"}} />
+                    <Ball style={{"--color": "#FFCBA4", "--i": "12px", "--d": "7.6s"}} />
+                    <Ball style={{"--color": "#FFA500", "--i": "16px", "--d": "4.3s"}} />
+                    <Ball style={{"--color": "#FF8C00", "--i": "18px", "--d": "2.8s"}} />
                 </ContainerLoader>
                 
                 <Title show={showTitle}>{name ? `${name}님의` : '당신의'} 첫 맞춤형 Hearty Lip 피빗이 태어났어요!</Title>
