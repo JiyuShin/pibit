@@ -19,10 +19,14 @@ const GlobalStyle = createGlobalStyle`
   body, html {
     overflow-y: hidden;
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
   }
   
   body {
-    background-color: #ffffff;
+    background: url('/bk2.png') no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
   }
 `;
 
@@ -316,7 +320,17 @@ Typewriter.displayName = 'Typewriter';
 
 export default function ClicProducePage() {
     const router = useRouter();
-    const { name = '지수', selectedHabits, finalHabit } = router.query;
+    const [actualName, setActualName] = useState('');
+    
+    useEffect(() => {
+        if (router.isReady) {
+            const { name = '', selectedHabits, finalHabit } = router.query;
+            console.log('클릭워크 프로듀스 페이지 - 받은 값들:', { name, selectedHabits, finalHabit, fullQuery: router.query });
+            setActualName(name);
+        }
+    }, [router.isReady, router.query]);
+    
+    const { selectedHabits, finalHabit } = router.query;
     const [showTitle, setShowTitle] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
     const [showModel, setShowModel] = useState(false);
@@ -325,7 +339,7 @@ export default function ClicProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}가 나를 똑딱 눌러줄\n때마다 속 시원한 재미를 톡톡 터뜨리는\n장난스럽고 쾌활한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 ${actualName ? `${actualName}가` : '당신이'} 나를 똑딱 눌러줄\n때마다 속 시원한 재미를 톡톡 터뜨리는\n장난스럽고 쾌활한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
@@ -355,9 +369,9 @@ export default function ClicProducePage() {
     const handleStartConversation = useCallback(() => {
         router.push({
             pathname: '/converf',
-            query: { name, selectedHabits: JSON.stringify(selectedHabits) },
+            query: { name: actualName, selectedHabits: JSON.stringify(selectedHabits) },
         });
-    }, [router, name, selectedHabits]);
+    }, [router, actualName, selectedHabits]);
 
     const handleGoBack = () => {
         router.back();
@@ -401,7 +415,7 @@ export default function ClicProducePage() {
                     <Ball style={{"--color": "#40E0D0", "--i": "18px", "--d": "2.8s"}} />
                 </ContainerLoader>
                 
-                <Title show={showTitle}>{name}님의 첫 맞춤형 Clickwork 피빗이 태어났어요!</Title>
+                <Title show={showTitle}>{actualName ? `${actualName}님의` : '당신의'} 첫 맞춤형 Clickwork 피빗이 태어났어요!</Title>
                 <Subtitle show={showTitle}>
                     데스크탑 앞에 놓여있는 clickwork 모듈과의 대화를 통해<br/>
                     새로운 습관 개선 여정을 시작하세요

@@ -285,8 +285,20 @@ export default function PibitLoadingPage() {
         const timer = setTimeout(() => {
             setIsExiting(true);
             setTimeout(() => {
+                // finalHabit에 따라 적절한 모듈 페이지로 이동
+                const moduleMapping = {
+                    '손톱 물어뜯기': '/fingermodule',
+                    '입술 물어뜯기': '/heartylip', 
+                    '다리 떨기': '/wigglemodule',
+                    '볼펜 딸깍거리기': '/Clickworkmodule',
+                    '턱 괴기': '/puffymodule',
+                    // 기타 습관들은 기본적으로 flowermodule로
+                };
+                
+                const targetPage = moduleMapping[finalHabit] || '/flowermodule';
+                
                 router.push({
-                    pathname: '/flowermodule',
+                    pathname: targetPage,
                     query: { name, selectedHabits, finalHabit }
                 });
             }, 1500);

@@ -683,9 +683,20 @@ export const TextureImage = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('/${props => props.imageName}.png') calc(50% + 23px) calc(50% + 31px)/52.5% no-repeat;
+  background: url('/${props => props.imageName}.${props => {
+    // .webp 이미지들
+    if (props.imageName === 'oranges' || props.imageName === 'bluish' || props.imageName === 'pink' || props.imageName === 'mint' || props.imageName === 'furryy' || props.imageName === 'sili' || props.imageName === 'dolgi' || props.imageName === 'yellowiggle' || props.imageName === 'bluewiggle' || props.imageName === 'pinkwiggle' || props.imageName === 'rediggle') {
+      return 'webp';
+    }
+    return 'png';
+  }}') center center/52.5% no-repeat;
   background-size: 52.5%;
   background-repeat: no-repeat;
+  /* JPEG/JPG 이미지들의 흰색 배경 투명 처리 (색상 UI용 PNG 이미지들은 제외) */
+  ${props => (props.imageName === 'furryy' || props.imageName === 'sili' || props.imageName === 'dolgi') && `
+    mix-blend-mode: multiply;
+    filter: contrast(1.1) brightness(1.05);
+  `}
   /* 🔥 즉시 전환 - 거의 0에 가까운 전환 시간 */
   transform: translate3d(${props => props.isVisible ? '0' : (props.direction === 'left' ? '-100%' : '100%')}, 0, 0) scale(1);
   opacity: ${props => props.isVisible ? 1 : 0};
@@ -704,6 +715,8 @@ export const TextureImage = styled.div`
       transition: transform 0.1s ease-out;
     }
   `}
+  
+
 `;
 
 // Flower logo - 왼쪽 상단에 배치
@@ -713,11 +726,11 @@ export const FlowerLogo = styled.div`
   height: 60px;
   left: 31px;
   top: 215px;
-  background: url('/module/flower.png') center/contain no-repeat;
+  background: url('/w3.png') center/contain no-repeat;
   z-index: 2;
 `;
 
-// Texture Type Label - ff2.png 보일 때 왼쪽에 표시되는 텍스트
+// Texture Type Label - furry.png 보일 때 왼쪽에 표시되는 텍스트
 export const TextureTypeLabel = styled.div`
   position: absolute;
   left: 48px;
@@ -811,104 +824,104 @@ export const TextureArrowIcon = styled.img`
 // 질감 선택 원형 요소들 (Ellipse 51-55)
 export const TextureOption1 = styled.div`
   position: absolute;
-  width: 57px;
-  height: 56px;
+  width: 60.42px;
+  height: 59.36px;
   left: 195px;
   top: 305px;
-  background: #FFDF76;
+  background: #FFD700;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
-  transform: scale(0);
+  transform: scale(0) rotate(6deg);
   animation: popIn 0.08s ease-out forwards;
   will-change: transform;
   
   @keyframes popIn {
     to {
-      transform: scale(1);
+      transform: scale(1) rotate(6deg);
     }
   }
   
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(6deg);
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   }
 `;
 
 export const TextureOption2 = styled.div`
   position: absolute;
-  width: 57px;
-  height: 56px;
+  width: 60.42px;
+  height: 59.36px;
   left: 268px;
   top: 305px;
-  background: #DDEBC1;
+  background: #87CEEB;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
-  transform: scale(0);
+  transform: scale(0) rotate(6deg);
   animation: popIn 0.08s ease-out forwards;
   will-change: transform;
   
   @keyframes popIn {
     to {
-      transform: scale(1);
+      transform: scale(1) rotate(6deg);
     }
   }
   
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(6deg);
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   }
 `;
 
 export const TextureOption3 = styled.div`
   position: absolute;
-  width: 57px;
-  height: 56px;
+  width: 60.42px;
+  height: 59.36px;
   left: 341px;
   top: 305px;
-  background: #C5E1FF;
+  background: #FFB6C1;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
-  transform: scale(0);
+  transform: scale(0) rotate(6deg);
   animation: popIn 0.08s ease-out forwards;
   will-change: transform;
   
   @keyframes popIn {
     to {
-      transform: scale(1);
+      transform: scale(1) rotate(6deg);
     }
   }
   
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(6deg);
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   }
 `;
 
 export const TextureOption4 = styled.div`
   position: absolute;
-  width: 57px;
-  height: 56px;
+  width: 60.42px;
+  height: 59.36px;
   left: 414px;
   top: 305px;
-  background: #EEC9E0;
+  background: #FF4444;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
-  transform: scale(0);
+  transform: scale(0) rotate(6deg);
   animation: popIn 0.08s ease-out forwards;
   will-change: transform;
   
   @keyframes popIn {
     to {
-      transform: scale(1);
+      transform: scale(1) rotate(6deg);
     }
   }
   
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(6deg);
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   }
 `;
@@ -1007,14 +1020,14 @@ export const FinalModalBoxImage = styled.div`
   }
 `;
 
-// flower 이미지 (즉시 나타남)
+// flower/finger 이미지 (즉시 나타남)
 export const FinalModalFlowerImage = styled.div`
   position: absolute;
   width: 239.83px;
   height: 169.05px;
   left: calc(50% - 239.83px/2 + 16.29px);
   top: calc(50% - 169.05px/2 - 20.66px);
-  background: url('/module/flower.png') center/contain no-repeat;
+  background: ${props => `url('/module/${props.moduleType === 'finger' ? 'finger' : props.moduleType === 'wiggle' ? 'wiggle' : 'flower'}.png')`} center/contain no-repeat;
   filter: drop-shadow(0px 9px 40px rgba(0, 0, 0, 0.13));
   opacity: 0;
   transform: rotate(12.77deg) scale(0.8) translateY(15px);

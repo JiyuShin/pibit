@@ -19,10 +19,14 @@ const GlobalStyle = createGlobalStyle`
   body, html {
     overflow-y: hidden;
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
   }
   
   body {
-    background-color: #ffffff;
+    background: url('/bk2.png') no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
   }
 `;
 
@@ -313,7 +317,17 @@ Typewriter.displayName = 'Typewriter';
 
 export default function WiggleProducePage() {
     const router = useRouter();
-    const { name = '지수', selectedHabits, finalHabit } = router.query;
+    const [actualName, setActualName] = useState('');
+    
+    useEffect(() => {
+        if (router.isReady) {
+            const { name = '', selectedHabits, finalHabit } = router.query;
+            console.log('위글 프로듀스 페이지 - 받은 값들:', { name, selectedHabits, finalHabit, fullQuery: router.query });
+            setActualName(name);
+        }
+    }, [router.isReady, router.query]);
+    
+    const { selectedHabits, finalHabit } = router.query;
     const [showTitle, setShowTitle] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
 
@@ -322,7 +336,7 @@ export default function WiggleProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}의 곁에서 다리 떨기 대신\n손가락이 내 말랑한 판을 돌리며 새로운 리듬으로\n불안을 살며시 풀어내도록 하는리드미컬한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 ${actualName ? `${actualName}의` : '당신의'} 곁에서 다리 떨기 대신\n손가락이 내 말랑한 판을 돌리며 새로운 리듬으로\n불안을 살며시 풀어내도록 하는리드미컬한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
@@ -349,10 +363,10 @@ export default function WiggleProducePage() {
 
     const handleStartConversation = useCallback(() => {
         router.push({
-            pathname: '/converf',
-            query: { name, selectedHabits: JSON.stringify(selectedHabits) },
+            pathname: '/wiggleconver',
+            query: { name: actualName, selectedHabits: JSON.stringify(selectedHabits) },
         });
-    }, [router, name, selectedHabits]);
+    }, [router, actualName, selectedHabits]);
 
     const handleGoBack = () => {
         router.back();
@@ -394,7 +408,7 @@ export default function WiggleProducePage() {
                     <Ball style={{"--color": "#AFEEEE", "--i": "18px", "--d": "2.8s"}} />
                 </ContainerLoader>
                 
-                <Title show={showTitle}>{name}님의 첫 맞춤형 Wiggler 피빗이 태어났어요!</Title>
+                <Title show={showTitle}>{actualName ? `${actualName}님의` : '당신의'} 첫 맞춤형 Wiggler 피빗이 태어났어요!</Title>
                 <Subtitle show={showTitle}>
                     데스크탑 앞에 놓여있는 wiggler 모듈과의 대화를 통해<br/>
                     새로운 습관 개선 여정을 시작하세요

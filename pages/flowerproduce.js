@@ -256,13 +256,13 @@ Typewriter.displayName = 'Typewriter';
 
 export default function FlowerProducePage() {
     const router = useRouter();
-    const { name = '지수', selectedHabits, finalHabit } = router.query;
+    const { name = '', selectedHabits, finalHabit } = router.query;
     const [showRectangle1, setShowRectangle1] = useState(false);
     const [showBubbleText1, setShowBubbleText1] = useState(false);
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}와 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n따듯하고 포근한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 ${name ? `${name}와` : '당신과'} 함께\n지내며 '${finalHabit}' 습관을 곁에서 돌봐줄\n따듯하고 포근한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
@@ -306,7 +306,7 @@ export default function FlowerProducePage() {
             <Root>
                 <LogoImage onClick={handleGoBack} />
                 <FlowerModelView onModelClick={handleStartConversation}/>
-                <Title>{name}님의 첫 맞춤형 피빗이 태어났어요!</Title>
+                <Title>{name ? `${name}님의` : '당신의'} 첫 맞춤형 피빗이 태어났어요!</Title>
                 <Subtitle>
                     데스크탑 앞에 놓여있는 five flower 모듈과의 대화를 통해<br/>
                     새로운 습관 개선 여정을 시작하세요

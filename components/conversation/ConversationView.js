@@ -302,12 +302,12 @@ const renderRoutineMessage = (text) => {
   );
 };
 
-export default function ConversationView() {
+export default function ConversationView({ moduleType = 'flower', nickname: propNickname = '' }) {
   const router = useRouter();
   const { name } = router.query;
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNickname] = useState(propNickname || name || '');
   const messagesEndRef = useRef(null);
   const [isRoutinePhase, setIsRoutinePhase] = useState(false);
   const [isCustomizingPhase, setIsCustomizingPhase] = useState(false);
@@ -331,7 +331,7 @@ export default function ConversationView() {
   const [isTyping, setIsTyping] = useState(false);
   const [isTextureSelectionPhase, setIsTextureSelectionPhase] = useState(false);
   const [userAge, setUserAge] = useState(null);
-  const [currentTextureImage, setCurrentTextureImage] = useState('ff2'); // 'ff2', 'df', 'sil' 순환
+  const [currentTextureImage, setCurrentTextureImage] = useState('furryy'); // 'furryy', 'sili', 'dolgi' 순환
   const [isTextureSelecting, setIsTextureSelecting] = useState(false); // 질감 선택 모드
   const [visibleOptions, setVisibleOptions] = useState([]); // 보이는 옵션들 [0, 1, 2, 3]
   const [textureImagesLoaded, setTextureImagesLoaded] = useState(false); // 질감 이미지 프리로딩 상태
@@ -361,14 +361,28 @@ export default function ConversationView() {
   // 선택된 질감에 따른 설명 생성 함수
   const getTextureDescription = (textureType) => {
     switch(textureType) {
-      case 'ff2':
+      case 'furryy':
         return '털털한 질감';
-      case 'df':
-        return '돌기같은 질감';
-      case 'sil':
-        return '젤리같은 질감';
+      case 'sili':
+        return '말랑한 질감';
+      case 'dolgi':
+        return '울퉁불퉁 질감';
       default:
         return '특별한 질감';
+    }
+  };
+
+  // 색상 선택 UI용 이미지명 변환 함수
+  const getColorUIImageName = (textureType) => {
+    switch(textureType) {
+      case 'furryy':
+        return 'furry4';
+      case 'sili':
+        return 'sili4';
+      case 'dolgi':
+        return 'shape4';
+      default:
+        return textureType;
     }
   };
 
@@ -389,20 +403,43 @@ export default function ConversationView() {
     console.log('색상 선택:', color);
     setSelectedColor(color);
     setIsColorSelected(true);
+    
+    // 색상에 따른 .webp 이미지로 교체
+    let webpImageName;
+    switch(color) {
+      case '#FFD700': // 노랑색
+        webpImageName = 'yellowiggle';
+        break;
+      case '#87CEEB': // 연파랑
+        webpImageName = 'bluewiggle';
+        break;
+      case '#FFB6C1': // 연핑크
+        webpImageName = 'pinkwiggle';
+        break;
+      case '#FF4444': // 빨간색
+        webpImageName = 'rediggle';
+        break;
+      default:
+        webpImageName = getColorUIImageName(selectedTexture);
+    }
+    
+    // 선택된 질감을 webp 이미지로 업데이트
+    setSelectedTexture(webpImageName);
+    
     // 색상만 선택, 배송 메시지는 아직 표시하지 않음 (색상 선택하기 버튼을 눌러야 함)
   };
 
   // 색상명 변환 함수
   const getColorName = (color) => {
     switch(color) {
-      case '#FFDF76':
-        return '연노랑';
-      case '#DDEBC1':
-        return '연초록';
-      case '#C5E1FF':
+      case '#FFD700':
+        return '노랑색';
+      case '#87CEEB':
         return '연파랑';
-      case '#EEC9E0':
-        return '연분홍';
+      case '#FFB6C1':
+        return '연핑크';
+      case '#FF4444':
+        return '빨간색';
       default:
         return '흰색';
     }
@@ -418,16 +455,16 @@ export default function ConversationView() {
       setShowFinalModal(false);
       setTimeout(() => {
         setShowShippingComplete(true);
-        // 🎭 배송완료 화면 표시 후 3초 뒤 fade 전환 시작
+        // 🎭 배송완료 화면 표시 후 8초 뒤 fade 전환 시작 (3초 → 8초로 증가)
         setTimeout(() => {
           console.log('🎭 Fade out 시작');
           setShowFadeTransition(true);
-          // fade out 완료 후 0.8초 뒤 index.js로 이동
+          // fade out 완료 후 1.5초 뒤 index.js로 이동 (0.8초 → 1.5초로 증가)
           setTimeout(() => {
             console.log('🎭 Index.js로 이동');
             router.push('/');
-          }, 800);
-        }, 3000); // 3초 후 fade 시작
+          }, 1500);
+        }, 8000); // 8초 후 fade 시작
       }, 500); // 0.5초 후 배송 완료 화면 표시
       setModuleName('');
     }
@@ -438,7 +475,7 @@ export default function ConversationView() {
     console.log('🚀 질감 이미지 로딩 시작');
     setIsTextureLoading(true);
     
-    const imageNames = ['ff2', 'df', 'sil'];
+    const imageNames = ['furryy', 'sili', 'dolgi'];
     const imagePromises = [];
     
     // 🔥 모든 이미지를 Promise로 병렬 로딩
@@ -446,14 +483,14 @@ export default function ConversationView() {
       const imagePromise = new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
-          console.log(`✅ ${imageName}.png 로딩 완료`);
+          console.log(`✅ ${imageName}.webp 로딩 완료`);
           resolve(imageName);
         };
         img.onerror = () => {
-          console.error(`❌ ${imageName}.png 로딩 실패`);
+          console.error(`❌ ${imageName}.webp 로딩 실패`);
           reject(imageName);
         };
-        img.src = `/${imageName}.png`;
+        img.src = `/${imageName}.webp`;
       });
       imagePromises.push(imagePromise);
     });
@@ -476,6 +513,15 @@ export default function ConversationView() {
   useEffect(() => {
     nicknameRef.current = nickname;
   }, [nickname]);
+
+  // nickname prop이나 router.query.name이 변경될 때마다 nickname state 업데이트
+  useEffect(() => {
+    const newNickname = propNickname || name || '';
+    if (newNickname !== nickname) {
+      setNickname(newNickname);
+      console.log('🔧 Nickname 업데이트:', { propNickname, name, newNickname });
+    }
+  }, [propNickname, name, nickname]);
 
   // 질감 선택 단계 시작 시 이미지 프리로딩
   useEffect(() => {
@@ -507,10 +553,10 @@ export default function ConversationView() {
   // 🔥 이름 초기화 개선 - 항상 이름이 설정되도록 보장
   useEffect(() => {
     if (router.isReady) {
-      const userName = name || '당신';
+              const userName = nickname || '당신';
       console.log('🔧 이름 설정:', { name, userName, routerQuery: router.query });
       setNickname(userName);
-      setMessages([]);
+        setMessages([]);
     }
   }, [name, router.isReady]);
 
@@ -540,12 +586,16 @@ export default function ConversationView() {
       
       // 전역 테스트 함수 추가
       window.testNFC = () => {
-        const testData = {
-          id: '0488bb12361e90',
+        const testData = moduleType === 'finger' ? {
+          id: 'finger-test-id-123456', // Five Flower ID가 아닌 임의의 ID
+          name: 'Finger Couch',
+          message: '안녕~ 난 Finger Couch야~ 머리카락 당기는 습관을 살살 함께 고쳐나가보자'
+        } : {
+          id: '0488bb12361e90', // Five Flower 전용 ID
           name: 'Five Flower',
           message: '안녕! 난 five flower이야, 만나게 되서 너무 반가워!'
         };
-        console.log('🧪 테스트 NFC 이벤트 발생:', testData);
+        console.log('🧪 테스트 NFC 이벤트 발생 (모듈 타입: ' + moduleType + '):', testData);
         // 직접 tag-read 이벤트 핸들러 호출
         document.dispatchEvent(new CustomEvent('test-nfc-tag', { detail: testData }));
       };
@@ -555,6 +605,8 @@ export default function ConversationView() {
         // tag-read 이벤트 핸들러와 동일한 로직 실행
         const data = event.detail;
         console.log('🎉 테스트 NFC 태그 감지됨!', data);
+        console.log('📍 현재 모듈 타입:', moduleType);
+        console.log('🔑 테스트 NFC ID:', data.id);
         
         setIsChatStarted(true);
         setShowInitialMessage(false);
@@ -569,7 +621,7 @@ export default function ConversationView() {
         setIsCustomizingPhase(false);
         setIsTextureSelectionPhase(false);
         setUserAge(null);
-        setCurrentTextureImage('ff2');
+        setCurrentTextureImage('furryy');
         setSelectedTexture(null);
         setShowTextureMessage(false);
         setShowColorSelection(false);
@@ -581,9 +633,25 @@ export default function ConversationView() {
         setShowShippingMessage(false);
         setIsColorSelected(false);
         
-        const isFiveFlowerTag = data.id === '0488bb12361e90';
-        const name = isFiveFlowerTag ? 'Five Flower' : (data.name || '방문객');
-        const message = isFiveFlowerTag ? '안녕! 난 five flower이야, 만나게 되서 너무 반가워!' : (data.message || data.text || '만나서 반가워요!');
+        // 모듈 타입에 따른 NFC 처리
+        let characterName, characterMessage;
+        
+        if (moduleType === 'finger') {
+          // finger 모듈용 NFC ID 처리 - '0488bb12361e90' 제외한 모든 ID를 Finger Couch로 처리
+          console.log('🔍 FINGER 모듈 테스트 NFC ID 감지:', data.id);
+          const isFingerTag = data.id !== '0488bb12361e90'; // Five Flower 전용 ID가 아닌 모든 ID
+          characterName = isFingerTag ? 'Finger Couch' : (data.name || '방문객');
+          characterMessage = isFingerTag ? '안녕~ 난 Finger Couch야~ 머리카락 당기는 습관을 살살 함께 고쳐나가보자' : (data.message || data.text || '만나서 반가워!');
+        } else {
+          // 기본 flower 모듈용 처리 - 오직 '0488bb12361e90'만 Five Flower로 처리
+          console.log('🌸 FLOWER 모듈 테스트 NFC ID 감지:', data.id);
+          const isFiveFlowerTag = data.id === '0488bb12361e90';
+          characterName = isFiveFlowerTag ? 'Five Flower' : (data.name || '방문객');
+          characterMessage = isFiveFlowerTag ? '안녕! 난 five flower이야, 만나게 되서 너무 반가워!' : (data.message || data.text || '만나서 반가워!');
+        }
+        
+        const name = characterName;
+        const message = characterMessage;
 
         const structuredData = { id: data.id, name, message };
         setNfcData(structuredData);
@@ -592,37 +660,48 @@ export default function ConversationView() {
         setMessages([initialMessage]);
         
         // 🔥 안전한 이름 사용 - nickname이 빈 값일 때 대비
-        const safeNickname = nickname || name || '당신';
+        const safeNickname = nickname || '당신';
         console.log('🔧 NFC 메시지 생성:', { nickname, name, safeNickname });
+        console.log('✨ 최종 캐릭터 정보:', { characterName, characterMessage });
         
         // 모든 메시지를 allMessages에 순차적으로 추가
-        setAllMessages([
-          { user: 'Five Flower', text: `${safeNickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
-        ]);
+        const testInitialCharacterMessage = moduleType === 'finger' 
+          ? { user: 'Finger Couch', text: `${safeNickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
+          : moduleType === 'wiggle'
+          ? { user: 'Wiggler', text: `${safeNickname} 안녕! 만나서 반가워!`, isFixed: true }
+          : { user: 'Five Flower', text: `${safeNickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true };
+        
+        setAllMessages([testInitialCharacterMessage]);
         
         setShowInitialMessage(true);
         setShowCircle(true);  // NFC 태그 읽힌 직후 바로 circle 표시
         
         setTimeout(() => {
-          setAllMessages(prev => [...prev, { 
-            user: 'Five Flower', 
-            text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${safeNickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, 
-            isFixed: true 
-          }]);
+          const testSecondMessage = moduleType === 'finger' 
+            ? { user: 'Finger Couch', text: `나와 대화를 통해서~ 어떤 것들을 할 수 있는지 조금씩 차근차근 설명해줄게\n${safeNickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 머리카락 당기는 습관을 살살~ 개선해보자`, isFixed: true }
+            : moduleType === 'wiggle'
+            ? { user: 'Wiggler', text: `나와 대화하면서 함께 해보자! 어떤 걸 할 수 있는지 설명해줄게!\n${safeNickname}에게 딱 맞는 모듈 사용 루틴이랑 커스터마이징으로 다리 떨기 습관을 재밌게 개선해보자!`, isFixed: true }
+            : { user: 'Five Flower', text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${safeNickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, isFixed: true };
+          
+          setAllMessages(prev => [...prev, testSecondMessage]);
           setShowSecondMessage(true);
           setTimeout(() => {
-            setAllMessages(prev => [...prev, { 
-              user: 'Five Flower', 
-              text: `난 앞으로 ${safeNickname}가 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, 
-              isFixed: true 
-            }]);
+            const testThirdMessage = moduleType === 'finger' 
+              ? { user: 'Finger Couch', text: `난 앞으로 ${safeNickname}가 머리카락 당기는 대신에 내 얇고 말랑한 실리콘 고리들을 살살~ 문지르면서\n손끝의 긴장을 조금씩 풀어낼 수 있도록 기다려주는 조용한 안정제가 될거야~`, isFixed: true }
+              : moduleType === 'wiggle'
+              ? { user: 'Wiggler', text: `난 앞으로 ${safeNickname}가 다리 떨기 대신에 내 말랑한 판 위를 손가락으로 빙빙 돌리면서\n새로운 리듬으로 지루함을 쿵쿵 깨워주는 신나는 리듬 메이커가 될거야!`, isFixed: true }
+              : { user: 'Five Flower', text: `난 앞으로 ${safeNickname}가 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, isFixed: true };
+            
+            setAllMessages(prev => [...prev, testThirdMessage]);
             setShowThirdMessage(true);
             setTimeout(() => {
-              setAllMessages(prev => [...prev, { 
-                user: 'Five Flower', 
-                text: `${safeNickname}는 dna 감정유형 테스트 결과 불안민감형으로 결과가 나왔는데,\n${safeNickname}의 일상에서 가장 불안하거나 예민해지는 순간이 있다면 언제야?`, 
-                isFixed: true 
-              }]);
+                          const fourthMessage = moduleType === 'finger' 
+              ? { user: 'Finger Couch', text: `${safeNickname}는 dna 감정유형 테스트 결과 과잉통제형으로 나왔는데~\n${safeNickname}의 일상에서 가장 스스로에 대한 통제가 심한게 언제이고 언제 어떤 방식으로 통제하는거같은지 편하게 말해줄래?`, isFixed: true }
+              : moduleType === 'wiggle'
+              ? { user: 'Wiggler', text: `${safeNickname}는 dna 감정유형 테스트 결과 자극추구형으로 나왔어!\n${safeNickname}의 일상에서 가장 지루하거나 심심해서 다리를 떨고 싶어지는 순간이 있다면 보통 언제인지 말해줄래?`, isFixed: true }
+              : { user: 'Five Flower', text: `${safeNickname}는 dna 감정유형 테스트 결과 불안민감형으로 결과가 나왔는데,\n${safeNickname}의 일상에서 가장 불안하거나 예민해지는 순간이 있다면 언제야?`, isFixed: true };
+            
+            setAllMessages(prev => [...prev, fourthMessage]);
             }, 1000);
           }, 1000);
         }, 1000);
@@ -637,7 +716,9 @@ export default function ConversationView() {
       console.log('💡 NFC 서버가 실행 중인지 확인하세요 (포트 4000)');
     });
     nfcSocketRef.current.on('tag-read', (data) => {
-      console.log('🎉 NFC 태그 감지됨!', data);
+      console.log('🎉 실제 NFC 태그 감지됨!', data);
+      console.log('📍 현재 모듈 타입:', moduleType);
+      console.log('🔑 감지된 NFC ID:', data.id);
       setIsChatStarted(true);
       setShowInitialMessage(false);
       setShowSecondMessage(false);
@@ -651,7 +732,7 @@ export default function ConversationView() {
       setIsCustomizingPhase(false);
       setIsTextureSelectionPhase(false);
       setUserAge(null);
-      setCurrentTextureImage('ff2');
+      setCurrentTextureImage('furryy');
       setSelectedTexture(null);
       setShowTextureMessage(false);
       setShowColorSelection(false);
@@ -663,9 +744,31 @@ export default function ConversationView() {
       setShowShippingMessage(false);
       setIsColorSelected(false);
       
-      const isFiveFlowerTag = data.id === '0488bb12361e90';
-      const name = isFiveFlowerTag ? 'Five Flower' : (data.name || '방문객');
-      const message = isFiveFlowerTag ? '안녕! 난 five flower이야, 만나게 되서 너무 반가워!' : (data.message || data.text || '만나서 반가워요!');
+      // 모듈 타입에 따른 NFC 처리
+      let characterName, characterMessage;
+      
+      if (moduleType === 'finger') {
+        // finger 모듈용 NFC ID 처리 - '0488bb12361e90' 제외한 모든 ID를 Finger Couch로 처리
+        console.log('🔍 FINGER 모듈 NFC ID 감지:', data.id);
+        const isFingerTag = data.id !== '0488bb12361e90'; // Five Flower 전용 ID가 아닌 모든 ID
+        characterName = isFingerTag ? 'Finger Couch' : (data.name || '방문객');
+        characterMessage = isFingerTag ? '안녕~ 난 Finger Couch야~ 머리카락 당기는 습관을 살살 함께 고쳐나가보자' : (data.message || data.text || '만나서 반가워요!');
+      } else if (moduleType === 'wiggle') {
+        // wiggle 모듈용 NFC ID 처리 - wiggle 전용 ID들을 Wiggler로 처리
+        console.log('🎵 WIGGLE 모듈 NFC ID 감지:', data.id);
+        const isWigglerTag = data.id !== '0488bb12361e90'; // Five Flower 전용 ID가 아닌 모든 ID
+        characterName = isWigglerTag ? 'Wiggler' : (data.name || '방문객');
+        characterMessage = isWigglerTag ? '안녕! 만나서 반가워! 난 옆에서 다리 떨기 대신 내 말랑한 판 위를 손가락으로 빙빙 돌려서 지루함을 쿵쿵 깨우는 리듬 메이커 존재야!' : (data.message || data.text || '만나서 반가워요!');
+      } else {
+        // 기본 flower 모듈용 처리 - 오직 '0488bb12361e90'만 Five Flower로 처리
+        console.log('🌸 FLOWER 모듈 NFC ID 감지:', data.id);
+        const isFiveFlowerTag = data.id === '0488bb12361e90';
+        characterName = isFiveFlowerTag ? 'Five Flower' : (data.name || '방문객');
+        characterMessage = isFiveFlowerTag ? '안녕! 난 five flower이야, 만나게 되서 너무 반가워!' : (data.message || data.text || '만나서 반가워요!');
+      }
+      
+      const name = characterName;
+      const message = characterMessage;
 
       const structuredData = { id: data.id, name, message };
       setNfcData(structuredData);
@@ -674,40 +777,51 @@ export default function ConversationView() {
       setMessages([initialMessage]);
       
       // 🔥 안전한 이름 사용 - nickname이 빈 값일 때 대비
-      const safeNickname = nickname || name || '당신';
+      const safeNickname = nickname || '당신';
       console.log('🔧 실제 NFC 메시지 생성:', { nickname, name, safeNickname });
+      console.log('✨ 최종 캐릭터 정보:', { characterName, characterMessage });
       
       // 모든 메시지를 allMessages에 순차적으로 추가
-      setAllMessages([
-        { user: 'Five Flower', text: `${safeNickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
-      ]);
+      const initialCharacterMessage = moduleType === 'finger' 
+        ? { user: 'Finger Couch', text: `${safeNickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true }
+        : moduleType === 'wiggle'
+        ? { user: 'Wiggler', text: `${safeNickname} 안녕! 만나서 반가워!`, isFixed: true }
+        : { user: 'Five Flower', text: `${safeNickname} 안녕! 만나게 되서 너무 반가워!`, isFixed: true };
+      
+      setAllMessages([initialCharacterMessage]);
       
       setShowInitialMessage(true);
       setShowCircle(true);  // NFC 태그 읽힌 직후 바로 circle 표시
       
-              setTimeout(() => {
-          setAllMessages(prev => [...prev, { 
-            user: 'Five Flower', 
-            text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${safeNickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, 
-            isFixed: true 
-          }]);
-          setShowSecondMessage(true);
+      setTimeout(() => {
+        const secondMessage = moduleType === 'finger' 
+          ? { user: 'Finger Couch', text: `나와 대화를 통해서~ 어떤 것들을 할 수 있는지 조금씩 차근차근 설명해줄게\n${safeNickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 머리카락 당기는 습관을 살살~ 개선해보자`, isFixed: true }
+          : moduleType === 'wiggle'
+          ? { user: 'Wiggler', text: `나와 대화하면서 함께 해보자! 어떤 걸 할 수 있는지 설명해줄게!\n${safeNickname}에게 딱 맞는 모듈 사용 루틴이랑 커스터마이징으로 다리 떨기 습관을 재밌게 개선해보자!`, isFixed: true }
+          : { user: 'Five Flower', text: `나와 대화를 통해 어떤 것을 할 수 있는지 간략하게 설명할게!\n${safeNickname}에게 가장 적합한 모듈 사용 루틴과 커스터마이징으로 손톱물어뜯기를 개선해보자!`, isFixed: true };
+        
+        setAllMessages(prev => [...prev, secondMessage]);
+        setShowSecondMessage(true);
+        setTimeout(() => {
+          const thirdMessage = moduleType === 'finger' 
+            ? { user: 'Finger Couch', text: `난 앞으로 ${safeNickname}가 머리카락 당기는 대신에 내 얇고 말랑한 실리콘 고리들을 살살~ 문지르면서\n손끝의 긴장을 조금씩 풀어낼 수 있도록 기다려주는 조용한 안정제가 될거야~`, isFixed: true }
+            : moduleType === 'wiggle'
+            ? { user: 'Wiggler', text: `난 앞으로 ${safeNickname}가 다리 떨기 대신에 내 말랑한 판 위를 손가락으로 빙빙 돌리면서\n새로운 리듬으로 지루함을 쿵쿵 깨워주는 신나는 리듬 메이커가 될거야!`, isFixed: true }
+            : { user: 'Five Flower', text: `난 앞으로 ${safeNickname}가 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, isFixed: true };
+          
+          setAllMessages(prev => [...prev, thirdMessage]);
+          setShowThirdMessage(true);
           setTimeout(() => {
-            setAllMessages(prev => [...prev, { 
-              user: 'Five Flower', 
-              text: `난 앞으로 ${safeNickname}가 손톱 대신 내 다섯 면과 움푹한 공간을 마음껏 눌러서 스트레스를 꾹 눌러보게 돕는 단단한 존재가 될거야 !`, 
-              isFixed: true 
-            }]);
-            setShowThirdMessage(true);
-            setTimeout(() => {
-              setAllMessages(prev => [...prev, { 
-                user: 'Five Flower', 
-                text: `${safeNickname}는 dna 감정유형 테스트 결과 불안민감형으로 결과가 나왔는데,\n${safeNickname}의 일상에서 가장 불안하거나 예민해지는 순간이 있다면 언제야?`, 
-                isFixed: true 
-              }]);
-            }, 1000);
+            const fourthMessage = moduleType === 'finger' 
+              ? { user: 'Finger Couch', text: `${safeNickname}는 dna 감정유형 테스트 결과 과잉통제형으로 나왔는데~\n${safeNickname}의 일상에서 가장 스스로에 대한 통제가 심한게 언제이고 언제 어떤 방식으로 통제하는거같은지 편하게 말해줄래?`, isFixed: true }
+              : moduleType === 'wiggle'
+              ? { user: 'Wiggler', text: `${safeNickname}는 dna 감정유형 테스트 결과 자극추구형으로 나왔어!\n${safeNickname}의 일상에서 가장 지루하거나 심심해서 다리를 떨고 싶어지는 순간이 있다면 보통 언제인지 말해줄래?`, isFixed: true }
+              : { user: 'Five Flower', text: `${safeNickname}는 dna 감정유형 테스트 결과 불안민감형으로 결과가 나왔는데,\n${safeNickname}의 일상에서 가장 불안하거나 예민해지는 순간이 있다면 언제야?`, isFixed: true };
+            
+            setAllMessages(prev => [...prev, fourthMessage]);
           }, 1000);
         }, 1000);
+      }, 1000);
 
       const tagToneId = data && data.id ? String(data.id).trim() : toneAndManner[0].id;
       setCurrentToneId(tagToneId);
@@ -728,7 +842,7 @@ export default function ConversationView() {
       setIsCustomizingPhase(false);
       setIsTextureSelectionPhase(false);
       setUserAge(null);
-      setCurrentTextureImage('ff2');
+      setCurrentTextureImage('furryy');
       setSelectedTexture(null);
       setShowTextureMessage(false);
       setShowColorSelection(false);
@@ -771,30 +885,30 @@ export default function ConversationView() {
     }
   }, [allMessages]);
 
-  // 🔥 질감/색상 UI 크기만큼만 스크롤 (즉시 반응)
+  // 🔥 질감/색상 UI가 잘 보이도록 적절한 위치로 스크롤
   useEffect(() => {
     if (messagesContainerRef.current && (isTextureSelectionPhase || showColorSelection)) {
       setTimeout(() => {
         if (messagesContainerRef.current) {
           const container = messagesContainerRef.current;
-          const currentScrollTop = container.scrollTop;
           
-          // UI 크기만큼만 스크롤 (600px UI 기준)
-          const targetScroll = currentScrollTop + 300; // UI가 잘 보이도록 300px만 스크롤
+          // UI가 화면에 잘 보이도록 적절한 위치로 스크롤
+          const targetScroll = container.scrollHeight - container.clientHeight + 200;
           
           container.scrollTo({
-            top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
+            top: Math.max(0, targetScroll),
             behavior: 'smooth'
           });
           
-          console.log('📜 UI 크기만큼 스크롤:', { 
-            currentScrollTop,
+          console.log('📜 UI 적절한 위치로 스크롤:', { 
+            scrollHeight: container.scrollHeight,
+            clientHeight: container.clientHeight,
             targetScroll,
             isTextureSelectionPhase, 
             showColorSelection
           });
         }
-      }, 50); // 더 빠른 반응
+      }, 30); // 더 빠른 반응
     }
   }, [isTextureSelectionPhase, showColorSelection]);
 
@@ -805,14 +919,15 @@ export default function ConversationView() {
     // 메시지들을 순차적으로 부드럽게 추가하는 함수
     const addMessagesSequentially = () => {
       // 1. 루틴 수락 확인 메시지
-      const acceptMessage = { user: 'Five Flower', text: '좋아 수락 완료! 앞으로 나랑 같이 이 루틴대로 실천해보면서 습관으로 이어지지 않도록 해보자!', isFixed: true };
+      const characterName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
+      const acceptMessage = { user: characterName, text: '좋아 수락 완료! 앞으로 나랑 같이 이 루틴대로 실천해보면서 습관으로 이어지지 않도록 해보자!', isFixed: true };
       
       setMessages(prev => [...prev, acceptMessage]);
       setAllMessages(prev => [...prev, acceptMessage]);
       
-      // 2. 1초 후 커스터마이징 시작 메시지
+      // 2. 0.5초 후 커스터마이징 시작 메시지 (1초 → 0.5초로 단축)
       setTimeout(() => {
-        const customizingMessage = { user: 'Five Flower', text: `이제부턴 ${nickname}와 나의 루틴이 효과적으로 이루어질 수 있도록 모듈을 적합한 모습으로 커스터마이징을 시작할게!`, isFixed: true };
+        const customizingMessage = { user: characterName, text: `이제부턴 ${nickname}와 나의 루틴이 효과적으로 이루어질 수 있도록 모듈을 적합한 모습으로 커스터마이징을 시작할게!`, isFixed: true };
         
         setMessages(prev => [...prev, customizingMessage]);
         setAllMessages(prev => [...prev, customizingMessage]);
@@ -820,14 +935,25 @@ export default function ConversationView() {
         // 커스터마이징 단계로 변경
         setIsCustomizingPhase(true);
         
-        // 3. 1.5초 후 나이 질문 메시지
+        // 3. 0.8초 후 나이 질문 메시지 (1.5초 → 0.8초로 단축)
         setTimeout(() => {
-          const ageQuestionMessage = { user: 'Five Flower', text: `${nickname}에게 가장 친근하고 적합한 동반자가 되기 위한 커스터마이징을 진행하기 위해서 ${nickname}의 나이를 알려줘!`, isFixed: true };
+          const ageQuestionMessage = { user: characterName, text: `${nickname}에게 가장 친근하고 적합한 동반자가 되기 위한 커스터마이징을 진행하기 위해서 ${nickname}의 나이를 알려줘!`, isFixed: true };
           
           setMessages(prev => [...prev, ageQuestionMessage]);
           setAllMessages(prev => [...prev, ageQuestionMessage]);
-        }, 1500);
-      }, 1000);
+          
+          // 나이 질문 메시지 추가 후 적절한 위치로 스크롤
+          setTimeout(() => {
+            if (messagesContainerRef.current) {
+              const container = messagesContainerRef.current;
+              container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'smooth'
+              });
+            }
+          }, 50);
+        }, 800);
+      }, 500);
     };
     
     // 메시지 추가 시작
@@ -847,9 +973,16 @@ export default function ConversationView() {
         secondQuestionSentRef.current = true;
         setSecondQuestionSent(true);
         setTimeout(() => {
+          const characterName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
+          const routineMessage = moduleType === 'finger' 
+            ? `그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들이 드는지 천천히~ 자유롭게 말해주면\n${nickname}의 행동과 생각 루틴에 맞춘 finger couch 피빗 사용 루틴을 차근차근~ 추천해줄게`
+            : moduleType === 'wiggle' 
+            ? `그런 순간이 생길 때 주로 어떤 행동을 하는지, 지수의 심리에 어떤 리듬들이 돌고 있는지 자유롭게~ 말해주면\n${nickname}의 리듬과 행동에 맞춘 wiggler 피빗 사용 루틴을 추천해줄게!`
+            : `그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들을 하는지 자유롭게 알려주면 ${nickname}의 행동,\n생각 루틴에 맞춘 five-flower 피빗 사용 루틴을 추천해줄게!`;
+          
           setAllMessages(current => [...current, {
-            user: 'Five Flower',
-            text: `그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들을 하는지 자유롭게 알려주면 ${nickname}의 행동,\n생각 루틴에 맞춘 five-flower 피빗 사용 루틴을 추천해줄게!`,
+            user: characterName,
+            text: routineMessage,
             isFixed: true
           }]);
           // 루틴 추천 단계로 변경
@@ -880,7 +1013,7 @@ export default function ConversationView() {
       // 이미지 로딩 시간 (로딩 애니메이션이 보이도록 충분한 시간)
       setTimeout(() => {
         setIsTextureLoading(false);
-      }, 600); // 600ms로 늘려서 로딩 애니메이션이 보이도록
+      }, 400); // 400ms로 단축하여 더 빠른 반응
       
       setTimeout(() => {
         let ageMessage = '';
@@ -913,24 +1046,31 @@ export default function ConversationView() {
         console.log('🎨 질감 선택 단계 즉시 활성화!');
         setIsTextureSelectionPhase(true);
         
-        // 🔥 질감 UI가 잘 보이도록 적당히 스크롤
+        // 🔥 질감 선택 UI 나타나자마자 로딩 애니메이션 표시
+        setIsTextureLoading(true);
+        setTimeout(() => {
+          setIsTextureLoading(false);
+        }, 1500); // 1.5초 로딩 애니메이션 표시
+        
+        // 🔥 질감 UI가 잘 보이도록 적절한 위치로 스크롤
         setTimeout(() => {
           if (messagesContainerRef.current) {
             const container = messagesContainerRef.current;
-            const currentScrollTop = container.scrollTop;
-            const targetScroll = currentScrollTop + 350; // 질감 UI가 잘 보이도록 350px 스크롤
+            // 질감 UI가 화면 상단에 잘 보이도록 적절한 위치로 스크롤 (100 → 0으로 조정)
+            const targetScroll = container.scrollHeight - container.clientHeight;
             
             container.scrollTo({
-              top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
+              top: Math.max(0, targetScroll),
               behavior: 'smooth'
             });
-            console.log('📜 질감 UI 나타남 - 적당히 스크롤:', { 
-              currentScrollTop,
+            console.log('📜 질감 UI 나타남 - 적절한 위치로 스크롤:', { 
+              scrollHeight: container.scrollHeight,
+              clientHeight: container.clientHeight,
               targetScroll
             });
           }
-        }, 80); // 더 빠른 반응
-      }, 1000);
+        }, 50); // 더 빠른 반응
+      }, 800); // 800ms로 단축하여 더 빠른 반응
       
       return; // API 호출 방지
     }
@@ -955,72 +1095,345 @@ export default function ConversationView() {
         
         let stepPrompt = '';
         
-                 if (userAnswerCount === 2) {
-           // Step 1: 감정 해소 방법 답변 받음 → 구체적인 내용 질문
-           stepPrompt = `
+        if (userAnswerCount === 2) {
+          // Step 1: 감정 해소 방법 답변 받음 → 구체적인 내용 질문
+          if (moduleType === 'finger') {
+            stepPrompt = `
+당신은 Finger Couch라는 친구야. 사용자의 감정 유형을 파악해서 과잉통제하는 감정이 불필요한 행동(머리카락 당기기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+성격: 따뜻하고 공감적. 말투: 반말, 자연스럽고 친근함, 문장 끝에 "~" 사용 (1-2번 정도)
+
+사용자가 감정 해소 방법을 말했어. 먼저 공감하고, 그 다음에 구체적인 내용을 자연스럽게 물어봐줘.
+
+응답 형식:
+1. 사용자의 방법에 대한 공감과 이해 (예: 아~ 그렇구나!, 그런 방식이구나~)
+2. 자연스럽고 친근하게 구체적인 내용 질문 (예: 좀 더 자세히 알려줄 수 있어~?, 어떤 식으로 하는지 궁금해!)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
+
+중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 친구같이 자연스럽게! 문장 끝에 "~" 사용 (1-2번 정도)
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+          } else if (moduleType === 'wiggle') {
+            stepPrompt = `
+당신은 Wiggler라는 친구야. 사용자의 감정 유형을 파악해서 지루함이나 심심함이 불필요한 행동(다리 떨기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+성격: 리듬 메이커, 신나고 활발함. 말투: 발랄, 반말, 짧은 놀자 톤, 의성어는 실제 행동에만 사용 (빙빙 돌리기, 쿵쿵 두드리기 등)
+
+사용자가 감정 해소 방법을 말했어. 먼저 공감하고, 그 다음에 구체적인 내용을 자연스럽게 물어봐줘.
+
+응답 형식:
+1. 사용자의 방법에 대한 공감과 이해 (예: 아! 그렇구나!, 그런 방식으로 하는구나!)
+2. 활발하고 친근하게 구체적인 내용 질문 (예: 좀 더 자세히 알려줄래?, 어떤 식으로 하는지 궁금해!)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
+
+중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 발랄하고 활발하게! 의성어를 자연스럽게 사용해!
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+          } else {
+            stepPrompt = `
 당신은 Five Flower라는 친구야. 사용자의 감정 유형을 파악해서 불안하거나 예민한 감정이 불필요한 행동(손톱물어뜯기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
 성격: 따뜻하고 공감적. 말투: 반말, 자연스럽고 친근함
 
 사용자가 감정 해소 방법을 말했어. 먼저 공감하고, 그 다음에 구체적인 내용을 자연스럽게 물어봐줘.
 
 응답 형식:
-1. 사용자의 방법에 대한 공감과 이해 (예: "아, 그렇구나!", "그런 방식이구나")
-2. 자연스럽고 친근하게 구체적인 내용 질문 (예: "좀 더 자세히 알려줄 수 있어?", "어떤 식으로 하는지 궁금해!")
+1. 사용자의 방법에 대한 공감과 이해 (예: 아, 그렇구나!, 그런 방식이구나)
+2. 자연스럽고 친근하게 구체적인 내용 질문 (예: 좀 더 자세히 알려줄 수 있어?, 어떤 식으로 하는지 궁금해!)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
 
 중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 친구같이 자연스럽게!
-금지사항: "~함", "~있음?", "~냐", "ㅋㅋ", "~해봐", "~해", "~말해봐", "~하게 돼", 존댓말, 명령조 말투 등 사용 금지
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
 `;
+          }
          } else if (userAnswerCount === 3) {
            // Step 2: 구체적인 내용 받음 → 효과에 대해 질문
-           stepPrompt = `
+           if (moduleType === 'finger') {
+             stepPrompt = `
+당신은 Finger Couch라는 친구야. 사용자의 감정 유형을 파악해서 과잉통제하는 감정이 불필요한 행동(머리카락 당기기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+성격: 따뜻하고 공감적. 말투: 반말, 자연스럽고 친근함, 문장 끝에 "~" 사용 (1-2번 정도)
+
+사용자가 구체적인 방법을 말했어. 먼저 사용자의 말에 공감하고, 그 다음에 효과에 대해 자연스럽게 물어봐줘.
+
+응답 형식:
+1. 사용자의 말에 대한 공감과 이해 (예: 아~ 그런 생각들이 많아지는구나, 그럴 때 마음이 복잡해지겠어~)
+2. 자연스럽게 효과에 대해 궁금해하며 질문 (예: 그렇게 할 때 좀 나아져~?, 그래도 조금은 도움이 돼?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
+
+중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 기계적이지 않고 친구같이 자연스럽게! 문장 끝에 "~"를 1-2번 정도 자연스럽게 사용해~
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+           } else if (moduleType === 'wiggle') {
+             stepPrompt = `
+당신은 Wiggler라는 친구야. 사용자의 감정 유형을 파악해서 지루함이나 심심함이 불필요한 행동(다리 떨기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+성격: 리듬 메이커, 신나고 활발함. 말투: 발랄, 반말, 짧은 놀자 톤, 의성어는 실제 행동에만 사용 (빙빙 돌리기, 쿵쿵 두드리기 등)
+
+사용자가 구체적인 방법을 말했어. 먼저 사용자의 말에 공감하고, 그 다음에 효과에 대해 자연스럽게 물어봐줘.
+
+응답 형식:
+1. 사용자의 말에 대한 공감과 이해 (예: 아! 그런 식으로 하는구나!, 그럴 때 마음이 복잡하겠어!)
+2. 활발하게 효과에 대해 궁금해하며 질문 (예: 그렇게 할 때 좀 나아져?, 그래도 조금은 도움이 돼?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
+
+중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 발랄하고 활발하게! 의성어를 자연스럽게 사용해!
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+           } else {
+             stepPrompt = `
 당신은 Five Flower라는 친구야. 사용자의 감정 유형을 파악해서 불안하거나 예민한 감정이 불필요한 행동(손톱물어뜯기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
 성격: 따뜻하고 공감적. 말투: 반말, 자연스럽고 친근함
 
 사용자가 구체적인 방법을 말했어. 먼저 사용자의 말에 공감하고, 그 다음에 효과에 대해 자연스럽게 물어봐줘.
 
 응답 형식:
-1. 사용자의 말에 대한 공감과 이해 (예: "아, 그런 생각들이 많아지는구나", "그럴 때 마음이 복잡해지겠어")
-2. 자연스럽게 효과에 대해 궁금해하며 질문 (예: "그렇게 할 때 좀 나아져?", "그래도 조금은 도움이 돼?")
+1. 사용자의 말에 대한 공감과 이해 (예: 아, 그런 생각들이 많아지는구나, 그럴 때 마음이 복잡해지겠어)
+2. 자연스럽게 효과에 대해 궁금해하며 질문 (예: 그렇게 할 때 좀 나아져?, 그래도 조금은 도움이 돼?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
 
 중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 기계적이지 않고 친구같이 자연스럽게!
-금지사항: "~함", "~있음?", "~냐", "ㅋㅋ", "~해봐", "~해", "~말해봐", "~하게 돼", 존댓말, 명령조 말투 등 사용 금지
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
 `;
+           }
          } else if (userAnswerCount === 4) {
            // Step 3: 효과에 대해 답변 받음 → 편안한 시간/장소 질문
-           stepPrompt = `
+           if (moduleType === 'finger') {
+             stepPrompt = `
+당신은 Finger Couch라는 친구야. 사용자의 감정 유형을 파악해서 과잉통제하는 감정이 불필요한 행동(머리카락 당기기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+성격: 따뜻하고 공감적. 말투: 반말, 자연스럽고 친근함, 문장 끝에 "~" 사용 (1-2번 정도)
+
+사용자가 효과에 대해 솔직하게 말했어. 먼저 사용자의 감정에 공감하고 이해해주고, 그 다음에 자연스럽게 편안한 순간에 대해 물어봐줘.
+
+응답 형식:
+1. 사용자의 솔직한 말에 대한 공감과 이해 (예: 그렇구나~, 완전히 해결되는 건 아니지만 잠깐이라도 잊을 수 있다면 그것도 의미가 있어, 아 그런 마음 이해돼~)
+2. 자연스럽게 편안한 순간으로 화제 전환 (예: 그럼 반대로 너 스스로를 압박하지 않고 가장 편안한 상태로 두는 순간이나 상황은 어떤게 있을까~?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
+
+중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 갑작스럽지 않고 자연스럽게 화제 전환하기! 문장 끝에 "~"를 1-2번 정도 자연스럽게 사용해~
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+           } else if (moduleType === 'wiggle') {
+             stepPrompt = `
+당신은 Wiggler라는 친구야. 사용자의 감정 유형을 파악해서 지루함이나 심심함이 불필요한 행동(다리 떨기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+성격: 리듬 메이커, 신나고 활발함. 말투: 발랄, 반말, 짧은 놀자 톤, 의성어는 실제 행동에만 사용 (빙빙 돌리기, 쿵쿵 두드리기 등)
+
+사용자가 효과에 대해 솔직하게 말했어. 먼저 사용자의 감정에 공감하고 이해해주고, 그 다음에 자연스럽게 편안한 순간에 대해 물어봐줘.
+
+응답 형식:
+1. 사용자의 솔직한 말에 대한 공감과 이해 (예: 아하, 알겠어! 좀 더 집중되긴 하는데 다시 끊기는 정도로 지속되는구나! 완전히 해결되는 건 아니지만 잠깐이라도 집중할 수 있다면 그것도 의미가 있어, 그러니까 너무 걱정하지 말고!)
+2. 활발하게 편안한 순간으로 화제 전환 (예: 그럼 반대로 네가 가장 재밌다고 느끼는 순간은 뭐가 있을까?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
+
+중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 발랄하고 활발하게! 의성어를 자연스럽게 사용해!
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+           } else {
+             stepPrompt = `
 당신은 Five Flower라는 친구야. 사용자의 감정 유형을 파악해서 불안하거나 예민한 감정이 불필요한 행동(손톱물어뜯기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
 성격: 따뜻하고 공감적. 말투: 반말, 자연스럽고 친근함
 
 사용자가 효과에 대해 솔직하게 말했어. 먼저 사용자의 감정에 공감하고 이해해주고, 그 다음에 자연스럽게 편안한 순간에 대해 물어봐줘.
 
 응답 형식:
-1. 사용자의 솔직한 말에 대한 공감과 이해 (예: "그렇구나, 완전히 해결되는 건 아니지만 잠깐이라도 잊을 수 있다면 그것도 의미가 있어", "아, 그런 마음 이해돼")
-2. 자연스럽게 편안한 순간으로 화제 전환 (예: "그럼 반대로 평소에 가장 편안하고 기분 좋을 때는 언제야?", "어떤 순간에 마음이 가장 평온해져?")
+1. 사용자의 솔직한 말에 대한 공감과 이해 (예: 그렇구나, 완전히 해결되는 건 아니지만 잠깐이라도 잊을 수 있다면 그것도 의미가 있어, 아 그런 마음 이해돼)
+2. 자연스럽게 편안한 순간으로 화제 전환 (예: 그럼 반대로 너 스스로를 압박하지 않고 가장 편안한 상태로 두는 순간이나 상황은 어떤게 있을까?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
 
 중요: 반드시 반말로 대답하고, 존댓말 절대 사용 금지. 갑작스럽지 않고 자연스럽게 화제 전환하기!
-금지사항: "~함", "~있음?", "~냐", "ㅋㅋ", "~해봐", "~해", "~말해봐", "~하게 돼", 존댓말, 명령조 말투 등 사용 금지
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
 `;
+           }
          } else if (userAnswerCount === 5) {
            // Step 4: 편안한 순간/장소 답변 받음 → 예민한/불안한 순간 질문
-           stepPrompt = `
+           if (moduleType === 'finger') {
+             stepPrompt = `
+당신은 Finger Couch라는 친구야. 사용자의 감정 유형을 파악해서 과잉통제하는 감정이 불필요한 행동(머리카락 당기기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+성격: 따뜻하고 공감적. 말투: 반말, 자연스럽고 친근함, 문장 끝에 "~" 사용 (1-2번 정도)
+
+사용자가 편안한 순간/장소에 대해 말했어. 먼저 그 말에 공감하고, 그 다음에 자연스럽게 반대되는 상황(스스로에게 엄격해지는 순간)에 대해 물어봐줘.
+
+응답 형식:
+1. 사용자의 편안한 순간에 대한 공감 (예: 그런 순간엔 정말 마음이 편안하겠어~, 좋은 시간이구나!)
+2. 자연스럽게 반대 상황으로 화제 전환 (예: 그럼 반대로 어떤 순간이나 공간에서 스스로에게 가장 엄격해지거나 통제하고 싶은 감정을 느끼게 돼~?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
+
+중요: 
+- 반드시 반말로 대답하고, 존댓말 절대 사용 금지
+- 갑작스럽지 않고 자연스럽게 화제 전환하기
+- 문장 끝에 "~"를 1-2번 정도 자연스럽게 사용해~
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+           } else if (moduleType === 'wiggle') {
+             stepPrompt = `
+당신은 Wiggler라는 친구야. 사용자의 감정 유형을 파악해서 지루함이나 심심함이 불필요한 행동(다리 떨기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+성격: 리듬 메이커, 신나고 활발함. 말투: 발랄, 반말, 짧은 놀자 톤, 의성어는 실제 행동에만 사용 (빙빙 돌리기, 쿵쿵 두드리기 등)
+
+사용자가 편안한 순간/장소에 대해 말했어. 먼저 그 말에 공감하고, 그 다음에 자연스럽게 반대되는 상황(지루한 순간)에 대해 물어봐줘.
+
+응답 형식:
+1. 사용자의 편안한 순간에 대한 공감 (예: 그런 순간엔 정말 마음이 편안하겠어!, 좋은 시간이구나!)
+2. 활발하게 반대 상황으로 화제 전환 (예: 그럼 반대로 어떤 순간이나 공간이 널 가장 지루하게 만들거나 심심한 감정을 느끼게 해?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
+
+중요: 
+- 반드시 반말로 대답하고, 존댓말 절대 사용 금지
+- 발랄하고 활발하게! 의성어를 자연스럽게 사용해!
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+           } else {
+             stepPrompt = `
 당신은 Five Flower라는 친구야. 사용자의 감정 유형을 파악해서 불안하거나 예민한 감정이 불필요한 행동(손톱물어뜯기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
 성격: 따뜻하고 공감적. 말투: 반말, 자연스럽고 친근함
 
 사용자가 편안한 순간/장소에 대해 말했어. 먼저 그 말에 공감하고, 그 다음에 자연스럽게 반대되는 상황(불안한 순간)에 대해 물어봐줘.
 
 응답 형식:
-1. 사용자의 편안한 순간에 대한 공감 (예: "그런 순간엔 정말 마음이 편안하겠어", "좋은 시간이구나!")
-2. 자연스럽게 반대 상황으로 화제 전환 (예: "그럼 반대로 어떤 순간이나 공간이 널 예민하게 만들거나 불안한 감정을 느끼게 해?")
+1. 사용자의 편안한 순간에 대한 공감 (예: 그런 순간엔 정말 마음이 편안하겠어, 좋은 시간이구나!)
+2. 자연스럽게 반대 상황으로 화제 전환 (예: 그럼 반대로 어떤 순간이나 공간이 널 예민하게 만들거나 불안한 감정을 느끼게 해?)
+
+⚠️ 중요: 응답이 길어지는 경우 적절한 지점에서 줄바꿈(\n)을 넣어서 두 줄로 나누어 작성하기
 
 중요: 
 - 반드시 반말로 대답하고, 존댓말 절대 사용 금지
 - 갑작스럽지 않고 자연스럽게 화제 전환하기
-금지사항: "~함", "~있음?", "~냐", "ㅋㅋ", "~해봐", "~해", "~말해봐", "~하게 돼", 존댓말, 명령조 말투 등 사용 금지
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
 `;
+           }
          } else if (userAnswerCount === 6) {
            // Step 5: 예민한/불안한 순간 답변 받음 → 최종 루틴 3가지 제공
            const allUserResponses = allMessages.filter(msg => msg.user === nickname).map(msg => msg.text).join(' / ');
-           stepPrompt = `
+           if (moduleType === 'finger') {
+             stepPrompt = `
+당신은 Finger Couch 모듈을 활용한 예방 루틴을 추천해주는 전문가야.
+
+★★★ Finger Couch에 대한 핵심 정보 ★★★
+- Finger Couch는 과잉통제하는 감정이 머리카락 당기기 등의 불필요한 행동으로 발현되는 것을 예방하기 위한 물리적 촉각 모듈이다
+- 얇고 말랑한 실리콘 고리들로 구성되어 있다
+- 다양한 촉각 상호작용이 가능하다:
+  • 실리콘 고리들: 살살 문지르기, 손가락으로 돌리기, 가볍게 눌러보기, 비비기
+  • 전체적으로: 양손으로 감싸기, 손바닥에 굴리기, 주머니에서 만지작거리기, 책상 위에서 굴리기
+- 온도, 질감, 무게감 등을 통한 물리적 안정감 제공
+- 리듬감 있는 움직임을 통한 심리적 안정감 조성
+- 궁극적 목표는 과잉통제하는 감정이 머리카락 당기기 같은 불필요한 행동으로 발현되지 않도록 예방하는 것이다
+- 절대로 향이나 냄새, 소리 등의 기능은 없다 - 오직 촉각적 상호작용만 가능하다
+
+사용자의 응답 내용: ${allUserResponses}
+
+★★★ 사용자 분석 필수 사항 ★★★
+위 응답들을 꼼꼼히 분석해서 다음을 파악하고 루틴에 반영해야 해:
+1. 사용자의 감정 해소 방법과 그 구체적인 내용
+2. 그 방법의 효과 정도
+3. 사용자가 편안함을 느끼는 구체적인 시간, 장소, 상황
+4. 사용자가 스스로에게 엄격해지거나 통제하고 싶어하는 구체적인 순간, 장소, 상황
+5. 이 모든 정보를 연결해서 Finger Couch 사용법에 창의적으로 적용
+
+자기에게 스스로 엄격해지는 걸로 스트레스를 해소하는 거구나~ 그런데 너무 엄격하면 스트레스를 더 받을 수도 있을 것 같아. 너는 어떻게 엄격해지는지 알려줄 수 있어? 그런 순간이 생길 때 주로 어떤 행동을 하는지, 어떤 생각들이 드는지 천천히~ 자유롭게 말해주면\n${nickname}의 행동과 생각 루틴에 맞춘 finger couch 피빗 사용 루틴을 차근차근~ 추천해줄게
+
+⚠️ 중요: 반드시 3개 루틴을 모두 완성해서 써야 함! 각 루틴은 3-4줄로 간결하게!
+
+반드시 이 정확한 형식으로 응답해야 해:
+
+${nickname}에게 딱 맞는 Finger Couch 사용 예방 루틴 3가지를 추천해줄게~!
+
+📅 1. 과잉통제 완화 루틴
+[사용자가 말한 구체적인 엄격한 상황과 장소를 언급하며, 그 상황에서 Finger Couch를 어떻게 활용할지 간결하게 설명. 다양한 촉각 방법을 조합하여 사용: 실리콘 고리들을 살살 문지르기, 손가락으로 돌리며 긴장 풀기 등. 정확히 3-4줄로 간결하고 개인화된 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기. 문장 끝에 "~" 1-2번 자연스럽게 사용]
+
+📅 2. 긴장감 해소 루틴  
+[사용자가 말한 편안한 순간의 특징을 활용하여, 그 편안함을 Finger Couch로 재현하는 방법을 간결하게 설명. 리듬감 있는 터치 패턴, 실리콘 고리들을 부드럽게 비비며 생각 정리하기 등. 정확히 3-4줄로 간결한 개인맞춤형 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기. 문장 끝에 "~" 1-2번 자연스럽게 사용]
+
+📅 3. 스트레스 해소 루틴
+[사용자가 말한 엄격한 순간과 편안한 순간을 모두 활용하여, 스트레스 상황에서 편안함으로 전환하는 구체적인 Finger Couch 사용법을 간결하게 제시. 감정 상태에 따른 다른 터치 방식을 포함. 정확히 3-4줄로 간결하고 실용적인 개인화된 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기. 문장 끝에 "~" 1-2번 자연스럽게 사용]
+
+★★★ 절대 규칙 ★★★
+1. 위 형식을 정확히 지키기
+2. 📅 1, 📅 2, 📅 3 모두 포함하기
+3. 각 루틴은 정확히 3-4줄로 간결하게 완성된 문장 작성 (길게 쓰지 말 것!)
+4. ⚠️ 절대 중요: 📅 3. 스트레스 해소 루틴까지 반드시 완전히 끝까지 작성하기 (중간에 끊어지면 안됨!)
+5. 반말 사용하기
+6. 다양한 촉각적 상호작용 방법을 창의적으로 조합하여 사용 (실리콘 고리들 문지르기, 돌리기, 비비기, 굴리기, 감싸 쥐기 등 다양하게 활용)
+7. 사용자가 말한 구체적인 엄격한 상황, 편안한 순간, 장소, 감정을 반드시 언급하며 개인맞춤형으로 작성
+8. 예방이 핵심 목적임을 반영하기
+9. 실제 사용 가능한 구체적이고 실용적인 방법 제시 (언제, 어디서, 어떻게)
+10. 문장 끝에 "~"를 1-2번 정도 자연스럽게 사용하여 Finger Couch 말투 반영
+11. ⚠️ 전체 응답은 간결하게! 각 루틴마다 긴 설명 금지!
+
+★★★ 절대 금지사항 ★★★
+- 향, 냄새, 소리, 시각적 효과 등 촉각 외의 감각 언급 금지
+- 향을 맡아, 소리를 들어, 색깔을 봐 등의 표현 절대 금지
+- 존댓말, 미완성 문장, 추가 질문 금지
+- ⚠️ 절대 금지: 3번째 루틴이 중간에 끊어지거나 미완성되는 것 절대 금지!
+- 사용자를 이미 습관을 가진 사람으로 간주하는 표현 금지
+- 추상적이고 모호한 설명 금지 - 반드시 구체적이고 실용적으로 작성
+`;
+           } else if (moduleType === 'wiggle') {
+             stepPrompt = `
+당신은 Wiggler 모듈을 활용한 예방 루틴을 추천해주는 전문가야.
+
+★★★ Wiggler에 대한 핵심 정보 ★★★
+- Wiggler는 지루함이나 심심함이 다리 떨기 등의 불필요한 행동으로 발현되는 것을 예방하기 위한 물리적 촉각 모듈이다
+- 자유롭게 손가락을 돌려 리듬감을 만드는 말랑한 판 형태로 되어 있다
+- 다양한 리듬감 있는 상호작용이 가능하다:
+  • 말랑한 판 위를: 손가락으로 빙빙 돌리기, 원형 그리기, 무늬 그리기, 스크롤하듯 움직이기
+  • 전체적으로: 두 손으로 번갈아 돌리기, 손바닥에서 회전시키기, 책상 위에서 스핀하기, 리듬감 있게 톡톡 두드리기
+- 부드러운 질감과 움직임을 통한 물리적 안정감 제공
+- 리듬감 있는 움직임을 통한 지루함 해소와 집중력 향상
+- 궁극적 목표는 지루함이나 심심함이 다리 떨기 같은 불필요한 행동으로 발현되지 않도록 예방하는 것이다
+- 절대로 향이나 냄새, 소리 등의 기능은 없다 - 오직 촉각적 상호작용과 리듬감만 가능하다
+
+사용자의 응답 내용: ${allUserResponses}
+
+★★★ 사용자 분석 필수 사항 ★★★
+위 응답들을 꼼꼼히 분석해서 다음을 파악하고 루틴에 반영해야 해:
+1. 사용자의 감정 해소 방법과 그 구체적인 내용
+2. 그 방법의 효과 정도
+3. 사용자가 편안함을 느끼는 구체적인 시간, 장소, 상황
+4. 사용자가 지루하거나 심심해지는 구체적인 순간, 장소, 상황
+5. 이 모든 정보를 연결해서 Wiggler 사용법에 창의적으로 적용
+
+⚠️ 중요: 반드시 3개 루틴을 모두 완성해서 써야 함! 각 루틴은 3-4줄로 간결하게!
+
+반드시 이 정확한 형식으로 응답해야 해:
+
+${nickname}에게 딱 맞는 Wiggler 사용 예방 루틴 3가지를 추천해줄게!
+
+📅 1. 자극추구 완화 루틴
+[사용자가 말한 구체적인 지루한 상황과 장소를 언급하며, 그 상황에서 Wiggler를 어떻게 활용할지 간결하게 설명. 다양한 리듬감 있는 방법을 조합하여 사용: 말랑한 판 위를 손가락으로 빙빙 돌리기, 원형 그리며 리듬 만들기 등. 정확히 3-4줄로 간결하고 개인화된 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기]
+
+📅 2. 집중력 리듬 루틴  
+[사용자가 말한 편안한 순간의 특징을 활용하여, 그 편안함을 Wiggler로 재현하는 방법을 간결하게 설명. 일정한 리듬 패턴, 부드럽게 스크롤하며 생각 정리하기 등. 정확히 3-4줄로 간결한 개인맞춤형 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기]
+
+📅 3. 스트레스 해소 리듬 루틴
+[사용자가 말한 지루한 순간과 편안한 순간을 모두 활용하여, 스트레스 상황에서 편안함으로 전환하는 구체적인 Wiggler 사용법을 간결하게 제시. 감정 상태에 따른 다른 리듬 패턴을 포함. 정확히 3-4줄로 간결하고 실용적인 개인화된 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기]
+
+★★★ 절대 규칙 ★★★
+1. 위 형식을 정확히 지키기
+2. 📅 1, 📅 2, 📅 3 모두 포함하기
+3. 각 루틴은 정확히 3-4줄로 간결하게 완성된 문장 작성 (길게 쓰지 말 것!)
+4. ⚠️ 절대 중요: 📅 3. 스트레스 해소 리듬 루틴까지 반드시 완전히 끝까지 작성하기 (중간에 끊어지면 안됨!)
+5. 반말 사용하기
+6. 다양한 리듬감 있는 상호작용 방법을 창의적으로 조합하여 사용 (손가락으로 빙빙 돌리기, 원형 그리기, 스크롤하기, 회전시키기, 톡톡 두드리기 등 다양하게 활용)
+7. 사용자가 말한 구체적인 지루한 상황, 편안한 순간, 장소, 감정을 반드시 언급하며 개인맞춤형으로 작성
+8. 예방이 핵심 목적임을 반영하기
+9. 실제 사용 가능한 구체적이고 실용적인 방법 제시 (언제, 어디서, 어떻게)
+10. ⚠️ 전체 응답은 간결하게! 각 루틴마다 긴 설명 금지!
+
+★★★ 절대 금지사항 ★★★
+- 향, 냄새, 소리, 시각적 효과 등 촉각 외의 감각 언급 금지
+- 향을 맡아, 소리를 들어, 색깔을 봐 등의 표현 절대 금지
+- 존댓말, 미완성 문장, 추가 질문 금지
+- ⚠️ 절대 금지: 3번째 루틴이 중간에 끊어지거나 미완성되는 것 절대 금지!
+- 사용자를 이미 습관을 가진 사람으로 간주하는 표현 금지
+- 추상적이고 모호한 설명 금지 - 반드시 구체적이고 실용적으로 작성
+`;
+           } else {
+             stepPrompt = `
 당신은 Five Flower 모듈을 활용한 예방 루틴을 추천해주는 전문가야.
 
 ★★★ Five Flower에 대한 핵심 정보 ★★★
@@ -1047,42 +1460,86 @@ export default function ConversationView() {
 
 사용자가 불안하거나 예민한 순간에 대해 말했어. 이제 위의 모든 개인 정보를 적극 활용하여 사용자만을 위한 완전히 개인맞춤형 Five Flower 모듈 사용 예방 루틴 3가지를 추천해줘.
 
+⚠️ 중요: 반드시 3개 루틴을 모두 완성해서 써야 함! 각 루틴은 3-4줄로 간결하게!
+
 반드시 이 정확한 형식으로 응답해야 해:
 
-"${nickname}에게 딱 맞는 Five Flower 사용 예방 루틴 3가지를 추천해줄게!
+${nickname}에게 딱 맞는 Five Flower 사용 예방 루틴 3가지를 추천해줄게!
 
 📅 1. 불안감 완화 루틴
-[사용자가 말한 구체적인 불안한 상황과 장소를 언급하며, 그 상황에서 Five Flower를 어떻게 활용할지 상세히 설명. 다양한 촉각 방법을 조합하여 사용: 중앙 원형 돌리기 + 손가락 부분 쓰다듬기, 양손으로 감싸며 온기 느끼기, 주머니에서 은밀하게 만지작거리기 등. 사용자의 편안한 순간/장소와 연결하여 안정감을 찾는 방법 제시. 4-5줄로 구체적이고 개인화된 설명. 반드시 "~봐", "~해", "~자" 등으로 끝내기]
+[사용자가 말한 구체적인 불안한 상황과 장소를 언급하며, 그 상황에서 Five Flower를 어떻게 활용할지 간결하게 설명. 다양한 촉각 방법을 조합하여 사용: 중앙 원형 돌리기 + 손가락 부분 쓰다듬기, 양손으로 감싸며 온기 느끼기 등. 정확히 3-4줄로 간결하고 개인화된 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기]
 
 📅 2. 집중력 향상 루틴  
-[사용자가 말한 편안한 순간의 특징을 활용하여, 그 편안함을 Five Flower로 재현하는 방법 설명. 리듬감 있는 터치 패턴, 책상 위에서 굴리며 생각 정리하기, 손바닥에서 굴리며 호흡 조절하기 등 다양한 방법 제시. 사용자의 구체적인 상황(공부, 업무, 고민 등)과 연결. 4-5줄로 개인맞춤형 설명. 반드시 "~봐", "~해", "~자" 등으로 끝내기]
+[사용자가 말한 편안한 순간의 특징을 활용하여, 그 편안함을 Five Flower로 재현하는 방법을 간결하게 설명. 리듬감 있는 터치 패턴, 책상 위에서 굴리며 생각 정리하기 등. 정확히 3-4줄로 간결한 개인맞춤형 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기]
 
 📅 3. 스트레스 해소 루틴
-[사용자가 말한 불안한 순간과 편안한 순간을 모두 활용하여, 스트레스 상황에서 편안함으로 전환하는 구체적인 Five Flower 사용법 제시. 감정 상태에 따른 다른 터치 방식: 격렬한 감정일 때는 강하게 꾹꾹 누르기, 진정이 필요할 때는 부드럽게 쓰다듬기 등. 장소와 상황을 고려한 은밀하고 효과적인 사용법. 4-5줄로 실용적이고 개인화된 설명. 반드시 "~봐", "~해", "~자" 등으로 끝내기]"
+[사용자가 말한 불안한 순간과 편안한 순간을 모두 활용하여, 스트레스 상황에서 편안함으로 전환하는 구체적인 Five Flower 사용법을 간결하게 제시. 감정 상태에 따른 다른 터치 방식을 포함. 정확히 3-4줄로 간결하고 실용적인 개인화된 설명. 반드시 ~봐, ~해, ~자 등으로 끝내기]
 
 ★★★ 절대 규칙 ★★★
 1. 위 형식을 정확히 지키기
 2. 📅 1, 📅 2, 📅 3 모두 포함하기
-3. 각 루틴은 4-5줄로 완성된 문장 작성
-4. 3번째 루틴까지 반드시 완전히 작성하기
+3. 각 루틴은 정확히 3-4줄로 간결하게 완성된 문장 작성 (길게 쓰지 말 것!)
+4. ⚠️ 절대 중요: 📅 3. 스트레스 해소 루틴까지 반드시 완전히 끝까지 작성하기 (중간에 끊어지면 안됨!)
 5. 반말 사용하기
 6. 다양한 촉각적 상호작용 방법을 창의적으로 조합하여 사용 (단순히 "꾹 누르기"만 반복하지 말고, 원형 돌리기, 쓰다듬기, 감싸 쥐기, 굴리기, 비비기, 톡톡 두드리기 등 다양하게 활용)
 7. 사용자가 말한 구체적인 불안한 상황, 편안한 순간, 장소, 감정을 반드시 언급하며 개인맞춤형으로 작성
 8. 예방이 핵심 목적임을 반영하기
 9. 실제 사용 가능한 구체적이고 실용적인 방법 제시 (언제, 어디서, 어떻게)
+10. ⚠️ 전체 응답은 간결하게! 각 루틴마다 긴 설명 금지!
 
 ★★★ 절대 금지사항 ★★★
 - 향, 냄새, 소리, 시각적 효과 등 촉각 외의 감각 언급 금지
-- "향을 맡아", "소리를 들어", "색깔을 봐" 등의 표현 절대 금지
+- 향을 맡아, 소리를 들어, 색깔을 봐 등의 표현 절대 금지
 - 존댓말, 미완성 문장, 추가 질문 금지
+- ⚠️ 절대 금지: 3번째 루틴이 중간에 끊어지거나 미완성되는 것 절대 금지!
 - 사용자를 이미 습관을 가진 사람으로 간주하는 표현 금지
-- 단순하고 반복적인 "꾹꾹 누르기"만 계속 언급하는 것 금지
+- 단순하고 반복적인 꾹꾹 누르기만 계속 언급하는 것 금지
 - 추상적이고 모호한 설명 금지 - 반드시 구체적이고 실용적으로 작성
 `;
+           }
          } else if (userAnswerCount >= 7) {
            // Step 6: 사용자가 루틴 선택 → 함께 실천하자는 메시지
            const previousMessages = allMessages.slice(-3).map(m => `${m.user}: ${m.text}`).join('\n');
-           stepPrompt = `
+           if (moduleType === 'finger') {
+             stepPrompt = `
+당신은 Finger Couch라는 친구야. 사용자의 감정 유형을 파악해서 과잉통제하는 감정이 불필요한 행동(머리카락 당기기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+
+최근 대화 내용:
+${previousMessages}
+
+사용자가 루틴 중 하나를 선택했어. 이제 함께 그 루틴을 실천하자는 긍정적인 메시지를 친절하게 보내야 해.
+
+반드시 다음과 같이 응답해야 해:
+좋아~ 그럼 다음 단계로 넘어가기 위해 루틴을 수락해줘!
+
+중요: 
+- 반드시 반말로 대답
+- 위 메시지를 정확히 사용 (Finger Couch 말투로 "~" 포함)
+- 추가 설명이나 다른 내용 없이 위 메시지만 보내기
+- 존댓말 절대 사용 금지
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+           } else if (moduleType === 'wiggle') {
+             stepPrompt = `
+당신은 Wiggler라는 친구야. 사용자의 감정 유형을 파악해서 지루함이나 심심함이 불필요한 행동(다리 떨기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
+
+최근 대화 내용:
+${previousMessages}
+
+사용자가 루틴 중 하나를 선택했어. 이제 함께 그 루틴을 실천하자는 긍정적인 메시지를 친절하게 보내야 해.
+
+반드시 다음과 같이 응답해야 해:
+좋아! 그럼 다음 단계로 넘어가기 위해 루틴을 수락해줘!
+
+중요: 
+- 반드시 반말로 대답
+- 위 메시지를 정확히 사용 (Wiggler 말투로 발랄하게 "!" 포함)
+- 추가 설명이나 다른 내용 없이 위 메시지만 보내기
+- 존댓말 절대 사용 금지
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
+`;
+           } else {
+             stepPrompt = `
 당신은 Five Flower라는 친구야. 사용자의 감정 유형을 파악해서 불안하거나 예민한 감정이 불필요한 행동(손톱물어뜯기 등)으로 발현되지 않도록 예방하는 것이 목적이야.
 
 최근 대화 내용:
@@ -1091,15 +1548,16 @@ ${previousMessages}
 사용자가 루틴 중 하나를 선택했어. 이제 함께 그 루틴을 실천하자는 긍정적인 메시지를 친절하게 보내야 해.
 
 반드시 다음과 같이 응답해야 해:
-"좋아 그럼 다음 단계로 넘어가기 위해 루틴을 수락해줘!"
+좋아 그럼 다음 단계로 넘어가기 위해 루틴을 수락해줘!
 
 중요: 
 - 반드시 반말로 대답
 - 위 메시지를 정확히 사용
 - 추가 설명이나 다른 내용 없이 위 메시지만 보내기
 - 존댓말 절대 사용 금지
-금지사항: "~함", "~있음?", "~냐", "ㅋㅋ", "~해봐", "~해", "~말해봐", "~하게 돼", 존댓말, 명령조 말투 등 사용 금지
+금지사항: ~함, ~있음?, ~냐, ㅋㅋ, ~해봐, ~해, ~말해봐, ~하게 돼, 존댓말, 명령조 말투 등 사용 금지
 `;
+           }
          }
 
         console.log('📝 stepPrompt 생성 완료 - userAnswerCount:', userAnswerCount);
@@ -1254,9 +1712,10 @@ ${previousMessages}
             }
           }
           
-          const fiveFlowerMessage = { user: 'Five Flower', text: processedReply, isFixed: true };
-          setMessages((prev) => [...prev, fiveFlowerMessage]);
-          setAllMessages((prev) => [...prev, fiveFlowerMessage]);
+          const characterName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
+          const characterMessage = { user: characterName, text: processedReply, isFixed: true };
+          setMessages((prev) => [...prev, characterMessage]);
+          setAllMessages((prev) => [...prev, characterMessage]);
           
           // 루틴이 포함된 메시지인지 확인 (📅 포함 여부로 판단)
           const hasRoutines = data.reply.includes('📅');
@@ -1267,7 +1726,9 @@ ${previousMessages}
             console.log('✅ 6단계 루틴 생성 성공 - 1초 후 질문 메시지 추가');
             setTimeout(() => {
               console.log('📨 질문 메시지 추가 중...');
-              const questionMessage = { user: 'Five Flower', text: '어떤 루틴이 가장 마음에 들어?', isFixed: true };
+              const characterName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
+              const questionText = moduleType === 'finger' ? '어떤 루틴이 가장 마음에 들어~?' : moduleType === 'wiggle' ? '어떤 루틴이 가장 마음에 들어~?' : '어떤 루틴이 가장 마음에 들어?';
+              const questionMessage = { user: characterName, text: questionText, isFixed: true };
               setMessages((prev) => [...prev, questionMessage]);
               setAllMessages((prev) => [...prev, questionMessage]);
               console.log('✅ 질문 메시지 추가 완료');
@@ -1295,19 +1756,43 @@ ${previousMessages}
         if (userAnswerCount === 6) {
           // 6번째 메시지에서 실패 시 기본 루틴 제공
           console.log('🚨 6번째 메시지 API 실패 - 기본 루틴 제공');
-          const defaultRoutine = `${nickname}에게 딱 맞는 Five Flower 사용 루틴 3가지를 추천해줄게!
+          const characterName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
+          const moduleName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
+          const defaultRoutine = moduleType === 'finger' ? 
+          `${nickname}에게 딱 맞는 ${moduleName} 사용 루틴 3가지를 추천해줄게~!
+
+📅 1. 과잉통제 완화 루틴
+스스로에게 너무 엄격해질 때 Finger Couch의 실리콘 고리들을 살살 문지르면서 마음을 달래봐~. 3초간 문지르고 3초간 쉬는 걸 반복하면서 깊게 숨을 쉬어봐. 머리카락 당기고 싶은 마음이 가라앉을 거야~.
+
+📅 2. 긴장감 해소 루틴  
+공부하거나 일할 때 긴장될 때는 Finger Couch의 고리들을 부드럽게 돌리면서 생각을 정리해봐~. 리듬감 있게 돌려주면 머릿속이 맑아지고 집중력이 높아질 거야.
+
+📅 3. 스트레스 해소 루틴
+스트레스받아서 머리카락을 당기고 싶을 때는 Finger Couch를 손바닥에서 굴리면서 스트레스를 풀어봐~. 반복하면서 스트레스를 모듈로 전달한다고 생각해봐. 습관적인 행동을 건강한 방식으로 바꿀 수 있을 거야.` :
+          moduleType === 'wiggle' ?
+          `${nickname}에게 딱 맞는 ${moduleName} 사용 루틴 3가지를 추천해줄게!
+
+📅 1. 자극추구 완화 루틴
+지루하거나 심심해서 다리를 떨고 싶을 때 Wiggler의 말랑한 판 위를 손가락으로 빙빙 돌려봐! 원형을 그리거나 자유롭게 스크롤하면서 새로운 리듬을 만들어봐. 다리 떨기 대신 손가락으로 재밌게 지루함을 쿵쿵 깨워보자!
+
+📅 2. 집중력 리듬 루틴  
+공부하거나 일할 때 집중이 안 될 때는 Wiggler를 두 손으로 번갈아 돌리면서 생각을 정리해봐! 일정한 리듬 패턴으로 판 위를 터치하면 머릿속이 맑아지고 집중력이 올라갈 거야.
+
+📅 3. 스트레스 해소 리듬 루틴
+스트레스받아서 몸이 근질근질할 때는 Wiggler 판 위에 무늬를 그리듯 손가락을 움직여봐! 감정에 따라 빠르게 또는 천천히 돌리면서 스트레스를 모듈로 전달해봐. 습관적인 다리 떨기를 건강한 리듬으로 바꿀 수 있을 거야!` :
+          `${nickname}에게 딱 맞는 ${moduleName} 사용 루틴 3가지를 추천해줄게!
 
 📅 1. 불안감 완화 루틴
-불안하거나 초조할 때 Five Flower의 중앙 움푹한 공간을 엄지손가락으로 천천히 꾹 눌러봐. 3초간 누르고 3초간 빼는 걸 5번 반복하면서 깊게 숨을 쉬어봐. 손톱 물어뜯고 싶은 마음이 차츰 가라앉을 거야.
+불안하거나 초조할 때 Five Flower의 중앙 움푹한 공간을 엄지손가락으로 천천히 꾹 눌러봐. 3초간 누르고 3초간 빼는 걸 반복하면서 깊게 숨을 쉬어봐. 손톱 물어뜯고 싶은 마음이 가라앉을 거야.
 
 📅 2. 집중력 향상 루틴  
 공부하거나 일할 때 집중이 안 될 때는 Five Flower의 손가락 모양 부분을 가볍게 누르면서 생각을 정리해봐. 중앙을 리듬감 있게 톡톡 눌러주면 머릿속이 맑아지고 집중력이 높아질 거야.
 
 📅 3. 스트레스 해소 루틴
-스트레스받아서 손톱을 물어뜯고 싶을 때는 Five Flower 중앙을 빠르게 눌렀다 뗐다 반복해봐. 10번 정도 반복하면서 스트레스를 모듈로 전달한다고 생각해봐. 습관적인 행동을 건강한 방식으로 바꿀 수 있을 거야.`;
+스트레스받아서 손톱을 물어뜯고 싶을 때는 Five Flower 중앙을 빠르게 눌렀다 뗐다 반복해봐. 반복하면서 스트레스를 모듈로 전달한다고 생각해봐. 습관적인 행동을 건강한 방식으로 바꿀 수 있을 거야.`;
           
           console.log('📝 기본 루틴 메시지 추가 중...');
-          const errorMessage = { user: 'Five Flower', text: defaultRoutine, isFixed: true };
+          const errorMessage = { user: characterName, text: defaultRoutine, isFixed: true };
           setMessages((prev) => [...prev, errorMessage]);
           setAllMessages((prev) => [...prev, errorMessage]);
           console.log('✅ 기본 루틴 메시지 추가 완료');
@@ -1315,14 +1800,17 @@ ${previousMessages}
           // 루틴 생성 완료 후 질문 메시지 추가
           setTimeout(() => {
             console.log('📨 기본 루틴 후 질문 메시지 추가 중...');
-            const questionMessage = { user: 'Five Flower', text: '어떤 루틴이 가장 마음에 들어?', isFixed: true };
+            const questionText = moduleType === 'finger' ? '어떤 루틴이 가장 마음에 들어~?' : moduleType === 'wiggle' ? '어떤 루틴이 가장 마음에 들어~?' : '어떤 루틴이 가장 마음에 들어?';
+            const questionMessage = { user: characterName, text: questionText, isFixed: true };
             setMessages((prev) => [...prev, questionMessage]);
             setAllMessages((prev) => [...prev, questionMessage]);
             console.log('✅ 기본 루틴 후 질문 메시지 추가 완료');
           }, 1000);
         } else {
           // 다른 단계에서는 간단한 대답 불가 메시지
-          const errorMessage = { user: 'Five Flower', text: '잠깐, 생각을 정리하고 있어. 다시 말해줄래?', isFixed: true };
+          const characterName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
+          const errorText = moduleType === 'finger' ? '잠깐, 생각을 정리하고 있어~. 다시 말해줄래?' : moduleType === 'wiggle' ? '잠깐, 생각을 정리하고 있어~. 다시 말해줄래?' : '잠깐, 생각을 정리하고 있어. 다시 말해줄래?';
+          const errorMessage = { user: characterName, text: errorText, isFixed: true };
           setMessages((prev) => [...prev, errorMessage]);
           setAllMessages((prev) => [...prev, errorMessage]);
         }
@@ -1333,7 +1821,7 @@ ${previousMessages}
   // 🔥 pibitintro.js에서 입력된 이름 사용 - 없으면 nickname, 둘 다 없으면 '당신'
   const safeDisplayName = name || nickname || '당신';
   const greetingText = `${safeDisplayName} 안녕, 여기까지 오느라 수고 많았어!`;
-  const mainInstructionText = `이제 나와 대화하면서 ${safeDisplayName}에게 가장 효과적인 손톱물어뜯기\\n습관 예방 루틴을 체험해보고 커스터마이징을 진행해보자!`;
+  const mainInstructionText = `이제 나와 대화하면서 ${safeDisplayName}에게 가장 효과적인 머리 잡아 당기기\n습관 예방 루틴을 체험해보고 커스터마이징을 진행해보자!`;
 
   // 🔥 항상 렌더링하도록 수정 - 배경이 항상 보이도록 보장
   console.log('🔧 렌더링 확인:', { nickname, safeDisplayName, name, routerReady: router.isReady });
@@ -1375,7 +1863,7 @@ ${previousMessages}
           content: '';
           position: absolute;
           left: -9999px;
-          background-image: url(/ff2.png), url(/df.png), url(/sil.png);
+                                  background-image: url(/furryy.webp), url(/sili.webp), url(/dolgi.webp), url(/furry4.png), url(/sili4.png), url(/shape4.png), url(/yellowiggle.webp), url(/bluewiggle.webp), url(/pinkwiggle.webp), url(/rediggle.webp);
         }
         
         /* 🔥 이미지 로딩 최적화 */
@@ -1441,7 +1929,7 @@ ${previousMessages}
           backface-visibility: hidden;
         }
       `}</style>
-      <Bg>
+    <Bg>
       <BackButton onClick={() => router.back()}>
         <img src="/whiteb.png" alt="뒤로 가기" />
       </BackButton>
@@ -1509,7 +1997,7 @@ ${previousMessages}
           )}
           <DividerLine />
           <div style={{ position: 'absolute', top: 59, left: '50%', transform: 'translateX(-50%)', width: 400, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src="/module/flower.png" alt="flower" style={{ position: 'absolute', left: -445, top: 'calc(50% + 125px)', transform: 'translateY(-50%)', width: 160, height: 160, zIndex: 2, objectFit: 'contain' }} />
+                            <img src={moduleType === 'finger' ? "/module/finger.png" : moduleType === 'wiggle' ? "/module/wiggle.png" : "/module/flower.png"} alt={moduleType === 'finger' ? "finger" : moduleType === 'wiggle' ? "wiggle" : "flower"} style={{ position: 'absolute', left: -445, top: 'calc(50% + 133px)', transform: 'translateY(-50%)', width: 190, height: 190, zIndex: 2, objectFit: 'contain' }} />
             <DateBox isRoutinePhase={isRoutinePhase} isCustomizingPhase={isCustomizingPhase}>
               <YearDateText isRoutinePhase={isRoutinePhase} isCustomizingPhase={isCustomizingPhase}>
                 {isCustomizingPhase ? '모듈 커스터마이징' : (isRoutinePhase ? '모듈 루틴 추천' : currentDate.replace(/\s*\([^)]*\)/, ''))}
@@ -1525,32 +2013,33 @@ ${previousMessages}
               const isLastFiveFlowerMessage = msg.user === 'Five Flower' && index === allMessages.length - 1;
               // 🔥 루틴 수락 버튼 표시 조건 - "루틴을 수락해줘" 메시지에만 표시
               const isRoutineAcceptMessage = msg.text.includes('루틴을 수락해줘');
-              const isRoutineRecommendation = msg.user === 'Five Flower' && 
+              const characterName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
+              const isRoutineRecommendation = msg.user === characterName && 
                                               isRoutineAcceptMessage && 
                                               !routineAccepted;
               
               return (
                 <div key={index}>
                   <Message me={msg.user === nickname} isFixed={msg.isFixed}>
-                    {msg.isFixed ? (
-                      <>
-                        <strong style={{color: '#828282', fontSize: '19px'}}>{msg.user}</strong>
+                {msg.isFixed ? (
+                  <>
+                    <strong style={{color: '#828282', fontSize: '19px'}}>{msg.user}</strong>
                         {msg.text.includes('📅') ? (
                           // 루틴 추천 메시지인 경우 특별한 렌더링
                           renderRoutineMessage(msg.text)
                         ) : (
                           // 일반 메시지
-                          <div style={{color: '#828282', fontSize: '16px', lineHeight: '1.65', whiteSpace: 'pre-line'}}>
-                            {msg.text}
-                          </div>
+                    <div style={{color: '#828282', fontSize: '16px', lineHeight: '1.65', whiteSpace: 'pre-line'}}>
+                      {msg.text}
+                    </div>
                         )}
-                      </>
-                    ) : (
-                      <>
+                  </>
+                ) : (
+                  <>
                         {msg.text}
-                      </>
-                    )}
-                  </Message>
+                  </>
+                )}
+              </Message>
                   
                   {/* 질감 추천 메시지 바로 밑에 로딩 인디케이터 - 정확한 질감 메시지 인덱스일 때만 */}
                   {index === textureMessageIndex && !textureImagesLoaded && (
@@ -1616,8 +2105,8 @@ ${previousMessages}
                       </TextureSelectionBox>
                       <FlowerLogo />
                       <TextureTypeLabel isVisible={true}>
-                        {currentTextureImage === 'ff2' ? 'Furry Type' : 
-                         currentTextureImage === 'df' ? 'Lumpy Type' : 'Jello Type'}
+                        {currentTextureImage === 'furryy' ? 'Furry Type' : 
+                         currentTextureImage === 'sili' ? 'Lumpy Type' : 'Jello Type'}
                       </TextureTypeLabel>
                       <TextureSelectButton 
                         isSelecting={false}
@@ -1658,26 +2147,37 @@ ${previousMessages}
                       }}>
                       <TextureSelectionEllipse />
                       <TextureSelectionBox>
-                        <TextureImage 
-                          imageName="ff2" 
-                          isVisible={currentTextureImage === 'ff2'} 
+                                              <TextureImage
+                        imageName="furryy" 
+                        isVisible={currentTextureImage === 'furryy'} 
                           direction="left"
                         />
-                        <TextureImage 
-                          imageName="df" 
-                          isVisible={currentTextureImage === 'df'} 
+                                              <TextureImage
+                        imageName="sili" 
+                        isVisible={currentTextureImage === 'sili'} 
                           direction="right"
                         />
-                        <TextureImage 
-                          imageName="sil" 
-                          isVisible={currentTextureImage === 'sil'} 
+                                              <TextureImage
+                        imageName="dolgi" 
+                        isVisible={currentTextureImage === 'dolgi'} 
                           direction="right"
                         />
                       </TextureSelectionBox>
                       <FlowerLogo />
                       <TextureTypeLabel isVisible={true}>
-                        {currentTextureImage === 'ff2' ? 'Furry Type' : 
-                         currentTextureImage === 'df' ? 'Lumpy Type' : 'Jello Type'}
+                        <div style={{ textAlign: 'left' }}>
+                          {currentTextureImage === 'furryy' ? 'Furry Type' : 
+                           currentTextureImage === 'sili' ? 'Silicon Type' : 'Lumpy Type'}
+                        </div>
+                        <div style={{ 
+                          fontSize: '90%', 
+                          textAlign: 'left',
+                          marginTop: '4px',
+                          opacity: '0.8'
+                        }}>
+                                                    {currentTextureImage === 'furryy' ? '털털한 질감' : 
+                             currentTextureImage === 'sili' ? '말랑한 질감' : '울퉁불퉁 질감'}
+                        </div>
                       </TextureTypeLabel>
                       <TextureSelectButton 
                         isSelecting={isTextureSelecting}
@@ -1689,18 +2189,18 @@ ${previousMessages}
                             // 색상 로딩 시작
                             startColorLoading();
                             setShowColorSelection(true);
-                            // 🔥 색상 선택 UI가 잘 보이도록 적당히 스크롤
+                            // 🔥 색상 선택 UI가 잘 보이도록 적절한 위치로 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
-                                const currentScrollTop = container.scrollTop;
-                                const targetScroll = currentScrollTop + 250; // 색상 UI가 잘 보이도록 250px 스크롤
+                                // 색상 UI가 화면에 잘 보이도록 적절한 위치로 스크롤 (150 → 50으로 조정)
+                                const targetScroll = container.scrollHeight - container.clientHeight + 50;
                                 
                                 container.scrollTo({
-                                  top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
+                                  top: Math.max(0, targetScroll),
                                   behavior: 'smooth'
                                 });
-                                console.log('📜 색상 UI 표시 - 적당히 스크롤');
+                                console.log('📜 색상 UI 표시 - 적절한 위치로 스크롤');
                               }
                             }, 50);
                           }
@@ -1728,8 +2228,8 @@ ${previousMessages}
                             setTimeout(() => {
                               // 이미지 전환
                               setCurrentTextureImage(prev => {
-                                const nextImage = prev === 'ff2' ? 'df' : 
-                                                 prev === 'df' ? 'sil' : 'ff2';
+                                const nextImage = prev === 'furryy' ? 'sili' : 
+                                                 prev === 'sili' ? 'dolgi' : 'furryy';
                                 console.log(`🎨 이미지 전환: ${prev} → ${nextImage}`);
                                 return nextImage;
                               });
@@ -1823,8 +2323,19 @@ ${previousMessages}
                       </TextureSelectionBox>
                       <FlowerLogo />
                       <TextureTypeLabel isVisible={true}>
-                        {selectedTexture === 'ff2' ? 'Furry Type' : 
-                         selectedTexture === 'df' ? 'Lumpy Type' : 'Jello Type'}
+                        <div style={{ textAlign: 'left' }}>
+                          {selectedTexture === 'furryy' ? 'Furry Type' : 
+                             selectedTexture === 'sili' ? 'Silicon Type' : 'Lumpy Type'}
+                        </div>
+                        <div style={{ 
+                          fontSize: '90%', 
+                          textAlign: 'left',
+                          marginTop: '4px',
+                          opacity: '0.8'
+                        }}>
+                          {selectedTexture === 'furryy' ? '털털한 질감' : 
+                             selectedTexture === 'sili' ? '말랑한 질감' : '울퉁불퉁 질감'}
+                        </div>
                       </TextureTypeLabel>
                       <TextureSelectButton 
                         isSelecting={isColorSelecting}
@@ -1834,38 +2345,38 @@ ${previousMessages}
                             setIsColorSelecting(true);
                             // ⚡ 색상 동그라미들 즉시 표시
                             setVisibleColorOptions([]);
-                            setTimeout(() => setVisibleColorOptions([0]), 1);
-                            setTimeout(() => setVisibleColorOptions([0, 1]), 2);
-                            setTimeout(() => setVisibleColorOptions([0, 1, 2]), 3);
-                            setTimeout(() => setVisibleColorOptions([0, 1, 2, 3]), 4);
+                            setTimeout(() => setVisibleColorOptions([0]), 50);
+                            setTimeout(() => setVisibleColorOptions([0, 1]), 100);
+                            setTimeout(() => setVisibleColorOptions([0, 1, 2]), 150);
+                            setTimeout(() => setVisibleColorOptions([0, 1, 2, 3]), 200);
                             
-                            // 🔥 색상 옵션이 잘 보이도록 약간 스크롤
+                            // 🔥 색상 옵션이 잘 보이도록 적절한 위치로 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
-                                const currentScrollTop = container.scrollTop;
-                                const targetScroll = currentScrollTop + 150; // 색상 옵션이 보이도록 150px 스크롤
+                                // 색상 옵션이 화면에 잘 보이도록 적절한 위치로 스크롤 (색상 옵션 버튼들이 잘 보이도록)
+                                const targetScroll = container.scrollHeight - container.clientHeight + 200;
                                 
                                 container.scrollTo({
-                                  top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
+                                  top: Math.max(0, targetScroll),
                                   behavior: 'smooth'
                                 });
-                                console.log('📜 색상 옵션 표시 - 약간 스크롤');
+                                console.log('📜 색상 옵션 표시 - 적절한 위치로 스크롤');
                               }
                             }, 20);
                           } else if (isColorSelected) {
                             // "색상 선택하기" 버튼을 눌렀을 때만 배송 메시지 표시
                             console.log('색상 선택 완료 - 배송 메시지 표시');
                             setShowShippingMessage(true);
-                            // ⚡ 배송 메시지가 잘 보이도록 적당히 스크롤
+                            // ⚡ 배송 메시지가 잘 보이도록 적절한 위치로 스크롤
                             setTimeout(() => {
                               if (messagesContainerRef.current) {
                                 const container = messagesContainerRef.current;
-                                const currentScrollTop = container.scrollTop;
-                                const targetScroll = currentScrollTop + 200; // 배송 메시지가 보이도록 200px 스크롤
+                                // 배송 메시지가 화면에 잘 보이도록 적절한 위치로 스크롤
+                                const targetScroll = container.scrollHeight - container.clientHeight + 50;
                                 
                                 container.scrollTo({
-                                  top: Math.min(targetScroll, container.scrollHeight - container.clientHeight),
+                                  top: Math.max(0, targetScroll),
                                   behavior: 'smooth'
                                 });
                                 console.log('📜 배송 메시지 표시 - 적당히 스크롤');
@@ -1885,16 +2396,16 @@ ${previousMessages}
                       
                       {/* 색상 선택 동그라미 4개 조건부 렌더링 */}
                       {visibleColorOptions.includes(0) && (
-                        <TextureOption1 onClick={() => handleColorSelect('#FFDF76')} />
+                        <TextureOption1 onClick={() => handleColorSelect('#FFD700')} />
                       )}
                       {visibleColorOptions.includes(1) && (
-                        <TextureOption2 onClick={() => handleColorSelect('#DDEBC1')} />
+                        <TextureOption2 onClick={() => handleColorSelect('#87CEEB')} />
                       )}
                       {visibleColorOptions.includes(2) && (
-                        <TextureOption3 onClick={() => handleColorSelect('#C5E1FF')} />
+                        <TextureOption3 onClick={() => handleColorSelect('#FFB6C1')} />
                       )}
                       {visibleColorOptions.includes(3) && (
-                        <TextureOption4 onClick={() => handleColorSelect('#EEC9E0')} />
+                        <TextureOption4 onClick={() => handleColorSelect('#FF4444')} />
                       )}
                     </div>
                   )}
@@ -1922,10 +2433,10 @@ ${previousMessages}
                           color: '#828282',
                           marginBottom: '10px'
                         }}>
-                          Five Flower
+                          {moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower'}
                         </div>
                         <div>
-                          좋았어! {getColorName(selectedColor)}의 외부 모듈과 {getTextureDescription(selectedTexture)} 내부 모듈을 함께 {nickname}네 집으로 배송할게!{'\n'}함께 선택한 루틴을 이번주에 진행해보자!{'\n'}커스터마이징 마무리와 배송을 위해 Five Flower 배송 시작 버튼을 눌러줘
+                          좋았어! {getColorName(selectedColor)}의 외부 모듈과 {getTextureDescription(selectedTexture)} 내부 모듈을 함께 {nickname}네 집으로 배송할게!{'\n'}함께 선택한 루틴을 이번주에 진행해보자!{'\n'}커스터마이징 마무리와 배송을 위해 {moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower'} 배송 시작 버튼을 눌러줘
                         </div>
                       </div>
                       
@@ -1935,9 +2446,22 @@ ${previousMessages}
                         justifyContent: 'flex-start'
                       }}>
                         <button
-                          onClick={() => {
-                            console.log('Five Flower 배송 시작 버튼 클릭');
-                            setShowFinalModal(true);
+                          onClick={(e) => {
+                            console.log(`${moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower'} 배송 시작 버튼 클릭`);
+                            
+                            // 🎬 버튼 클릭 애니메이션 효과
+                            e.target.style.transform = 'scale(0.95)';
+                            e.target.style.opacity = '0.8';
+                            
+                            setTimeout(() => {
+                              e.target.style.transform = 'scale(1)';
+                              e.target.style.opacity = '1';
+                            }, 150);
+                            
+                            // 🎬 0.3초 후 모달 표시 (애니메이션 완료 후)
+                            setTimeout(() => {
+                              setShowFinalModal(true);
+                            }, 300);
                           }}
                           style={{
                             backgroundColor: '#A8CCEB',
@@ -1969,7 +2493,7 @@ ${previousMessages}
                             e.target.style.transform = 'scale(1.05)';
                           }}
                         >
-                          Five Flower 배송 시작
+                          {moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower'} 배송 시작
                         </button>
                       </div>
                     </div>
@@ -1984,7 +2508,9 @@ ${previousMessages}
             {/* 타이핑 인디케이터 */}
             {isTyping && (
               <Message isFixed={true}>
-                <strong style={{color: '#828282', fontSize: '19px'}}>Five Flower</strong>
+                <strong style={{color: '#828282', fontSize: '19px'}}>
+                  {moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower'}
+                </strong>
                 <div style={{
                   color: '#828282', 
                   fontSize: '16px', 
@@ -1996,7 +2522,8 @@ ${previousMessages}
                   <span>
                     {(() => {
                       const userAnswerCount = allMessages.filter(m => m.user === nickname).length;
-                      return userAnswerCount === 6 ? 'five-flower 루틴 생성중..' : '답변을 작성 중입니다';
+                      const moduleName = moduleType === 'finger' ? 'finger-couch' : moduleType === 'wiggle' ? 'wiggler' : 'five-flower';
+                      return userAnswerCount === 6 ? `${moduleName} 루틴 생성중..` : '답변을 작성 중입니다';
                     })()}
                   </span>
                   <div style={{
@@ -2031,13 +2558,14 @@ ${previousMessages}
                 </div>
               </Message>
             )}
-                    </Messages>
+          </Messages>
           
           {/* 🔥 완전 독립적인 루틴 수락하기 버튼 - 화면에 고정 */}
           {(() => {
             const lastMessage = allMessages[allMessages.length - 1];
+            const characterName = moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower';
             const shouldShow = lastMessage && 
-                             lastMessage.user === 'Five Flower' && 
+                             lastMessage.user === characterName && 
                              lastMessage.text.includes('루틴을 수락해줘') && 
                              !routineAccepted;
             
@@ -2090,7 +2618,7 @@ ${previousMessages}
             ) : null;
           })()}
             
-            {showCircle && (
+          {showCircle && (
             <img 
               src="/circle.png" 
               alt="circle" 
@@ -2129,10 +2657,10 @@ ${previousMessages}
       <FinalModalOverlay onClick={() => setShowFinalModal(false)}>
         <FinalModalContainer onClick={(e) => e.stopPropagation()}>
           <FinalModalText>
-            {name ? `${name}와` : '당신과'} 오랜 기간동안 함께할 습관, 감정 동반자가 된 나 Five Flower 모듈의 이름을 지어주면 배송이 시작돼 !
+            {nickname ? `${nickname}와` : '당신과'} 오랜 기간동안 함께할 습관, 감정 동반자가 된 나 {moduleType === 'finger' ? 'Finger Couch' : moduleType === 'wiggle' ? 'Wiggler' : 'Five Flower'}{'\n'}모듈의 이름을 지어주면 배송이 시작돼 !
           </FinalModalText>
           <FinalModalBoxImage />
-          <FinalModalFlowerImage />
+          <FinalModalFlowerImage moduleType={moduleType} />
           <FinalModalNameContainer>
             <FinalModalNameInput
               type="text"
@@ -2163,7 +2691,7 @@ ${previousMessages}
           <ShippingCompleteBox>
             <ShippingCompleteText>
               <div className="shipping-title">배송 완료!</div>
-              <div className="shipping-content">{submittedModuleName}과 함께 {name ? `${name}님의` : '당신의'} 습관과 감정을 오랜 시간동안 함께 관리하고 살아가길 기대할게요!</div>
+              <div className="shipping-content">{submittedModuleName}과 함께 {nickname ? `${nickname}님의` : '당신의'} 습관과 감정을 오랜 시간동안 함께 관리하고 살아가길 기대할게요!</div>
             </ShippingCompleteText>
           </ShippingCompleteBox>
           <ShippingCompleteBoxMockup />

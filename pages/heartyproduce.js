@@ -19,10 +19,14 @@ const GlobalStyle = createGlobalStyle`
   body, html {
     overflow-y: hidden;
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
   }
   
   body {
-    background-color: #ffffff;
+    background: url('/bk2.png') no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
   }
 `;
 
@@ -316,7 +320,7 @@ Typewriter.displayName = 'Typewriter';
 
 export default function HeartyProducePage() {
     const router = useRouter();
-    const { name = '지수', selectedHabits, finalHabit } = router.query;
+    const { name = '', selectedHabits, finalHabit } = router.query;
     const [showTitle, setShowTitle] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
     const [showModel, setShowModel] = useState(false);
@@ -325,7 +329,7 @@ export default function HeartyProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name}가 입술 대신 내 말랑한 결을\n천천히 쓸어내릴 때마다 작은 불안들을 말없이 녹여주는\n부드럽고 살포근한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 난 ${name ? `${name}가` : '당신이'} 입술 대신 내 말랑한 결을\n천천히 쓸어내릴 때마다 작은 불안들을 말없이 녹여주는\n부드럽고 살포근한 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
@@ -401,7 +405,7 @@ export default function HeartyProducePage() {
                     <Ball style={{"--color": "#8a2be2", "--i": "18px", "--d": "2.8s"}} />
                 </ContainerLoader>
                 
-                <Title show={showTitle}>{name}님의 첫 맞춤형 Hearty Lip 피빗이 태어났어요!</Title>
+                <Title show={showTitle}>{name ? `${name}님의` : '당신의'} 첫 맞춤형 Hearty Lip 피빗이 태어났어요!</Title>
                 <Subtitle show={showTitle}>
                     데스크탑 앞에 놓여있는 hearty lip 모듈과의 대화를 통해<br/>
                     새로운 습관 개선 여정을 시작하세요
