@@ -26,7 +26,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     background: url('/bk2.png') no-repeat center center;
     background-size: cover;
-    background-attachment: fixed;
+    will-change: transform;
   }
 `;
 
@@ -42,19 +42,9 @@ const Root = styled.div`
   margin: 0 auto;
   overflow: hidden;
   animation: ${fadeIn} 1.5s ease-in-out;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/bk2.png') no-repeat center center;
-    background-size: cover;
-    filter: saturate(1.8);
-    z-index: -1;
-  }
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 `;
 
 const LogoImage = styled.div`
@@ -368,7 +358,7 @@ export default function ClicProducePage() {
 
     const handleStartConversation = useCallback(() => {
         router.push({
-            pathname: '/converf',
+            pathname: '/clicconver',
             query: { name: actualName, selectedHabits: JSON.stringify(selectedHabits) },
         });
     }, [router, actualName, selectedHabits]);

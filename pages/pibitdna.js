@@ -462,7 +462,7 @@ export default function PibitDnaPage() {
     const timer = setTimeout(() => {
       setInitialTextsVisible(false);
       setBoxVisible(true);
-    }, 6000);
+    }, 4000);
     return () => clearTimeout(timer);
   }, []);
 

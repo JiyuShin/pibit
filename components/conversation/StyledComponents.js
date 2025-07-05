@@ -685,7 +685,7 @@ export const TextureImage = styled.div`
   height: 100%;
   background: url('/${props => props.imageName}.${props => {
     // .webp 이미지들
-    if (props.imageName === 'oranges' || props.imageName === 'bluish' || props.imageName === 'pink' || props.imageName === 'mint' || props.imageName === 'Furry8' || props.imageName === 'sili7' || props.imageName === 'lumpy2' || props.imageName === 'yellowh' || props.imageName === 'blueh' || props.imageName === 'purpleh' || props.imageName === 'minth') {
+    if (props.imageName === 'oranges' || props.imageName === 'bluish' || props.imageName === 'pink' || props.imageName === 'mint' || props.imageName === 'flufffy23' || props.imageName === 'sili99' || props.imageName === 'liumpy9' || props.imageName === 'yellowh' || props.imageName === 'blueh' || props.imageName === 'purpleh' || props.imageName === 'minth' || props.imageName === 'pinkp' || props.imageName === 'purplep' || props.imageName === 'greenp' || props.imageName === 'yellowp') {
       return 'webp';
     }
     return 'png';
@@ -693,7 +693,7 @@ export const TextureImage = styled.div`
   background-size: 52.5%;
   background-repeat: no-repeat;
   /* JPEG/JPG 이미지들의 흰색 배경 투명 처리 (색상 UI용 PNG 이미지들은 제외) */
-  ${props => (props.imageName === 'Furry8' || props.imageName === 'sili7' || props.imageName === 'lumpy2') && `
+  ${props => (props.imageName === 'flufffy23' || props.imageName === 'sili99' || props.imageName === 'liumpy9') && `
     mix-blend-mode: multiply;
     filter: contrast(1.1) brightness(1.05);
   `}
@@ -828,7 +828,7 @@ export const TextureOption1 = styled.div`
   height: 59.36px;
   left: 195px;
   top: 329px;
-  background: #FFEB9C;
+  background: #FFB6C1;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
@@ -854,7 +854,7 @@ export const TextureOption2 = styled.div`
   height: 59.36px;
   left: 268px;
   top: 329px;
-  background: #87CEEB;
+  background: #9370DB;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
@@ -880,7 +880,7 @@ export const TextureOption3 = styled.div`
   height: 59.36px;
   left: 341px;
   top: 329px;
-  background: #E6E6FA;
+  background: #90EE90;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
@@ -906,7 +906,7 @@ export const TextureOption4 = styled.div`
   height: 59.36px;
   left: 414px;
   top: 329px;
-  background: #A8E6A3;
+  background: #FFEB9C;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
@@ -1027,7 +1027,7 @@ export const FinalModalFlowerImage = styled.div`
   height: 169.05px;
   left: calc(50% - 239.83px/2 + 16.29px);
   top: calc(50% - 169.05px/2 - 20.66px);
-  background: ${props => `url('/module/${props.moduleType === 'finger' ? 'finger' : props.moduleType === 'wiggle' ? 'wiggle' : props.moduleType === 'heart' ? 'heart' : props.moduleType === 'puffy' ? 'puffy' : 'flower'}.png')`} center/contain no-repeat;
+  background: ${props => `url('/module/${props.moduleType === 'finger' ? 'finger' : props.moduleType === 'wiggle' ? 'wiggle' : props.moduleType === 'heart' ? 'heart' : props.moduleType === 'puffy' ? 'puffy' : props.moduleType === 'clic' ? 'pinch' : 'flower'}.png')`} center/contain no-repeat;
   filter: drop-shadow(0px 9px 40px rgba(0, 0, 0, 0.13));
   opacity: 0;
   transform: rotate(12.77deg) scale(0.8) translateY(15px);

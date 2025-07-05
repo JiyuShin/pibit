@@ -26,7 +26,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     background: url('/bk2.png') no-repeat center center;
     background-size: cover;
-    background-attachment: fixed;
+    will-change: transform;
   }
 `;
 
@@ -42,19 +42,9 @@ const Root = styled.div`
   margin: 0 auto;
   overflow: hidden;
   animation: ${fadeIn} 1.5s ease-in-out;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/bk2.png') no-repeat center center;
-    background-size: cover;
-    filter: saturate(1.8);
-    z-index: -1;
-  }
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 `;
 
 const LogoImage = styled.div`
@@ -224,13 +214,13 @@ const move = keyframes`
 `;
 
 const ContainerLoader = styled.aside`
-  --size: 314px;
+  --size: 240.21px;
   width: var(--size);
   height: var(--size);
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(calc(-50% - 165px), calc(-50% + 121px)) scale(${({ show }) => (show ? 1 : 0.2)});
+  transform: translate(calc(-50% - 120px), calc(-50% + 121px)) scale(${({ show }) => (show ? 1 : 0.2)});
   z-index: -2;
   opacity: ${({ show }) => (show ? 0.3 : 0)};
   transition: opacity 2s ease-out, transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -249,6 +239,9 @@ const Ball = styled.article`
   mix-blend-mode: difference;
   animation-duration: var(--d);
   filter: blur(28px) saturate(2.8);
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 
   &:nth-child(even) {
     animation-direction: reverse;

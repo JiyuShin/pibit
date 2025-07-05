@@ -2,7 +2,7 @@ const { NFC } = require('nfc-pcsc');
 const { Server } = require('socket.io');
 const http = require('http');
 
-// 1. 웹소켓 서버 생성 (포트 4001)
+// 1. 웹소켓 서버 생성 (포트 4002)
 const server = http.createServer();
 const io = new Server(server, {
   cors: {
@@ -66,6 +66,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(4001, () => {
-  console.log("📡 소켓 서버 실행 중 (포트 4001)");
+server.listen(4002, () => {
+  console.log("📡 소켓 서버 실행 중 (포트 4002)");
 }); 

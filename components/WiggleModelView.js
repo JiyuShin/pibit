@@ -22,9 +22,12 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
   console.log('Loading model:', modelPath);
   
   const groupRef = useRef();
+  const [modelReady, setModelReady] = useState(false);
   
   // Clear specific model from cache
   useEffect(() => {
+    // Reset model ready state when model path changes
+    setModelReady(false);
     // Clear all GLTF cache and preload the new model
     useGLTF.clear();
     // Force browser to not use cache
@@ -56,9 +59,17 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
       const center = box.getCenter(new THREE.Vector3());
       
       // Move the scene so its center is at origin (0,0,0)
-      scene.position.set(-center.x, -center.y, -center.z);
+      // For wiggle22.glb, adjust the Y center for proper core rotation
+      if (modelPath.includes('wiggle22.glb')) {
+        // Use the model's visual center rather than bounding box center
+        // Adjust Y position to rotate around the model's core, not the bottom
+        const adjustedCenterY = center.y * 0.7; // Adjust to rotate around visual center
+        scene.position.set(-center.x, -adjustedCenterY, -center.z);
+      } else {
+        scene.position.set(-center.x, -center.y, -center.z);
+      }
       
-      // Center the model properly for wiggle22.glb
+      // Center the model for proper rotation, especially for wiggle22.glb
       if (modelPath.includes('wiggle22.glb')) {
         // Reset any transforms that might cause drift
         scene.rotation.set(0, 0, 0);
@@ -74,6 +85,11 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
           }
         });
       }
+      
+      // Set model as ready after all calculations are complete
+      setTimeout(() => {
+        setModelReady(true);
+      }, 100);
     }
   }, [scene, modelPath]);
 
@@ -95,6 +111,11 @@ function Model({ onModelClick, scale, modelPath, position = [0, 0, 0], ...props 
     }
     return [0, 0, 0];
   };
+
+  // Only render when model is ready
+  if (!modelReady) {
+    return null;
+  }
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
@@ -124,7 +145,7 @@ export default function WiggleModelView({ onModelClick, modelPath = '/wiggle22.g
   // Set different scales based on model type
   const getModelScale = () => {
     if (modelPath.includes('wiggle22.glb')) {
-      return 0.0788415804; // 7% more increase for wiggle22 (0.07368372 * 1.07)
+      return 0.0683320076328; // 0.07배 더 크게 (0.063861680124 * 1.07)
     }
     if (modelPath.includes('clic22.glb')) {
       return 0.07841856045; // Reduced by 0.03 (0.08084387552 * 0.97)
@@ -135,7 +156,7 @@ export default function WiggleModelView({ onModelClick, modelPath = '/wiggle22.g
   // Set different positions based on model type
   const getModelPosition = () => {
     if (modelPath.includes('wiggle22.glb')) {
-      return [0.3, -0.4, 0]; // Move wiggle22 up 60px from previous position
+      return [0.3, -1.35, 0]; // 밑으로 60px 더 내림 (기존 -0.75에서 -0.6 추가)
     }
     if (modelPath.includes('clic22.glb')) {
       return [0, 1.1, 0]; // Move clic22 up by 30px more from previous position

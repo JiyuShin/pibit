@@ -26,7 +26,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     background: url('/bk2.png') no-repeat center center;
     background-size: cover;
-    will-change: auto;
+    will-change: transform;
   }
 `;
 
@@ -42,7 +42,9 @@ const Root = styled.div`
   margin: 0 auto;
   overflow: hidden;
   animation: ${fadeIn} 1.5s ease-in-out;
-  will-change: opacity;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 `;
 
 const LogoImage = styled.div`
@@ -320,7 +322,7 @@ export default function HeartyProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕 만나서 반가워, 난 입술 피부 조직을 닮은\n말랑이를 쓸어내리며 마음을 살살 달래줄\n따듯하고 중독성 있는 존재야!`;
+    const fullText1 = `안녕 만나서 반가워, 난 ${name ? `${name}님의` : '당신의'} 입술 피부 조직을 닮은\n말랑이를 쓸어내리며 마음을 살살 달래줄\n따듯하고 중독성 있는 존재야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {

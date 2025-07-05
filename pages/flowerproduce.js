@@ -26,7 +26,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     background: url('/bk2.png') no-repeat center center;
     background-size: cover;
-    background-attachment: fixed;
+    will-change: transform;
   }
 `;
 
@@ -42,19 +42,9 @@ const Root = styled.div`
   margin: 0 auto;
   overflow: hidden;
   animation: ${fadeIn} 1.5s ease-in-out;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/bk2.png') no-repeat center center;
-    background-size: cover;
-    filter: saturate(1.8);
-    z-index: -1;
-  }
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 `;
 
 const LogoImage = styled.div`
@@ -146,7 +136,7 @@ const BubbleText1 = styled.p`
   position: absolute;
   width: 380px;
   left: 102px;
-  top: 363px;
+  top: 380px;
   font-family: 'Pretendard Variable', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -320,7 +310,17 @@ Typewriter.displayName = 'Typewriter';
 
 export default function FlowerProducePage() {
     const router = useRouter();
-    const { name = '', selectedHabits, finalHabit } = router.query;
+    const [actualName, setActualName] = useState('');
+    
+    useEffect(() => {
+        if (router.isReady) {
+            const { name = '', selectedHabits, finalHabit } = router.query;
+            console.log('플라워 프로듀스 페이지 - 받은 값들:', { name, selectedHabits, finalHabit, fullQuery: router.query });
+            setActualName(name);
+        }
+    }, [router.isReady, router.query]);
+    
+    const { selectedHabits, finalHabit } = router.query;
     const [showTitle, setShowTitle] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
     const [showModel, setShowModel] = useState(false);
@@ -329,7 +329,7 @@ export default function FlowerProducePage() {
     const [showRectangle2, setShowRectangle2] = useState(false);
     const [showBubbleButton, setShowBubbleButton] = useState(false);
 
-    const fullText1 = `안녕! 만나서 반가워, 난 ${name ? `${name}가` : '당신이'} 입술 대신 내 말랑한 결을\n천천히 쓸어내릴 때마다 작은 불안들을 말없이 녹여주는\n부드럽고 살포근한 존재야!`;
+    const fullText1 = `안녕! 만나서 반가워, 나는 ${actualName ? `${actualName}님의` : '당신의'} 손톱물어뜯기\n습관을 곁에서 돌봐줄 따듯하고 섬세한 동반자야!`;
     const fullText2 = "대화를 시작하고 싶다면 나를 클릭해줘 !";
 
     useEffect(() => {
@@ -358,10 +358,10 @@ export default function FlowerProducePage() {
 
     const handleStartConversation = useCallback(() => {
         router.push({
-            pathname: '/converf',
-            query: { name, selectedHabits: JSON.stringify(selectedHabits) },
+            pathname: '/flowerconver',
+            query: { name: actualName, selectedHabits: JSON.stringify(selectedHabits) },
         });
-    }, [router, name, selectedHabits]);
+    }, [router, actualName, selectedHabits]);
 
     const handleGoBack = () => {
         router.back();
@@ -405,7 +405,7 @@ export default function FlowerProducePage() {
                     <Ball style={{"--color": "#8a2be2", "--i": "18px", "--d": "2.8s"}} />
                 </ContainerLoader>
                 
-                <Title show={showTitle}>{name ? `${name}님의` : '당신의'} 첫 맞춤형 Five Flower 피빗이 태어났어요!</Title>
+                <Title show={showTitle}>{actualName ? `${actualName}님의` : '당신의'} 첫 맞춤형 Five Flower 피빗이 태어났어요!</Title>
                 <Subtitle show={showTitle}>
                     데스크탑 앞에 놓여있는 Five Flower 모듈과의 대화를 통해<br/>
                     새로운 습관 개선 여정을 시작하세요
