@@ -5,6 +5,7 @@ import styled, { keyframes } from 'styled-components';
 import * as THREE from 'three';
 import { useSpring, a } from '@react-spring/three';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -451,7 +452,7 @@ function AnimatedModel({ onAnimationStart }) {
   );
 }
 
-export default function PibitDnaPage() {
+function PibitDnaPage() {
   const [stickVisible, setStickVisible] = useState(false);
   const [initialTextsVisible, setInitialTextsVisible] = useState(true);
   const [boxVisible, setBoxVisible] = useState(false);
@@ -536,4 +537,8 @@ export default function PibitDnaPage() {
       )}
     </ModelContainer>
   );
-} 
+}
+
+export default dynamic(() => Promise.resolve(PibitDnaPage), {
+  ssr: false
+}); 

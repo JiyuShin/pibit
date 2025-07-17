@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF } from '@react-three/drei';
+import dynamic from 'next/dynamic';
 
 function Model(props) {
   const { nodes, materials } = useGLTF('/sole.glb');
@@ -254,7 +255,7 @@ function Model(props) {
 
 useGLTF.preload('/sole.glb');
 
-export default function SoleViewerPage() {
+function SoleViewerPage() {
   return (
     <div style={{ height: '100vh', width: '100vw' }}>
       <Canvas camera={{ position: [0, 0, 35], fov: 75 }}> {/* 카메라 위치와 시야각 조정 */}
@@ -268,4 +269,8 @@ export default function SoleViewerPage() {
       </Canvas>
     </div>
   );
-} 
+}
+
+export default dynamic(() => Promise.resolve(SoleViewerPage), {
+  ssr: false
+}); 

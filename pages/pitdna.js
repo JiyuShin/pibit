@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
+import dynamic from 'next/dynamic';
 
 function AnimatedModel({ onAnimationStart }) {
   const group = useRef();
@@ -11,4 +12,6 @@ function AnimatedModel({ onAnimationStart }) {
   // ... existing code ...
 }
 
-export default AnimatedModel; 
+export default dynamic(() => Promise.resolve(AnimatedModel), {
+  ssr: false
+}); 
