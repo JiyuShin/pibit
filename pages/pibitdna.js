@@ -178,7 +178,7 @@ const ModelContainer = styled.div`
   z-index: 1;
 `;
 
-function DnaStickModel() {
+function DnaStickModelComponent() {
   const group = useRef();
   const { scene } = useGLTF('/dnastick.glb');
 
@@ -294,7 +294,11 @@ function DnaStickModel() {
   );
 }
 
-function RecModel() {
+const DnaStickModel = dynamic(() => Promise.resolve(DnaStickModelComponent), {
+  ssr: false
+});
+
+function RecModelComponent() {
   const group = useRef();
   const { scene } = useGLTF('/rec.glb');
 
@@ -355,7 +359,11 @@ function RecModel() {
   );
 }
 
-function AnimatedModel({ onAnimationStart }) {
+const RecModel = dynamic(() => Promise.resolve(RecModelComponent), {
+  ssr: false
+});
+
+function AnimatedModelComponent({ onAnimationStart }) {
   const { scene, animations } = useGLTF('/dnakit7.glb');
   const { actions } = useAnimations(animations, scene);
   const { gl } = useThree();
@@ -452,7 +460,11 @@ function AnimatedModel({ onAnimationStart }) {
   );
 }
 
-function PibitDnaPage() {
+const AnimatedModel = dynamic(() => Promise.resolve(AnimatedModelComponent), {
+  ssr: false
+});
+
+export default function PibitDnaPage() {
   const [stickVisible, setStickVisible] = useState(false);
   const [initialTextsVisible, setInitialTextsVisible] = useState(true);
   const [boxVisible, setBoxVisible] = useState(false);
@@ -537,8 +549,4 @@ function PibitDnaPage() {
       )}
     </ModelContainer>
   );
-}
-
-export default dynamic(() => Promise.resolve(PibitDnaPage), {
-  ssr: false
-}); 
+} 
