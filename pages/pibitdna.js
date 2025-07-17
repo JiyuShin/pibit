@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { useSpring, a } from '@react-spring/three';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -163,9 +164,6 @@ const BackgroundContainer = styled.div`
   height: 100%;
   top: 0;
   left: 0;
-  background-image: url('/introbk.png');
-  background-size: cover;
-  background-position: center;
   z-index: -1;
 `;
 
@@ -488,7 +486,18 @@ export default function PibitDnaPage() {
 
   return (
     <ModelContainer>
-      <BackgroundContainer />
+      <BackgroundContainer>
+        <Image
+          src="/introbk.png"
+          alt="background"
+          fill
+          style={{
+            objectFit: 'cover',
+            objectPosition: 'center',
+          }}
+          priority
+        />
+      </BackgroundContainer>
       <InitialTextsContainer visible={initialTextsVisible}>
           <TitleText>YOUR PIBIT DNA TESTER HAS ARRIVED!</TitleText>
           <InstructionText>
